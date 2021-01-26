@@ -76,8 +76,8 @@
   },
   "lint-staged": {
     "src/**/*.ts": [
-      "yarn eslint --cache --fix",
-      "yarn prettier --write"
+      "yarn eslint --fix",
+      "yarn prettier --write ."
     ]
   }
 }
