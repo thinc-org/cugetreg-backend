@@ -24,7 +24,11 @@
 		"@nestjs/common": "^7.5.1",
 		"@nestjs/config": "^0.6.2",
 		"@nestjs/core": "^7.5.1",
+		"@nestjs/graphql": "^7.9.8",
 		"@nestjs/platform-express": "^7.5.1",
+		"apollo-server-express": "^2.19.2",
+		"graphql": "^15.5.0",
+		"graphql-tools": "^7.0.2",
 		"reflect-metadata": "^0.1.13",
 		"rimraf": "^3.0.2",
 		"rxjs": "^6.6.3"
@@ -78,7 +82,7 @@
 	"lint-staged": {
 		"src/**/*.ts": [
 			"yarn eslint --fix",
-			"yarn prettier --write ."
+			"yarn prettier --write"
 		]
 	}
 }

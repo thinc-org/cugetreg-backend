@@ -1,0 +1,49 @@
+type Class {
+	type: ClassType
+	dayOfweek: Days
+	startTime: String
+	endTime: String
+	building: String
+	room: String
+	teacher: String
+}
+
+type Section {
+	sectionNo: Int
+	closed: Boolean
+	registered: Int
+	max: Int
+	note: String
+	classes: [Class]
+}
+
+type Course {
+	# General info
+	studyProgram: StudyProgram
+	semester: Int
+	academicYear: Int
+
+	# Course info
+	courseNo: String
+	abbrName: String
+	courseNameTh: String
+	courseNameEn: String
+	faculty: String
+	credit: Int
+	creditHours: String
+	courseCondition: String
+
+	# Exam
+	midtermStart: Date
+	midtermEnd: Date
+	finalStart: Date
+	finalEnd: Date
+
+	# Section
+	sections: [Section]
+}
+
+type Query {
+	courses: [Course]!
+	course(id: Int!): Course
+}
