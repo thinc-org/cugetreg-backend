@@ -31,12 +31,6 @@ export enum ClassType {
 	SMNA = 'SMNA',
 }
 
-export enum Semester {
-	_1 = '_1',
-	_2 = '_2',
-	_3 = '_3',
-}
-
 export enum GenEdType {
 	SO = 'SO',
 	SC = 'SC',
@@ -79,8 +73,8 @@ export class Section {
 
 export class Course {
 	studyProgram?: StudyProgram
-	semester?: number
-	academicYear?: number
+	semester?: string
+	academicYear?: string
 	courseNo?: string
 	abbrName?: string
 	courseNameTh?: string
