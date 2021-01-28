@@ -8,6 +8,12 @@ Backend service for [CU Get Reg](https://cugetreg.com).
 
 This project is powered by NestJS and GraphQL. For official documentation, see [here](https://docs.nestjs.com/).
 
+## Prerequisites
+
+1. Node 14 LTS
+2. Yarn
+3. Docker-compose
+
 ## Installation
 
 1. Install dependencies.
@@ -21,6 +27,18 @@ $ yarn install
 ```bash
 $ cp .env.template .env
 ```
+
+## Running MongoDB locally
+
+Make sure port `27017` is available.
+
+```bash
+$ docker-compose up
+```
+
+MongoDB should be up and running on `http://localhost:27017`
+
+In case of `Bind for 0.0.0.0:27017 failed: port is already allocated`, make sure port `27017` is available.
 
 ## Running the app
 
