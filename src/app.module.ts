@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GraphQLModule } from '@nestjs/graphql'
 import { join } from 'path'
 import { CourseModule } from './course/course.module'
 import { CommonModule } from './common/common.module'
+import { MongooseModule } from '@nestjs/mongoose'
 
 @Module({
 	imports: [
@@ -19,6 +20,13 @@ import { CommonModule } from './common/common.module'
 		}),
 		CourseModule,
 		CommonModule,
+		MongooseModule.forRootAsync({
+			imports: [ConfigModule],
+			useFactory: async (configService: ConfigService) => ({
+				uri: configService.get<string>('mongoURI'),
+			}),
+			inject: [ConfigService],
+		}),
 	],
 	controllers: [AppController],
 	providers: [AppService],
