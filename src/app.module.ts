@@ -7,10 +7,13 @@ import { join } from 'path'
 import { CourseModule } from './course/course.module'
 import { CommonModule } from './common/common.module'
 import { MongooseModule } from '@nestjs/mongoose'
+import configuration from './config/configuration'
 
 @Module({
 	imports: [
-		ConfigModule.forRoot(),
+		ConfigModule.forRoot({
+			load: [configuration],
+		}),
 		GraphQLModule.forRoot({
 			typePaths: ['./**/*.graphql'],
 			definitions: {
