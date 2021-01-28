@@ -34,8 +34,8 @@ type Section {
 type Course {
 	# General info
 	studyProgram: StudyProgram
-	semester: Int
-	academicYear: Int
+	semester: String
+	academicYear: String
 
 	# Course info
 	courseNo: String

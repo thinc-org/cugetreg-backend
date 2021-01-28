@@ -24,12 +24,6 @@ enum ClassType {
 	SMNA
 }
 
-enum Semester {
-	1
-	2
-	3
-}
-
 enum GenEdType {
 	SO
 	SC

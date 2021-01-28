@@ -31,6 +31,34 @@ export enum ClassType {
 	SMNA = 'SMNA',
 }
 
+export enum Semester {
+	_1 = '_1',
+	_2 = '_2',
+	_3 = '_3',
+}
+
+export enum GenEdType {
+	SO = 'SO',
+	SC = 'SC',
+	HU = 'HU',
+	IN = 'IN',
+}
+
+export class Period {
+	start?: string
+	end?: string
+}
+
+export class ExamPeriod {
+	date?: Date
+	period?: Period
+}
+
+export class StudentCount {
+	current?: number
+	max?: number
+}
+
 export class Class {
 	type?: ClassType
 	dayOfweek?: Days
@@ -44,8 +72,7 @@ export class Class {
 export class Section {
 	sectionNo?: number
 	closed?: boolean
-	registered?: number
-	max?: number
+	students?: StudentCount
 	note?: string
 	classes?: Class[]
 }
@@ -62,10 +89,9 @@ export class Course {
 	credit?: number
 	creditHours?: string
 	courseCondition?: string
-	midtermStart?: Date
-	midtermEnd?: Date
-	finalStart?: Date
-	finalEnd?: Date
+	genEdType?: GenEdType
+	midterm?: ExamPeriod
+	final?: ExamPeriod
 	sections?: Section[]
 }
 
