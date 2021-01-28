@@ -1,3 +1,18 @@
+type Period {
+	start: String
+	end: String
+}
+
+type ExamPeriod {
+	date: Date
+	period: Period
+}
+
+type StudentCount {
+	current: Int
+	max: Int
+}
+
 type Class {
 	type: ClassType
 	dayOfweek: Days
@@ -11,8 +26,7 @@ type Class {
 type Section {
 	sectionNo: Int
 	closed: Boolean
-	registered: Int
-	max: Int
+	students: StudentCount
 	note: String
 	classes: [Class]
 }
@@ -32,12 +46,11 @@ type Course {
 	credit: Int
 	creditHours: String
 	courseCondition: String
+	genEdType: GenEdType
 
 	# Exam
-	midtermStart: Date
-	midtermEnd: Date
-	finalStart: Date
-	finalEnd: Date
+	midterm: ExamPeriod
+	final: ExamPeriod
 
 	# Section
 	sections: [Section]
