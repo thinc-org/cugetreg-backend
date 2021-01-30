@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose'
+import { User } from 'src/graphql'
 
 export const TimetableSchema = new mongoose.Schema({
 	semester: { type: String, required: true },
@@ -17,3 +18,5 @@ export const UserSchema = new mongoose.Schema({
 		required: true,
 	},
 })
+
+export type UserDocument = User & mongoose.Document
