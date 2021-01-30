@@ -1,0 +1,17 @@
+type Timetable {
+	semester: String!
+	academicYear: String!
+	name: String!
+	courses: [String!]!
+}
+
+type User {
+	_id: String!
+	email: String!
+	name: String!
+	timetables: [Timetable!]!
+}
+
+type Query {
+	me: User
+}

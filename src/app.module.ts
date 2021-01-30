@@ -7,6 +7,7 @@ import { join } from 'path'
 import { CourseModule } from './course/course.module'
 import { CommonModule } from './common/common.module'
 import { MongooseModule } from '@nestjs/mongoose'
+import { UserModule } from './user/user.module'
 import configuration from './config/configuration'
 
 @Module({
@@ -30,6 +31,7 @@ import configuration from './config/configuration'
 			}),
 			inject: [ConfigService],
 		}),
+		UserModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
