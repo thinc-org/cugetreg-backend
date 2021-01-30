@@ -96,6 +96,8 @@ export abstract class IQuery {
     abstract course(id: number): Course | Promise<Course>;
 
     abstract me(): User | Promise<User>;
+
+    abstract users(): User[] | Promise<User[]>;
 }
 
 export class Timetable {
@@ -108,6 +110,7 @@ export class Timetable {
 export class User {
     _id: string;
     email: string;
-    name: string;
+    firstName?: string;
+    lastName?: string;
     timetables: Timetable[];
 }

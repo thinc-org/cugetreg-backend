@@ -8,10 +8,12 @@ type Timetable {
 type User {
 	_id: String!
 	email: String!
-	name: String!
+	firstName: String
+	lastName: String
 	timetables: [Timetable!]!
 }
 
 type Query {
 	me: User
+	users: [User!]!
 }
