@@ -10,4 +10,9 @@ export class UserService {
 	getCurrentUser() {
 		return `This action returns current user.`
 	}
+
+	// for dev only
+	async getAllUsers(): Promise<UserDocument[]> {
+		return this.userModel.find()
+	}
 }

@@ -11,8 +11,8 @@ export const TimetableSchema = new mongoose.Schema({
 export const UserSchema = new mongoose.Schema({
 	googleId: { type: String, required: true },
 	email: { type: String, required: true },
-	firstName: { type: String, required: true },
-	lastName: { type: String, required: true },
+	firstName: { type: String },
+	lastName: { type: String },
 	timetables: {
 		type: [TimetableSchema],
 		required: true,
