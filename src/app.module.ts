@@ -8,11 +8,13 @@ import { CourseModule } from './course/course.module'
 import { CommonModule } from './common/common.module'
 import { MongooseModule } from '@nestjs/mongoose'
 import { UserModule } from './user/user.module'
+import { AuthModule } from './auth/auth.module'
 import configuration from './config/configuration'
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({
+			isGlobal: true,
 			load: [configuration],
 		}),
 		GraphQLModule.forRoot({
@@ -32,6 +34,7 @@ import configuration from './config/configuration'
 			inject: [ConfigService],
 		}),
 		UserModule,
+		AuthModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
