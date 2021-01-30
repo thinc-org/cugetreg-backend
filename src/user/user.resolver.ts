@@ -7,13 +7,13 @@ export class UserResolver {
 	constructor(private readonly userService: UserService) {}
 
 	@Query('me')
-	getCurrentUser() {
+	async getCurrentUser() {
 		return this.userService.getCurrentUser()
 	}
 
 	// for dev only
 	@Query('users')
-	getAllUsers(): Promise<UserDocument[]> {
+	async getAllUsers(): Promise<UserDocument[]> {
 		return this.userService.getAllUsers()
 	}
 }
