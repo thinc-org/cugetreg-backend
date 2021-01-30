@@ -1,3 +1,9 @@
+type VerifyDTO {
+	accessToken: String!
+	_id: String!
+	firstName: String!
+}
+
 type Mutation {
-	verify(code: String!): User
+	verify(code: String!, redirectURI: String!): VerifyDTO!
 }

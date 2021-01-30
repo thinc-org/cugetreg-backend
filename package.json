@@ -25,6 +25,7 @@
 		"@nestjs/config": "^0.6.2",
 		"@nestjs/core": "^7.5.1",
 		"@nestjs/graphql": "^7.9.8",
+		"@nestjs/jwt": "^7.2.0",
 		"@nestjs/mongoose": "^7.2.2",
 		"@nestjs/platform-express": "^7.5.1",
 		"apollo-server-express": "^2.19.2",
@@ -33,7 +34,8 @@
 		"mongoose": "^5.11.13",
 		"reflect-metadata": "^0.1.13",
 		"rimraf": "^3.0.2",
-		"rxjs": "^6.6.3"
+		"rxjs": "^6.6.3",
+		"serialize-error": "^8.0.1"
 	},
 	"devDependencies": {
 		"@nestjs/cli": "^7.5.1",
