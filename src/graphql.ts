@@ -1,3 +1,4 @@
+
 /** ------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
  * -------------------------------------------------------
@@ -6,91 +7,107 @@
 /* tslint:disable */
 /* eslint-disable */
 export enum Days {
-	MO = 'MO',
-	TU = 'TU',
-	WE = 'WE',
-	TH = 'TH',
-	FR = 'FR',
-	SA = 'SA',
-	SU = 'SU',
+    MO = "MO",
+    TU = "TU",
+    WE = "WE",
+    TH = "TH",
+    FR = "FR",
+    SA = "SA",
+    SU = "SU"
 }
 
 export enum StudyProgram {
-	S = 'S',
-	T = 'T',
-	I = 'I',
+    S = "S",
+    T = "T",
+    I = "I"
 }
 
 export enum ClassType {
-	LECT = 'LECT',
-	LAB = 'LAB',
-	DISC = 'DISC',
-	FWK = 'FWK',
-	PRAC = 'PRAC',
-	IDPS = 'IDPS',
-	SMNA = 'SMNA',
+    LECT = "LECT",
+    LAB = "LAB",
+    DISC = "DISC",
+    FWK = "FWK",
+    PRAC = "PRAC",
+    IDPS = "IDPS",
+    SMNA = "SMNA"
 }
 
 export enum GenEdType {
-	SO = 'SO',
-	SC = 'SC',
-	HU = 'HU',
-	IN = 'IN',
+    SO = "SO",
+    SC = "SC",
+    HU = "HU",
+    IN = "IN"
 }
 
 export class Period {
-	start?: string
-	end?: string
+    start?: string;
+    end?: string;
 }
 
 export class ExamPeriod {
-	date?: Date
-	period?: Period
+    date?: Date;
+    period?: Period;
 }
 
 export class StudentCount {
-	current?: number
-	max?: number
+    current?: number;
+    max?: number;
 }
 
 export class Class {
-	type?: ClassType
-	dayOfweek?: Days
-	startTime?: string
-	endTime?: string
-	building?: string
-	room?: string
-	teacher?: string
+    type?: ClassType;
+    dayOfweek?: Days;
+    startTime?: string;
+    endTime?: string;
+    building?: string;
+    room?: string;
+    teacher?: string;
 }
 
 export class Section {
-	sectionNo?: number
-	closed?: boolean
-	students?: StudentCount
-	note?: string
-	classes?: Class[]
+    sectionNo?: number;
+    closed?: boolean;
+    students?: StudentCount;
+    note?: string;
+    classes?: Class[];
 }
 
 export class Course {
-	studyProgram?: StudyProgram
-	semester?: string
-	academicYear?: string
-	courseNo?: string
-	abbrName?: string
-	courseNameTh?: string
-	courseNameEn?: string
-	faculty?: string
-	credit?: number
-	creditHours?: string
-	courseCondition?: string
-	genEdType?: GenEdType
-	midterm?: ExamPeriod
-	final?: ExamPeriod
-	sections?: Section[]
+    studyProgram?: StudyProgram;
+    semester?: string;
+    academicYear?: string;
+    courseNo?: string;
+    abbrName?: string;
+    courseNameTh?: string;
+    courseNameEn?: string;
+    faculty?: string;
+    credit?: number;
+    creditHours?: string;
+    courseCondition?: string;
+    genEdType?: GenEdType;
+    midterm?: ExamPeriod;
+    final?: ExamPeriod;
+    sections?: Section[];
 }
 
 export abstract class IQuery {
-	abstract courses(): Course[] | Promise<Course[]>
+    abstract courses(): Course[] | Promise<Course[]>;
 
-	abstract course(id: number): Course | Promise<Course>
+    abstract course(id: number): Course | Promise<Course>;
+
+    abstract me(): User | Promise<User>;
+}
+
+export class Timetable {
+    semester: string;
+    academicYear: string;
+    name: string;
+    courses: string[];
+}
+
+export class User {
+    _id: string;
+    email: string;
+    name: string;
+    timetables: Timetable[];
 }
