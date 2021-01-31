@@ -1,7 +1,7 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLInitialContext } from 'src/common/common.type'
+import { VerifyDTO } from 'src/graphql'
 import { AuthService } from './auth.service'
-import { VerifyDTO } from './dto/verify.dto'
 
 @Resolver('Auth')
 export class AuthResolver {

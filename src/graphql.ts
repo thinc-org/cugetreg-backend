@@ -59,7 +59,7 @@ export class ExamPeriod {
     period?: Period;
 }
 
-export class StudentCount {
+export class Capacity {
     current?: number;
     max?: number;
 }
@@ -67,8 +67,7 @@ export class StudentCount {
 export class Class {
     type?: ClassType;
     dayOfweek?: Days;
-    startTime?: string;
-    endTime?: string;
+    period?: Period;
     building?: string;
     room?: string;
     teacher?: string;
@@ -77,7 +76,7 @@ export class Class {
 export class Section {
     sectionNo?: number;
     closed?: boolean;
-    students?: StudentCount;
+    capacity?: Capacity;
     note?: string;
     classes?: Class[];
 }
@@ -119,6 +118,7 @@ export class TimetableCourse {
 export class Timetable {
     semester: string;
     academicYear: string;
+    studyProgram: StudyProgram;
     name: string;
     courses: TimetableCourse[];
 }
