@@ -13,32 +13,32 @@ import configuration from './config/configuration'
 import { GraphQLInitialContext } from './common/common.type'
 
 @Module({
-	imports: [
-		ConfigModule.forRoot({
-			isGlobal: true,
-			load: [configuration],
-		}),
-		GraphQLModule.forRoot({
-			typePaths: ['./**/*.graphql'],
-			definitions: {
-				path: join(process.cwd(), 'src/graphql.ts'),
-				outputAs: 'class',
-			},
-			context: ({ req, res }: GraphQLInitialContext) => ({ req, res }),
-		}),
-		CourseModule,
-		CommonModule,
-		MongooseModule.forRootAsync({
-			imports: [ConfigModule],
-			useFactory: async (configService: ConfigService) => ({
-				uri: configService.get<string>('mongoURI'),
-			}),
-			inject: [ConfigService],
-		}),
-		UserModule,
-		AuthModule,
-	],
-	controllers: [AppController],
-	providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
+    GraphQLModule.forRoot({
+      typePaths: ['./**/*.graphql'],
+      definitions: {
+        path: join(process.cwd(), 'src/graphql.ts'),
+        outputAs: 'class',
+      },
+      context: ({ req, res }: GraphQLInitialContext) => ({ req, res }),
+    }),
+    CourseModule,
+    CommonModule,
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('mongoURI'),
+      }),
+      inject: [ConfigService],
+    }),
+    UserModule,
+    AuthModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

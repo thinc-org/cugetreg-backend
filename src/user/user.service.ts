@@ -5,14 +5,14 @@ import { UserDocument } from 'src/schemas/user.schema'
 
 @Injectable()
 export class UserService {
-	constructor(@InjectModel('user') private userModel: Model<UserDocument>) {}
+  constructor(@InjectModel('user') private userModel: Model<UserDocument>) {}
 
-	async getCurrentUser() {
-		return `This action returns current user.`
-	}
+  async getCurrentUser() {
+    return `This action returns current user.`
+  }
 
-	// for dev only
-	async getAllUsers(): Promise<UserDocument[]> {
-		return this.userModel.find()
-	}
+  // for dev only
+  async getAllUsers(): Promise<UserDocument[]> {
+    return this.userModel.find()
+  }
 }
