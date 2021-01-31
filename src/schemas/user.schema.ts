@@ -10,6 +10,7 @@ export const TimetableCourseSchema = new mongoose.Schema({
 export const TimetableSchema = new mongoose.Schema({
 	semester: { type: String, required: true },
 	academicYear: { type: String, required: true },
+	studyProgram: { type: String, required: true },
 	name: { type: String, required: true },
 	courses: { type: [TimetableCourseSchema], required: true },
 })
