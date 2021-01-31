@@ -1,32 +1,32 @@
 enum Days {
-	MO
-	TU
-	WE
-	TH
-	FR
-	SA
-	SU
+  MO
+  TU
+  WE
+  TH
+  FR
+  SA
+  SU
 }
 
 enum StudyProgram {
-	S
-	T
-	I
+  S
+  T
+  I
 }
 
 enum ClassType {
-	LECT
-	LAB
-	DISC
-	FWK
-	PRAC
-	IDPS
-	SMNA
+  LECT
+  LAB
+  DISC
+  FWK
+  PRAC
+  IDPS
+  SMNA
 }
 
 enum GenEdType {
-	SO
-	SC
-	HU
-	IN
+  SO
+  SC
+  HU
+  IN
 }

@@ -1,26 +1,26 @@
 type TimetableCourse {
-	courseNo: String!
-	sectionNo: String!
-	isVisible: Boolean!
+  courseNo: String!
+  sectionNo: String!
+  isVisible: Boolean!
 }
 
 type Timetable {
-	semester: String!
-	academicYear: String!
-	studyProgram: StudyProgram!
-	name: String!
-	courses: [TimetableCourse!]!
+  semester: String!
+  academicYear: String!
+  studyProgram: StudyProgram!
+  name: String!
+  courses: [TimetableCourse!]!
 }
 
 type User {
-	_id: String!
-	email: String!
-	firstName: String
-	lastName: String
-	timetables: [Timetable!]!
+  _id: String!
+  email: String!
+  firstName: String
+  lastName: String
+  timetables: [Timetable!]!
 }
 
 type Query {
-	me: User
-	users: [User!]!
+  me: User
+  users: [User!]!
 }

@@ -4,16 +4,16 @@ import { UserService } from './user.service'
 
 @Resolver('User')
 export class UserResolver {
-	constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
-	@Query('me')
-	async getCurrentUser() {
-		return this.userService.getCurrentUser()
-	}
+  @Query('me')
+  async getCurrentUser() {
+    return this.userService.getCurrentUser()
+  }
 
-	// for dev only
-	@Query('users')
-	async getAllUsers(): Promise<UserDocument[]> {
-		return this.userService.getAllUsers()
-	}
+  // for dev only
+  @Query('users')
+  async getAllUsers(): Promise<UserDocument[]> {
+    return this.userService.getAllUsers()
+  }
 }
