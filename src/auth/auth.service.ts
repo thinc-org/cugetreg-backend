@@ -11,7 +11,7 @@ import { Model } from 'mongoose'
 import { serializeError } from 'serialize-error'
 import { GraphQLInitialContext } from 'src/common/common.type'
 import { UserDocument } from 'src/schemas/user.schema'
-import { VerifyDTO } from './dto/verify.dto'
+import { VerifyDTO } from 'src/graphql'
 
 interface OAuthToken {
   access_token: string
@@ -65,8 +65,8 @@ export class AuthService {
       )
     }
 
-    const clientId = this.configService.get<string>('oauthClientId')
-    const clientSecret = this.configService.get<string>('oauthClientSecret')
+    const clientId = this.configService.get<string>('googleOAuthId')
+    const clientSecret = this.configService.get<string>('googleOAuthSecret')
 
     try {
       const verifyResponse = await this.httpService
