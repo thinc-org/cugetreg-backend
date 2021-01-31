@@ -8,7 +8,7 @@ type ExamPeriod {
 	period: Period
 }
 
-type StudentCount {
+type Capacity {
 	current: Int
 	max: Int
 }
@@ -16,8 +16,7 @@ type StudentCount {
 type Class {
 	type: ClassType
 	dayOfweek: Days
-	startTime: String
-	endTime: String
+	period: Period
 	building: String
 	room: String
 	teacher: String
@@ -26,7 +25,7 @@ type Class {
 type Section {
 	sectionNo: Int
 	closed: Boolean
-	students: StudentCount
+	capacity: Capacity
 	note: String
 	classes: [Class]
 }
