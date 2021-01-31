@@ -1,8 +1,14 @@
+type TimetableCourse {
+	courseNo: String!
+	sectionNo: String!
+	isVisible: Boolean!
+}
+
 type Timetable {
 	semester: String!
 	academicYear: String!
 	name: String!
-	courses: [String!]!
+	courses: [TimetableCourse!]!
 }
 
 type User {

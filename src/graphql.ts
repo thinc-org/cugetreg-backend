@@ -100,11 +100,17 @@ export abstract class IQuery {
     abstract users(): User[] | Promise<User[]>;
 }
 
+export class TimetableCourse {
+    courseNo: string;
+    sectionNo: string;
+    isVisible: boolean;
+}
+
 export class Timetable {
     semester: string;
     academicYear: string;
     name: string;
-    courses: string[];
+    courses: TimetableCourse[];
 }
 
 export class User {
