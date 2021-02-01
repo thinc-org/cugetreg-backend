@@ -1,4 +1,4 @@
-enum Days {
+enum DayOfWeek {
   MO
   TU
   WE

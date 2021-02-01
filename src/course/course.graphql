@@ -15,7 +15,7 @@ type Capacity {
 
 type Class {
   type: ClassType
-  dayOfweek: Days
+  dayOfWeek: DayOfWeek
   period: Period
   building: String
   room: String
@@ -23,7 +23,7 @@ type Class {
 }
 
 type Section {
-  sectionNo: Int
+  sectionNo: String
   closed: Boolean
   capacity: Capacity
   note: String
