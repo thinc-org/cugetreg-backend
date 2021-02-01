@@ -170,9 +170,10 @@ export class AuthService {
     context: GraphQLExpressContext,
     refreshToken: string
   ): void {
+    const secureCookies = this.configService.get<boolean>('secureCookies')
     context.res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: secureCookies,
     })
   }
 
