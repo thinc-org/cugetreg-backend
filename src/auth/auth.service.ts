@@ -11,7 +11,8 @@ import { Model } from 'mongoose'
 import { serializeError } from 'serialize-error'
 import { GraphQLExpressContext } from 'src/common/types/context.type'
 import { UserDocument } from 'src/schemas/user.schema'
-import { VerifyDTO } from 'src/graphql'
+import { AccessTokenDTO } from 'src/graphql'
+import { AccessTokenPayload } from './auth.dto'
 
 interface OAuthToken {
   access_token: string
@@ -32,6 +33,11 @@ interface UserInfo {
   verified_email: boolean
 }
 
+interface AuthTokens {
+  accessToken: string
+  refreshToken: string
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -45,7 +51,7 @@ export class AuthService {
     code: string,
     redirectURI: string,
     context: GraphQLExpressContext
-  ): Promise<VerifyDTO> {
+  ): Promise<AccessTokenDTO> {
     if (!code) {
       throw new HttpException(
         {
@@ -89,21 +95,9 @@ export class AuthService {
 
       const user = await this.findOrCreateUser(userInfo)
 
-      const accessToken = this.jwtService.sign(
-        {
-          _id: user._id,
-          firstName: user.firstName,
-        },
-        { expiresIn: '1h' }
-      )
-      const refreshToken = this.jwtService.sign({
-        _id: user._id,
-      })
+      const { accessToken, refreshToken } = this.generateAuthTokens(user)
 
-      context.res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: true,
-      })
+      this.setRefreshToken(context, refreshToken)
 
       return { accessToken, _id: user._id, firstName: user.firstName }
     } catch (err) {
@@ -116,6 +110,70 @@ export class AuthService {
         HttpStatus.SERVICE_UNAVAILABLE
       )
     }
+  }
+
+  async refresh(
+    refreshToken: string,
+    context: GraphQLExpressContext
+  ): Promise<AccessTokenDTO> {
+    if (!refreshToken) {
+      throw new HttpException(
+        {
+          reason: 'REFRESH_TOKEN_UNDEFINED',
+          message: 'Refresh token is undefined',
+        },
+        HttpStatus.BAD_REQUEST
+      )
+    }
+    const { _id: userId } = this.jwtService.decode(
+      refreshToken
+    ) as AccessTokenPayload
+
+    const user = await this.userModel.findById(userId)
+    if (!user) {
+      throw new HttpException(
+        {
+          reason: 'USER_NOT_FOUND',
+          message: `User does not exist`,
+        },
+        HttpStatus.NOT_FOUND
+      )
+    }
+
+    const {
+      accessToken,
+      refreshToken: newRefreshToken,
+    } = this.generateAuthTokens(user)
+
+    this.setRefreshToken(context, newRefreshToken)
+
+    return { accessToken, _id: user._id, firstName: user.firstName }
+  }
+
+  private generateAuthTokens(user: UserDocument): AuthTokens {
+    const accessToken = this.jwtService.sign(
+      {
+        _id: user._id,
+        firstName: user.firstName,
+      },
+      { expiresIn: '1h' }
+    )
+
+    const refreshToken = this.jwtService.sign({
+      _id: user._id,
+    })
+
+    return { accessToken, refreshToken }
+  }
+
+  private setRefreshToken(
+    context: GraphQLExpressContext,
+    refreshToken: string
+  ): void {
+    context.res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+    })
   }
 
   private async findOrCreateUser(userInfo: UserInfo): Promise<UserDocument> {
