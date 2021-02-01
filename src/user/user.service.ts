@@ -7,8 +7,8 @@ import { UserDocument } from 'src/schemas/user.schema'
 export class UserService {
   constructor(@InjectModel('user') private userModel: Model<UserDocument>) {}
 
-  async getCurrentUser() {
-    return `This action returns current user.`
+  async getUser(userId: string): Promise<UserDocument> {
+    return this.userModel.findById(userId)
   }
 
   // for dev only
