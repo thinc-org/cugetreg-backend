@@ -1,12 +1,14 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
-import { GraphQLExpressContext } from '../common.type'
+import { GraphQLExpressContext } from '../types/context.type'
 
 export const Cookies = createParamDecorator(
-  (cookieName: string, ctx: ExecutionContext) => {
-    const context = GqlExecutionContext.create(
-      ctx
+  (cookieName: string, context: ExecutionContext) => {
+    const gqlContext = GqlExecutionContext.create(
+      context
     ).getContext<GraphQLExpressContext>()
-    return cookieName ? context.req.cookies?.[cookieName] : context.req.cookies
+    return cookieName
+      ? gqlContext.req.cookies?.[cookieName]
+      : gqlContext.req.cookies
   }
 )
