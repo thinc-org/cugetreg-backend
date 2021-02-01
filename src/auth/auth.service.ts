@@ -125,7 +125,8 @@ export class AuthService {
         HttpStatus.BAD_REQUEST
       )
     }
-    const { _id: userId } = this.jwtService.decode(
+
+    const { _id: userId } = this.jwtService.verify(
       refreshToken
     ) as AccessTokenPayload
 
