@@ -6,7 +6,7 @@
 
 /* tslint:disable */
 /* eslint-disable */
-export enum Days {
+export enum DayOfWeek {
     MO = "MO",
     TU = "TU",
     WE = "WE",
@@ -66,7 +66,7 @@ export class Capacity {
 
 export class Class {
     type?: ClassType;
-    dayOfweek?: Days;
+    dayOfWeek?: DayOfWeek;
     period?: Period;
     building?: string;
     room?: string;
@@ -74,7 +74,7 @@ export class Class {
 }
 
 export class Section {
-    sectionNo?: number;
+    sectionNo?: string;
     closed?: boolean;
     capacity?: Capacity;
     note?: string;
