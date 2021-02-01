@@ -10,7 +10,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { UserModule } from './user/user.module'
 import { AuthModule } from './auth/auth.module'
 import configuration from './config/configuration'
-import { GraphQLInitialContext } from './common/common.type'
+import { GraphQLExpressContext } from './common/types/context.type'
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ import { GraphQLInitialContext } from './common/common.type'
         path: join(process.cwd(), 'src/graphql.ts'),
         outputAs: 'class',
       },
-      context: ({ req, res }: GraphQLInitialContext) => ({ req, res }),
+      context: ({ req, res }: GraphQLExpressContext) => ({ req, res }),
     }),
     CourseModule,
     CommonModule,

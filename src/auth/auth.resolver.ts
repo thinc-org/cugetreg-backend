@@ -1,5 +1,5 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql'
-import { GraphQLInitialContext } from 'src/common/common.type'
+import { GraphQLExpressContext } from 'src/common/types/context.type'
 import { VerifyDTO } from 'src/graphql'
 import { AuthService } from './auth.service'
 
@@ -11,7 +11,7 @@ export class AuthResolver {
   async verify(
     @Args('code') code: string,
     @Args('redirectURI') redirectURI: string,
-    @Context() context: GraphQLInitialContext
+    @Context() context: GraphQLExpressContext
   ): Promise<VerifyDTO> {
     return this.authService.verify(code, redirectURI, context)
   }
