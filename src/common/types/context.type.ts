@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-export interface GraphQLInitialContext {
+export interface GraphQLExpressContext {
   req: Request
   res: Response
 }
