@@ -6,5 +6,5 @@ type AccessTokenDTO {
 
 type Mutation {
   verify(code: String!, redirectURI: String!): AccessTokenDTO!
-  refresh(): AccessTokenDTO!
+  refresh: AccessTokenDTO!
 }
