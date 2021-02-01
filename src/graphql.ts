@@ -39,14 +39,16 @@ export enum GenEdType {
     IN = "IN"
 }
 
-export class VerifyDTO {
+export class AccessTokenDTO {
     accessToken: string;
     _id: string;
     firstName: string;
 }
 
 export abstract class IMutation {
-    abstract verify(code: string, redirectURI: string): VerifyDTO | Promise<VerifyDTO>;
+    abstract verify(code: string, redirectURI: string): AccessTokenDTO | Promise<AccessTokenDTO>;
+
+    abstract refresh(refreshToken: string): AccessTokenDTO | Promise<AccessTokenDTO>;
 }
 
 export class Period {
