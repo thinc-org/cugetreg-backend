@@ -8,6 +8,10 @@ Backend service for [CU Get Reg](https://cugetreg.com).
 
 This project is powered by NestJS and GraphQL. For official documentation, see [here](https://docs.nestjs.com/).
 
+## Documentation
+
+The CU Get Reg API Documentation can be found [here](./DOCUMENTATION.md).
+
 ## Prerequisites
 
 1. Node 14 LTS
