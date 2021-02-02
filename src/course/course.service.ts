@@ -6,9 +6,12 @@ export class CourseService implements OnApplicationBootstrap {
   private courses: Course[] = []
 
   async onApplicationBootstrap(): Promise<void> {
-    console.log('Started fetching course data...')
+    await this.refresh()
+  }
+
+  async refresh(): Promise<void> {
     this.courses = await getMockCourses()
-    console.log('Finished fetching course data...')
+    console.log(`${new Date().toISOString()} -  Course data refreshed`)
   }
 
   findAll(): Course[] {
