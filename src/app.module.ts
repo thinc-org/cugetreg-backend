@@ -19,7 +19,7 @@ import { GraphQLExpressContext } from './common/types/context.type'
       load: [configuration],
     }),
     GraphQLModule.forRoot({
-      typePaths: ['./**/*.graphql'],
+      typePaths: ['./src/**/*.graphql'],
       definitions: {
         path: join(process.cwd(), 'src/graphql.ts'),
         outputAs: 'class',
