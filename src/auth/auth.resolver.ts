@@ -1,6 +1,4 @@
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql'
-import { GraphQLExpressContext } from 'src/common/types/context.type'
-import { Cookies } from 'src/common/decorators/cookies.decorator'
+import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { AccessTokenDTO } from 'src/graphql'
 import { AuthService } from './auth.service'
 
@@ -11,17 +9,8 @@ export class AuthResolver {
   @Mutation('verify')
   async verify(
     @Args('code') code: string,
-    @Args('redirectURI') redirectURI: string,
-    @Context() context: GraphQLExpressContext
+    @Args('redirectURI') redirectURI: string
   ): Promise<AccessTokenDTO> {
-    return this.authService.verify(code, redirectURI, context)
-  }
-
-  @Mutation('refresh')
-  async refresh(
-    @Cookies('refreshToken') refreshToken: string,
-    @Context() context: GraphQLExpressContext
-  ): Promise<AccessTokenDTO> {
-    return this.authService.refresh(refreshToken, context)
+    return this.authService.verify(code, redirectURI)
   }
 }
