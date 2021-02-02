@@ -9,11 +9,10 @@ import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { serializeError } from 'serialize-error'
-import { GraphQLExpressContext } from 'src/common/types/context.type'
 import { UserDocument } from 'src/schemas/user.schema'
-import { VerifyDTO } from 'src/graphql'
+import { AccessTokenDTO } from 'src/graphql'
 
-interface OAuthToken {
+interface GoogleOAuthResponse {
   access_token: string
   expires_in: number
   scope: string
@@ -41,11 +40,7 @@ export class AuthService {
     @InjectModel('user') private userModel: Model<UserDocument>
   ) {}
 
-  async verify(
-    code: string,
-    redirectURI: string,
-    context: GraphQLExpressContext
-  ): Promise<VerifyDTO> {
+  async verify(code: string, redirectURI: string): Promise<AccessTokenDTO> {
     if (!code) {
       throw new HttpException(
         {
@@ -70,7 +65,7 @@ export class AuthService {
 
     try {
       const verifyResponse = await this.httpService
-        .post<OAuthToken>('https://oauth2.googleapis.com/token', {
+        .post<GoogleOAuthResponse>('https://oauth2.googleapis.com/token', {
           client_id: clientId,
           client_secret: clientSecret,
           code: code,
@@ -89,21 +84,7 @@ export class AuthService {
 
       const user = await this.findOrCreateUser(userInfo)
 
-      const accessToken = this.jwtService.sign(
-        {
-          _id: user._id,
-          firstName: user.firstName,
-        },
-        { expiresIn: '1h' }
-      )
-      const refreshToken = this.jwtService.sign({
-        _id: user._id,
-      })
-
-      context.res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: true,
-      })
+      const accessToken = this.generateAccessToken(user)
 
       return { accessToken, _id: user._id, firstName: user.firstName }
     } catch (err) {
@@ -116,6 +97,18 @@ export class AuthService {
         HttpStatus.SERVICE_UNAVAILABLE
       )
     }
+  }
+
+  private generateAccessToken(user: UserDocument): string {
+    const accessToken = this.jwtService.sign(
+      {
+        _id: user._id,
+        firstName: user.firstName,
+      },
+      { expiresIn: '7d' }
+    )
+
+    return accessToken
   }
 
   private async findOrCreateUser(userInfo: UserInfo): Promise<UserDocument> {
