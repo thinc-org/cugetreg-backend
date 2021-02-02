@@ -9,12 +9,10 @@ import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { serializeError } from 'serialize-error'
-import { GraphQLExpressContext } from 'src/common/types/context.type'
 import { UserDocument } from 'src/schemas/user.schema'
 import { AccessTokenDTO } from 'src/graphql'
-import { AccessTokenPayload } from './auth.dto'
 
-interface OAuthToken {
+interface GoogleOAuthResponse {
   access_token: string
   expires_in: number
   scope: string
@@ -33,11 +31,6 @@ interface UserInfo {
   verified_email: boolean
 }
 
-interface AuthTokens {
-  accessToken: string
-  refreshToken: string
-}
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -47,11 +40,7 @@ export class AuthService {
     @InjectModel('user') private userModel: Model<UserDocument>
   ) {}
 
-  async verify(
-    code: string,
-    redirectURI: string,
-    context: GraphQLExpressContext
-  ): Promise<AccessTokenDTO> {
+  async verify(code: string, redirectURI: string): Promise<AccessTokenDTO> {
     if (!code) {
       throw new HttpException(
         {
@@ -76,7 +65,7 @@ export class AuthService {
 
     try {
       const verifyResponse = await this.httpService
-        .post<OAuthToken>('https://oauth2.googleapis.com/token', {
+        .post<GoogleOAuthResponse>('https://oauth2.googleapis.com/token', {
           client_id: clientId,
           client_secret: clientSecret,
           code: code,
@@ -95,9 +84,7 @@ export class AuthService {
 
       const user = await this.findOrCreateUser(userInfo)
 
-      const { accessToken, refreshToken } = this.generateAuthTokens(user)
-
-      this.setRefreshToken(context, refreshToken)
+      const accessToken = this.generateAccessToken(user)
 
       return { accessToken, _id: user._id, firstName: user.firstName }
     } catch (err) {
@@ -112,70 +99,16 @@ export class AuthService {
     }
   }
 
-  async refresh(
-    refreshToken: string,
-    context: GraphQLExpressContext
-  ): Promise<AccessTokenDTO> {
-    if (!refreshToken) {
-      throw new HttpException(
-        {
-          reason: 'REFRESH_TOKEN_UNDEFINED',
-          message: 'Refresh token is undefined',
-        },
-        HttpStatus.BAD_REQUEST
-      )
-    }
-
-    const { _id: userId } = this.jwtService.verify(
-      refreshToken
-    ) as AccessTokenPayload
-
-    const user = await this.userModel.findById(userId)
-    if (!user) {
-      throw new HttpException(
-        {
-          reason: 'USER_NOT_FOUND',
-          message: `User does not exist`,
-        },
-        HttpStatus.NOT_FOUND
-      )
-    }
-
-    const {
-      accessToken,
-      refreshToken: newRefreshToken,
-    } = this.generateAuthTokens(user)
-
-    this.setRefreshToken(context, newRefreshToken)
-
-    return { accessToken, _id: user._id, firstName: user.firstName }
-  }
-
-  private generateAuthTokens(user: UserDocument): AuthTokens {
+  private generateAccessToken(user: UserDocument): string {
     const accessToken = this.jwtService.sign(
       {
         _id: user._id,
         firstName: user.firstName,
       },
-      { expiresIn: '1h' }
+      { expiresIn: '7d' }
     )
 
-    const refreshToken = this.jwtService.sign({
-      _id: user._id,
-    })
-
-    return { accessToken, refreshToken }
-  }
-
-  private setRefreshToken(
-    context: GraphQLExpressContext,
-    refreshToken: string
-  ): void {
-    const secureCookies = this.configService.get<boolean>('secureCookies')
-    context.res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: secureCookies,
-    })
+    return accessToken
   }
 
   private async findOrCreateUser(userInfo: UserInfo): Promise<UserDocument> {

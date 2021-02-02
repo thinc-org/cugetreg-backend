@@ -47,8 +47,6 @@ export class AccessTokenDTO {
 
 export abstract class IMutation {
     abstract verify(code: string, redirectURI: string): AccessTokenDTO | Promise<AccessTokenDTO>;
-
-    abstract refresh(): AccessTokenDTO | Promise<AccessTokenDTO>;
 }
 
 export class Period {
