@@ -28,11 +28,11 @@ Redirect to `https://accounts.google.com/o/oauth2/v2/auth` with the following qu
 | scope | Must be set to `https://www.googleapis.com/auth/userinfo.profile+https://www.googleapis.com/auth/userinfo.email`. |
 | access_type | Must be set to `online`. |
 | include_granted_scopes | Should be `true`. See [Incremental Authorization](https://developers.google.com/identity/protocols/oauth2/web-server#incrementalAuth) |.
-| state | Only set this parameter for PR Deployments. Use this parameter to set the `returnURI` so backend knows where to redirect after Google sends the authorization code to backend. For example: `return_uri=https://cugetreg-pr-x.render.com/auth/callback` |
+| state | Only set this parameter for PR Deployments. Use this parameter to set the `returnURI` so backend knows where to redirect after Google sends the authorization code to backend. For example: `returnURI=https://cugetreg-pr-x.render.com/auth/callback` |
 
 For Render PR Deployments, normal authentication flow is impossible (as the domain will change every pr, and every redirect uri must be manually authorized in the Google Cloud Console).
 
-To fix this, frontend must set the redirectURI to backend's callback endpoint (`/api/auth/callback`) and set the `returnURI` value in `state` parameter to the deployment's callback path. For example: `return_uri=https://cugetreg-pr-x.render.com/auth/callback`.
+To fix this, frontend must set the redirectURI to backend's callback endpoint (`/api/auth/callback`) and set the `returnURI` value in `state` parameter to the deployment's callback path. For example: `returnURI=https://cugetreg-pr-x.render.com/auth/callback`.
 
 ### 2. Google prompts user for consent.
 
