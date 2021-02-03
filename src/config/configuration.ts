@@ -4,5 +4,6 @@ export default () => ({
   googleOAuthId: process.env.GOOGLE_OAUTH_ID,
   googleOAuthSecret: process.env.GOOGLE_OAUTH_SECRET,
   jwtSecret: process.env.JWT_SECRET,
+  refreshSecret: process.env.REFRESH_SECRET,
   isProduction: process.env.IS_PRODUCTION === 'true',
 })
