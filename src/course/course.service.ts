@@ -27,9 +27,6 @@ export class CourseService implements OnApplicationBootstrap {
 
   async refresh(): Promise<void> {
     this.courses = await getMockCourses()
-    this.courses.sort((course1, course2) =>
-      course1.courseNo.localeCompare(course2.courseNo)
-    )
     const fuseIndex = Fuse.createIndex(fuseOptions.keys, this.courses)
     this.fuse.setCollection(this.courses, fuseIndex)
     console.log(`${new Date().toISOString()} -  Course data refreshed`)
