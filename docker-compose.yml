@@ -4,7 +4,7 @@ services:
   mongo:
     container_name: cgr-mongo
     image: mongo
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./volumes/mongo:/data/db
     ports:
