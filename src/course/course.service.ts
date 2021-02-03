@@ -9,13 +9,17 @@ import {
   Semester,
   StudyProgram,
 } from '@thinc-org/chula-courses'
-import { lowerBound } from 'src/util/functions'
+import Fuse from 'fuse.js'
 
-type SearchProps = Pick<Course, 'courseNo'>
+const fuseOptions = {
+  useExtendedSearch: true,
+  keys: ['courseNo', 'semester', 'academicYear', 'studyProgram'],
+}
 
 @Injectable()
 export class CourseService implements OnApplicationBootstrap {
   private courses: Course[] = []
+  private fuse = new Fuse([] as Course[], fuseOptions)
 
   async onApplicationBootstrap(): Promise<void> {
     await this.refresh()
@@ -26,6 +30,8 @@ export class CourseService implements OnApplicationBootstrap {
     this.courses.sort((course1, course2) =>
       course1.courseNo.localeCompare(course2.courseNo)
     )
+    const fuseIndex = Fuse.createIndex(fuseOptions.keys, this.courses)
+    this.fuse.setCollection(this.courses, fuseIndex)
     console.log(`${new Date().toISOString()} -  Course data refreshed`)
   }
 
@@ -39,28 +45,21 @@ export class CourseService implements OnApplicationBootstrap {
     academicYear: string,
     studyProgram: StudyProgram
   ): Course {
-    let index = lowerBound<SearchProps>(
-      this.courses,
-      { courseNo },
-      (course1, course2) => course1.courseNo.localeCompare(course2.courseNo)
-    )
-    while (
-      index !== null &&
-      index < this.courses.length &&
-      this.courses[index].courseNo === courseNo
-    ) {
-      const course = this.courses[index++]
-      if (
-        course.semester === semester &&
-        course.academicYear === academicYear &&
-        course.studyProgram === studyProgram
-      ) {
-        return course
-      }
-    }
-    throw new NotFoundException({
-      reason: 'COURSE_NOT_FOUND',
-      message: 'Cannot find a course that match the given properties',
+    const results = this.fuse.search({
+      $and: [
+        { courseNo: `=${courseNo}` },
+        { semester: `=${semester}` },
+        { academicYear: `=${academicYear}` },
+        { studyProgram: `=${studyProgram}` },
+      ],
     })
+    if (results.length === 0) {
+      throw new NotFoundException({
+        reason: 'COURSE_NOT_FOUND',
+        message: 'Cannot find a course that match the given properties',
+      })
+    }
+
+    return results[0].item
   }
 }
