@@ -102,7 +102,7 @@ export class Course {
 export abstract class IQuery {
     abstract courses(): Course[] | Promise<Course[]>;
 
-    abstract course(id: number): Course | Promise<Course>;
+    abstract course(courseNo: string, semester: string, academicYear: string, studyProgram: StudyProgram): Course | Promise<Course>;
 
     abstract me(): User | Promise<User>;
 

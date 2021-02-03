@@ -57,5 +57,10 @@ type Course {
 
 type Query {
   courses: [Course]!
-  course(id: Int!): Course
+  course(
+    courseNo: String!
+    semester: String!
+    academicYear: String!
+    studyProgram: StudyProgram!
+  ): Course
 }
