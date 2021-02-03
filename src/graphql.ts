@@ -40,6 +40,13 @@ export enum GenEdType {
     NO = "NO"
 }
 
+export class FilterInput {
+    keyword?: string;
+    genEdType?: GenEdType;
+    dayOfWeek?: DayOfWeek;
+    noConflict?: boolean;
+}
+
 export class AccessTokenDTO {
     accessToken: string;
     _id: string;
@@ -104,6 +111,8 @@ export abstract class IQuery {
     abstract courses(): Course[] | Promise<Course[]>;
 
     abstract course(courseNo: string, semester: string, academicYear: string, studyProgram: StudyProgram): Course | Promise<Course>;
+
+    abstract search(filter?: FilterInput): Course[] | Promise<Course[]>;
 
     abstract me(): User | Promise<User>;
 
