@@ -11,6 +11,9 @@ export class CourseService implements OnApplicationBootstrap {
 
   async refresh(): Promise<void> {
     this.courses = await getMockCourses()
+    this.courses.sort((course1, course2) =>
+      course1.courseNo.localeCompare(course2.courseNo)
+    )
     console.log(`${new Date().toISOString()} -  Course data refreshed`)
   }
 
