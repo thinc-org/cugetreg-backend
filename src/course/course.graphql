@@ -55,6 +55,13 @@ type Course {
   sections: [Section!]!
 }
 
+input FilterInput {
+  keyword: String
+  genEdType: GenEdType
+  dayOfWeek: DayOfWeek
+  noConflict: Boolean
+}
+
 type Query {
   courses: [Course]!
   course(
@@ -63,4 +70,5 @@ type Query {
     academicYear: String!
     studyProgram: StudyProgram!
   ): Course!
+  search(filter: FilterInput): [Course]!
 }
