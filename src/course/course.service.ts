@@ -71,7 +71,14 @@ export class CourseService implements OnApplicationBootstrap {
     return results[0].item
   }
 
-  async search({ keyword, genEdTypes, dayOfWeeks, noConflict }: FilterInput) {
+  async search({
+    keyword = '',
+    genEdTypes = [],
+    dayOfWeeks = [],
+    noConflict = false,
+    limit = 10,
+    offset = 0,
+  }: FilterInput) {
     const expressions = []
     if (keyword) {
       expressions.push({
@@ -83,12 +90,12 @@ export class CourseService implements OnApplicationBootstrap {
         ],
       })
     }
-    if (genEdTypes && genEdTypes.length > 0) {
+    if (genEdTypes.length > 0) {
       expressions.push({
         genEdType: genEdTypes.map((genEdType) => `=${genEdType}`).join(' | '),
       })
     }
-    if (dayOfWeeks && dayOfWeeks.length > 0) {
+    if (dayOfWeeks.length > 0) {
       expressions.push({
         'sections.classes.dayOfWeek': dayOfWeeks
           .map((dayOfWeek) => `=${dayOfWeek}`)
@@ -96,7 +103,7 @@ export class CourseService implements OnApplicationBootstrap {
       })
     }
     if (expressions.length === 0) {
-      return this.findAll()
+      return this.findAll().slice(offset, offset + limit)
     }
     const results = this.fuse
       .search({
@@ -110,10 +117,10 @@ export class CourseService implements OnApplicationBootstrap {
         }
       })
       .sort((result1, result2) => result1.sortScore - result2.sortScore)
+      .slice(offset, offset + limit)
       .map((result) => result.item)
 
     // TODO: Filter out courses that conflicts with selected courses if noConflict === true
-    // TODO: Implement pagination
 
     return results
   }

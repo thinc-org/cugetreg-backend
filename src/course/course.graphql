@@ -57,9 +57,11 @@ type Course {
 
 input FilterInput {
   keyword: String
-  genEdTypes: [GenEdType]
-  dayOfWeeks: [DayOfWeek]
+  genEdTypes: [GenEdType!]
+  dayOfWeeks: [DayOfWeek!]
   noConflict: Boolean
+  limit: Int
+  offset: Int
 }
 
 type Query {

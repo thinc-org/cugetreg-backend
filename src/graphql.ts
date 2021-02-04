@@ -45,6 +45,8 @@ export class FilterInput {
     genEdTypes?: GenEdType[];
     dayOfWeeks?: DayOfWeek[];
     noConflict?: boolean;
+    limit?: number;
+    offset?: number;
 }
 
 export class AccessTokenDTO {
