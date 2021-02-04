@@ -14,17 +14,16 @@ import { FilterInput } from 'src/graphql'
 
 const fuseOptions = {
   useExtendedSearch: true,
-  shouldSort: true,
   keys: [
-    { name: 'courseNo', weight: 3 },
-    { name: 'semester', weight: 1 },
-    { name: 'academicYear', weight: 1 },
-    { name: 'studyProgram', weight: 1 },
-    { name: 'abbrName', weight: 2 },
-    { name: 'courseNameTh', weight: 1 },
-    { name: 'courseNameEn', weight: 1 },
-    { name: 'genEdType', weight: 1 },
-    { name: 'sections.classes.dayOfWeek', weight: 1 },
+    'courseNo',
+    'semester',
+    'academicYear',
+    'studyProgram',
+    'abbrName',
+    'courseNameTh',
+    'courseNameEn',
+    'genEdType',
+    'sections.classes.dayOfWeek',
   ],
 }
 
@@ -99,10 +98,23 @@ export class CourseService implements OnApplicationBootstrap {
     if (expressions.length === 0) {
       return this.findAll()
     }
-    const results = this.fuse.search({
-      $and: expressions,
-    })
+    const results = this.fuse
+      .search({
+        $and: expressions,
+      })
+      .map((result) => {
+        const sortScore = result.item.abbrName.indexOf(keyword)
+        return {
+          item: result.item,
+          sortScore: sortScore !== -1 ? sortScore : Number.MAX_SAFE_INTEGER,
+        }
+      })
+      .sort((result1, result2) => result1.sortScore - result2.sortScore)
+      .map((result) => result.item)
 
-    return results.map((result) => result.item)
+    // TODO: Filter out courses that conflicts with selected courses if noConflict === true
+    // TODO: Implement pagination
+
+    return results
   }
 }
