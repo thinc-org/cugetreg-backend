@@ -75,7 +75,6 @@ export class CourseService implements OnApplicationBootstrap {
     keyword = '',
     genEdTypes = [],
     dayOfWeeks = [],
-    noConflict = false,
     limit = 10,
     offset = 0,
   }: FilterInput) {
@@ -119,8 +118,6 @@ export class CourseService implements OnApplicationBootstrap {
       .sort((result1, result2) => result1.sortScore - result2.sortScore)
       .slice(offset, offset + limit)
       .map((result) => result.item)
-
-    // TODO: Filter out courses that conflicts with selected courses if noConflict === true
 
     return results
   }

@@ -59,7 +59,6 @@ input FilterInput {
   keyword: String
   genEdTypes: [GenEdType!]
   dayOfWeeks: [DayOfWeek!]
-  noConflict: Boolean
   limit: Int
   offset: Int
 }
