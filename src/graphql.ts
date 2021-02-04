@@ -44,7 +44,6 @@ export class FilterInput {
     keyword?: string;
     genEdTypes?: GenEdType[];
     dayOfWeeks?: DayOfWeek[];
-    noConflict?: boolean;
     limit?: number;
     offset?: number;
 }
