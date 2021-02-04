@@ -11,12 +11,6 @@ export class CourseController {
 
   @Post('refresh')
   async refresh(@Query('secret') secret: string): Promise<void> {
-    if (typeof secret === 'undefined') {
-      throw new BadRequestException({
-        reason: 'SECRET_UNDEFINED',
-        message: 'Refresh secret is undefined.',
-      })
-    }
     if (secret !== this.configService.get<string>('refreshSecret')) {
       throw new BadRequestException({
         reason: 'SECRET_INVALID',
