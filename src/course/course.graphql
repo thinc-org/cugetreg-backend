@@ -19,7 +19,7 @@ type Class {
   period: Period!
   building: String!
   room: String!
-  teacher: String!
+  teachers: [String!]!
 }
 
 type Section {
