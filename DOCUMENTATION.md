@@ -23,7 +23,7 @@ Redirect to `https://accounts.google.com/o/oauth2/v2/auth` with the following qu
 | Parameters | Value |
 | --- | --- |
 | client_id | Must be set to `297489937770-g4p9q7jsmgaddbl074tbn9b6j2ba2kf4.apps.googleusercontent.com` (staging). |
-| redirect_uri | Your frontend's callback URI which can handle the code in the query string and send to backend for verification. For Render PR Deployments, this value must be `https://cugetreg.com/api/auth/callback` (production) or `https://<STAGING_HOST>/api/auth/callback` (staging).
+| redirect_uri | Your frontend's callback URI which can handle the code in the query string and send to backend for verification. For Render PR Deployments, this value must be set to backend's callback URI which is `https://cugetreg.com/api/auth/callback` (production) or `https://<STAGING_HOST>/api/auth/callback` (staging).
 | response_type | Must be set to `code`. |
 | scope | Must be set to `https://www.googleapis.com/auth/userinfo.profile+https://www.googleapis.com/auth/userinfo.email`. |
 | access_type | Must be set to `online`. |
