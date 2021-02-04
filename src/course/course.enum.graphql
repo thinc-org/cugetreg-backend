@@ -29,4 +29,5 @@ enum GenEdType {
   SC
   HU
   IN
+  NO
 }
