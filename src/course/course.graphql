@@ -1,50 +1,50 @@
 type Period {
-  start: String
-  end: String
+  start: String!
+  end: String!
 }
 
 type ExamPeriod {
-  date: Date
-  period: Period
+  date: Date!
+  period: Period!
 }
 
 type Capacity {
-  current: Int
-  max: Int
+  current: Int!
+  max: Int!
 }
 
 type Class {
-  type: ClassType
-  dayOfWeek: DayOfWeek
-  period: Period
-  building: String
-  room: String
-  teacher: String
+  type: ClassType!
+  dayOfWeek: DayOfWeek!
+  period: Period!
+  building: String!
+  room: String!
+  teacher: String!
 }
 
 type Section {
-  sectionNo: String
-  closed: Boolean
-  capacity: Capacity
+  sectionNo: String!
+  closed: Boolean!
+  capacity: Capacity!
   note: String
-  classes: [Class]
+  classes: [Class!]!
 }
 
 type Course {
   # General info
-  studyProgram: StudyProgram
-  semester: String
-  academicYear: String
+  studyProgram: StudyProgram!
+  semester: String!
+  academicYear: String!
 
   # Course info
-  courseNo: String
-  abbrName: String
-  courseNameTh: String
-  courseNameEn: String
-  faculty: String
-  credit: Int
-  creditHours: String
-  courseCondition: String
+  courseNo: String!
+  abbrName: String!
+  courseNameTh: String!
+  courseNameEn: String!
+  faculty: String!
+  credit: Int!
+  creditHours: String!
+  courseCondition: String!
   genEdType: GenEdType
 
   # Exam
@@ -52,7 +52,7 @@ type Course {
   final: ExamPeriod
 
   # Section
-  sections: [Section]
+  sections: [Section!]!
 }
 
 type Query {
@@ -62,5 +62,5 @@ type Query {
     semester: String!
     academicYear: String!
     studyProgram: StudyProgram!
-  ): Course
+  ): Course!
 }
