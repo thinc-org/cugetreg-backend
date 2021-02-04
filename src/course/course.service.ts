@@ -10,10 +10,22 @@ import {
   StudyProgram,
 } from '@thinc-org/chula-courses'
 import Fuse from 'fuse.js'
+import { FilterInput } from 'src/graphql'
 
 const fuseOptions = {
   useExtendedSearch: true,
-  keys: ['courseNo', 'semester', 'academicYear', 'studyProgram'],
+  shouldSort: true,
+  keys: [
+    { name: 'courseNo', weight: 3 },
+    { name: 'semester', weight: 1 },
+    { name: 'academicYear', weight: 1 },
+    { name: 'studyProgram', weight: 1 },
+    { name: 'abbrName', weight: 2 },
+    { name: 'courseNameTh', weight: 1 },
+    { name: 'courseNameEn', weight: 1 },
+    { name: 'genEdType', weight: 1 },
+    { name: 'sections.classes.dayOfWeek', weight: 1 },
+  ],
 }
 
 @Injectable()
@@ -58,5 +70,39 @@ export class CourseService implements OnApplicationBootstrap {
     }
 
     return results[0].item
+  }
+
+  async search({ keyword, genEdTypes, dayOfWeeks, noConflict }: FilterInput) {
+    const expressions = []
+    if (keyword) {
+      expressions.push({
+        $or: [
+          { courseNo: `'${keyword}` },
+          { abbrName: `'${keyword}` },
+          { courseNameTh: `'${keyword}` },
+          { courseNameEn: `'${keyword}` },
+        ],
+      })
+    }
+    if (genEdTypes && genEdTypes.length > 0) {
+      expressions.push({
+        genEdType: genEdTypes.map((genEdType) => `=${genEdType}`).join(' | '),
+      })
+    }
+    if (dayOfWeeks && dayOfWeeks.length > 0) {
+      expressions.push({
+        'sections.classes.dayOfWeek': dayOfWeeks
+          .map((dayOfWeek) => `=${dayOfWeek}`)
+          .join(' | '),
+      })
+    }
+    if (expressions.length === 0) {
+      return this.findAll()
+    }
+    const results = this.fuse.search({
+      $and: expressions,
+    })
+
+    return results.map((result) => result.item)
   }
 }

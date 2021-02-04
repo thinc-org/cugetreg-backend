@@ -57,8 +57,8 @@ type Course {
 
 input FilterInput {
   keyword: String
-  genEdType: GenEdType
-  dayOfWeek: DayOfWeek
+  genEdTypes: [GenEdType]
+  dayOfWeeks: [DayOfWeek]
   noConflict: Boolean
 }
 

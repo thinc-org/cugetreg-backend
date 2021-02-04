@@ -42,8 +42,8 @@ export enum GenEdType {
 
 export class FilterInput {
     keyword?: string;
-    genEdType?: GenEdType;
-    dayOfWeek?: DayOfWeek;
+    genEdTypes?: GenEdType[];
+    dayOfWeeks?: DayOfWeek[];
     noConflict?: boolean;
 }
 
