@@ -63,12 +63,12 @@ input FilterInput {
 }
 
 type Query {
-  courses: [Course]!
+  courses: [Course!]!
   course(
     courseNo: String!
     semester: String!
     academicYear: String!
     studyProgram: StudyProgram!
   ): Course!
-  search(filter: FilterInput): [Course]!
+  search(filter: FilterInput): [Course!]!
 }
