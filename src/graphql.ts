@@ -50,53 +50,53 @@ export abstract class IMutation {
 }
 
 export class Period {
-    start?: string;
-    end?: string;
+    start: string;
+    end: string;
 }
 
 export class ExamPeriod {
-    date?: Date;
-    period?: Period;
+    date: Date;
+    period: Period;
 }
 
 export class Capacity {
-    current?: number;
-    max?: number;
+    current: number;
+    max: number;
 }
 
 export class Class {
-    type?: ClassType;
-    dayOfWeek?: DayOfWeek;
-    period?: Period;
-    building?: string;
-    room?: string;
-    teacher?: string;
+    type: ClassType;
+    dayOfWeek: DayOfWeek;
+    period: Period;
+    building: string;
+    room: string;
+    teacher: string;
 }
 
 export class Section {
-    sectionNo?: string;
-    closed?: boolean;
-    capacity?: Capacity;
+    sectionNo: string;
+    closed: boolean;
+    capacity: Capacity;
     note?: string;
-    classes?: Class[];
+    classes: Class[];
 }
 
 export class Course {
-    studyProgram?: StudyProgram;
-    semester?: string;
-    academicYear?: string;
-    courseNo?: string;
-    abbrName?: string;
-    courseNameTh?: string;
-    courseNameEn?: string;
-    faculty?: string;
-    credit?: number;
-    creditHours?: string;
-    courseCondition?: string;
-    genEdType?: GenEdType;
+    studyProgram: StudyProgram;
+    semester: string;
+    academicYear: string;
+    courseNo: string;
+    abbrName: string;
+    courseNameTh: string;
+    courseNameEn: string;
+    faculty: string;
+    credit: number;
+    creditHours: string;
+    courseCondition: string;
+    genEdType: GenEdType;
     midterm?: ExamPeriod;
     final?: ExamPeriod;
-    sections?: Section[];
+    sections: Section[];
 }
 
 export abstract class IQuery {
