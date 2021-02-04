@@ -45,7 +45,7 @@ type Course {
   credit: Int!
   creditHours: String!
   courseCondition: String!
-  genEdType: GenEdType
+  genEdType: GenEdType!
 
   # Exam
   midterm: ExamPeriod
