@@ -1,8 +1,8 @@
 import {
-  HttpException,
+  BadRequestException,
   HttpService,
-  HttpStatus,
   Injectable,
+  ServiceUnavailableException,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
@@ -42,22 +42,16 @@ export class AuthService {
 
   async verify(code: string, redirectURI: string): Promise<AccessTokenDTO> {
     if (!code) {
-      throw new HttpException(
-        {
-          reason: 'CODE_UNDEFINED',
-          message: 'Authorization code is undefined',
-        },
-        HttpStatus.BAD_REQUEST
-      )
+      throw new BadRequestException({
+        reason: 'CODE_UNDEFINED',
+        message: 'Authorization code is undefined',
+      })
     }
     if (!redirectURI) {
-      throw new HttpException(
-        {
-          reason: 'REDIRECT_URI_UNDEFINED',
-          message: 'Redirect URI is undefined',
-        },
-        HttpStatus.BAD_REQUEST
-      )
+      throw new BadRequestException({
+        reason: 'REDIRECT_URI_UNDEFINED',
+        message: 'Redirect URI is undefined',
+      })
     }
 
     const clientId = this.configService.get<string>('googleOAuthId')
@@ -88,14 +82,11 @@ export class AuthService {
 
       return { accessToken, _id: user._id, firstName: user.firstName }
     } catch (err) {
-      throw new HttpException(
-        {
-          reason: 'OAUTH_ERROR',
-          message: 'Unknown error during OAuth token verification request',
-          error: serializeError(err),
-        },
-        HttpStatus.SERVICE_UNAVAILABLE
-      )
+      throw new ServiceUnavailableException({
+        reason: 'OAUTH_ERROR',
+        message: 'Unknown error during OAuth token verification request',
+        error: serializeError(err),
+      })
     }
   }
 
