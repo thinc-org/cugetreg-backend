@@ -36,7 +36,8 @@ export enum GenEdType {
     SO = "SO",
     SC = "SC",
     HU = "HU",
-    IN = "IN"
+    IN = "IN",
+    NO = "NO"
 }
 
 export class AccessTokenDTO {
@@ -70,7 +71,7 @@ export class Class {
     period: Period;
     building: string;
     room: string;
-    teacher: string;
+    teachers: string[];
 }
 
 export class Section {
