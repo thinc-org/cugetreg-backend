@@ -14,16 +14,17 @@ import { FilterInput } from 'src/graphql'
 
 const fuseOptions = {
   useExtendedSearch: true,
+  shouldSort: true,
   keys: [
-    'courseNo',
-    'semester',
-    'academicYear',
-    'studyProgram',
-    'abbrName',
-    'courseNameTh',
-    'courseNameEn',
-    'genEdType',
-    'sections.classes.dayOfWeek',
+    { name: 'courseNo', weight: 3 },
+    { name: 'semester', weight: 1 },
+    { name: 'academicYear', weight: 1 },
+    { name: 'studyProgram', weight: 1 },
+    { name: 'abbrName', weight: 2 },
+    { name: 'courseNameTh', weight: 1 },
+    { name: 'courseNameEn', weight: 1 },
+    { name: 'genEdType', weight: 1 },
+    { name: 'sections.classes.dayOfWeek', weight: 1 },
   ],
 }
 
@@ -108,14 +109,6 @@ export class CourseService implements OnApplicationBootstrap {
       .search({
         $and: expressions,
       })
-      .map((result) => {
-        const sortScore = result.item.abbrName.indexOf(keyword)
-        return {
-          item: result.item,
-          sortScore: sortScore !== -1 ? sortScore : Number.MAX_SAFE_INTEGER,
-        }
-      })
-      .sort((result1, result2) => result1.sortScore - result2.sortScore)
       .slice(offset, offset + limit)
       .map((result) => result.item)
 
