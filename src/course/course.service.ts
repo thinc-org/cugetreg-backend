@@ -115,6 +115,8 @@ export class CourseService implements OnApplicationBootstrap {
       .splice(offset, limit)
       .map((result) => result.item)
 
+    // TODO: Populate search results with average ratings
+
     return results
   }
 }
