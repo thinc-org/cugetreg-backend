@@ -106,9 +106,12 @@ export class CourseService implements OnApplicationBootstrap {
       return this.findAll().slice(offset, offset + limit)
     }
     const results = this.fuse
-      .search({
-        $and: expressions,
-      }, ({ limit: offset + limit })
+      .search(
+        {
+          $and: expressions,
+        },
+        { limit: offset + limit }
+      )
       .splice(offset, limit)
       .map((result) => result.item)
 
