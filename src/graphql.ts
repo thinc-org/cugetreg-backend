@@ -44,6 +44,9 @@ export class FilterInput {
     keyword?: string;
     genEdTypes?: GenEdType[];
     dayOfWeeks?: DayOfWeek[];
+    semester: string;
+    academicYear: string;
+    studyProgram: StudyProgram;
     limit?: number;
     offset?: number;
 }

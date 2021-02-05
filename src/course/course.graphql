@@ -59,6 +59,9 @@ input FilterInput {
   keyword: String
   genEdTypes: [GenEdType!]
   dayOfWeeks: [DayOfWeek!]
+  semester: String!
+  academicYear: String!
+  studyProgram: StudyProgram!
   limit: Int
   offset: Int
 }
