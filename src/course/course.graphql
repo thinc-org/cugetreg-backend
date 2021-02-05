@@ -59,20 +59,18 @@ input FilterInput {
   keyword: String
   genEdTypes: [GenEdType!]
   dayOfWeeks: [DayOfWeek!]
-  semester: String!
-  academicYear: String!
-  studyProgram: StudyProgram!
   limit: Int
   offset: Int
 }
 
+input CourseGroupInput {
+  semester: String!
+  academicYear: String!
+  studyProgram: StudyProgram!
+}
+
 type Query {
   courses: [Course!]!
-  course(
-    courseNo: String!
-    semester: String!
-    academicYear: String!
-    studyProgram: StudyProgram!
-  ): Course!
-  search(filter: FilterInput): [Course!]!
+  course(courseNo: String!, courseGroup: CourseGroupInput!): Course!
+  search(filter: FilterInput!, courseGroup: CourseGroupInput!): [Course!]!
 }

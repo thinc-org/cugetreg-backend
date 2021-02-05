@@ -10,7 +10,7 @@ import {
   StudyProgram,
 } from '@thinc-org/chula-courses'
 import Fuse from 'fuse.js'
-import { FilterInput } from 'src/graphql'
+import { CourseGroupInput, FilterInput } from 'src/graphql'
 
 const fuseOptions = {
   useExtendedSearch: true,
@@ -72,16 +72,16 @@ export class CourseService implements OnApplicationBootstrap {
     return results[0].item
   }
 
-  async search({
-    keyword = '',
-    genEdTypes = [],
-    dayOfWeeks = [],
-    semester,
-    academicYear,
-    studyProgram,
-    limit = 10,
-    offset = 0,
-  }: FilterInput) {
+  async search(
+    {
+      keyword = '',
+      genEdTypes = [],
+      dayOfWeeks = [],
+      limit = 10,
+      offset = 0,
+    }: FilterInput,
+    { semester, academicYear, studyProgram }: CourseGroupInput
+  ): Promise<Course[]> {
     const expressions = []
     if (keyword) {
       expressions.push({
