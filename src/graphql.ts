@@ -44,11 +44,14 @@ export class FilterInput {
     keyword?: string;
     genEdTypes?: GenEdType[];
     dayOfWeeks?: DayOfWeek[];
+    limit?: number;
+    offset?: number;
+}
+
+export class CourseGroupInput {
     semester: string;
     academicYear: string;
     studyProgram: StudyProgram;
-    limit?: number;
-    offset?: number;
 }
 
 export class AccessTokenDTO {
@@ -114,9 +117,9 @@ export class Course {
 export abstract class IQuery {
     abstract courses(): Course[] | Promise<Course[]>;
 
-    abstract course(courseNo: string, semester: string, academicYear: string, studyProgram: StudyProgram): Course | Promise<Course>;
+    abstract course(courseNo: string, courseGroup: CourseGroupInput): Course | Promise<Course>;
 
-    abstract search(filter?: FilterInput): Course[] | Promise<Course[]>;
+    abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
 
     abstract me(): User | Promise<User>;
 

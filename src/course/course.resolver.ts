@@ -1,6 +1,6 @@
 import { Resolver, Query, Args } from '@nestjs/graphql'
-import { Course, Semester, StudyProgram } from '@thinc-org/chula-courses'
-import { FilterInput } from 'src/graphql'
+import { Course, Semester } from '@thinc-org/chula-courses'
+import { CourseGroupInput, FilterInput } from 'src/graphql'
 import { CourseService } from './course.service'
 
 @Resolver('Course')
@@ -15,20 +15,22 @@ export class CourseResolver {
   @Query('course')
   findOne(
     @Args('courseNo') courseNo: string,
-    @Args('semester') semester: Semester,
-    @Args('academicYear') academicYear: string,
-    @Args('studyProgram') studyProgram: StudyProgram
+    @Args('courseGroup')
+    { semester, academicYear, studyProgram }: CourseGroupInput
   ): Course {
     return this.courseService.findOne(
       courseNo,
-      semester,
+      semester as Semester,
       academicYear,
       studyProgram
     )
   }
 
   @Query('search')
-  async search(@Args('filter') filter: FilterInput): Promise<Course[]> {
-    return this.courseService.search(filter)
+  async search(
+    @Args('filter') filter: FilterInput,
+    @Args('courseGroup') courseGroup: CourseGroupInput
+  ): Promise<Course[]> {
+    return this.courseService.search(filter, courseGroup)
   }
 }
