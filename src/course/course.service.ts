@@ -76,6 +76,9 @@ export class CourseService implements OnApplicationBootstrap {
     keyword = '',
     genEdTypes = [],
     dayOfWeeks = [],
+    semester,
+    academicYear,
+    studyProgram,
     limit = 10,
     offset = 0,
   }: FilterInput) {
@@ -102,9 +105,11 @@ export class CourseService implements OnApplicationBootstrap {
           .join(' | '),
       })
     }
-    if (expressions.length === 0) {
-      return this.findAll().slice(offset, offset + limit)
-    }
+    expressions.push({
+      semester: `=${semester}`,
+      academicYear: `=${academicYear}`,
+      studyProgram: `=${studyProgram}`,
+    })
     const results = this.fuse
       .search(
         {
