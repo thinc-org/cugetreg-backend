@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module'
 import configuration from './config/configuration'
 import { GraphQLExpressContext } from './common/types/context.type'
 import { GraphQLError } from 'graphql'
+import { ReviewModule } from './review/review.module'
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { GraphQLError } from 'graphql'
     }),
     UserModule,
     AuthModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],
