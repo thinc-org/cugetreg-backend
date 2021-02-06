@@ -74,7 +74,11 @@ export abstract class IMutation {
 
     abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
 
-    abstract removeReview(id: string): Review | Promise<Review>;
+    abstract removeReview(reviewId: string): Review | Promise<Review>;
+
+    abstract like(reviewId: string): Review | Promise<Review>;
+
+    abstract dislike(reviewId: string): Review | Promise<Review>;
 }
 
 export class Period {

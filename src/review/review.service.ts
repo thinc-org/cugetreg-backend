@@ -56,6 +56,14 @@ export class ReviewService {
     return `This action removes a #${reviewId} review`
   }
 
+  like(reviewId: string, userId: string) {
+    return `like!`
+  }
+
+  dislike(reviewId: string, userId: string) {
+    return `dislike!`
+  }
+
   private transformReview(rawReview: ReviewDocument, userId: string): Review {
     return {
       rating: rawReview.rating,
