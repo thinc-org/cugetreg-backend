@@ -31,9 +31,27 @@ export class ReviewResolver {
   @UseGuards(JwtAuthGuard)
   @Mutation('removeReview')
   remove(
-    @Args('id') reviewId: string,
+    @Args('reviewId') reviewId: string,
     @CurrentUser() user: AccessTokenPayload
   ) {
     return this.reviewService.remove(reviewId, user._id)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation('like')
+  like(
+    @Args('reviewId') reviewId: string,
+    @CurrentUser() user: AccessTokenPayload
+  ) {
+    return this.reviewService.like(reviewId, user._id)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation('dislike')
+  dislike(
+    @Args('reviewId') reviewId: string,
+    @CurrentUser() user: AccessTokenPayload
+  ) {
+    return this.reviewService.dislike(reviewId, user._id)
   }
 }
