@@ -3,11 +3,11 @@ import * as mongoose from 'mongoose'
 
 export const ReviewSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'user' },
-  rating: { type: Number, required: true },
   courseNo: { type: String, required: true },
   semester: { type: String, required: true },
   academicYear: { type: String, required: true },
   studyProgram: { type: String, required: true },
+  rating: { type: Number, required: true },
   content: { type: String, required: true },
   likes: [
     {
@@ -25,7 +25,7 @@ export const ReviewSchema = new mongoose.Schema({
   ],
 })
 
-export class ReviewDocument extends mongoose.Document {
+export type ReviewDocument = mongoose.Document & {
   userId: string
   rating: number
   courseNo: string
@@ -33,6 +33,6 @@ export class ReviewDocument extends mongoose.Document {
   academicYear: string
   studyProgram: StudyProgram
   content: string
-  likes: string[]
-  dislikes: string[]
+  likes: mongoose.Types.ObjectId[]
+  dislikes: mongoose.Types.ObjectId[]
 }

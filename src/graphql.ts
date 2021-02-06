@@ -59,6 +59,7 @@ export class CreateReviewInput {
     courseNo: string;
     semester: string;
     academicYear: string;
+    studyProgram: StudyProgram;
     content?: string;
 }
 
@@ -133,7 +134,7 @@ export abstract class IQuery {
 
     abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
 
-    abstract review(courseNo: number, studyProgram?: StudyProgram): Review[] | Promise<Review[]>;
+    abstract review(courseNo: number, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
 
     abstract me(): User | Promise<User>;
 
@@ -145,6 +146,7 @@ export class Review {
     courseNo: string;
     semester: string;
     academicYear: string;
+    studyProgram: StudyProgram;
     content?: string;
     likeCount: number;
     dislikeCount: number;

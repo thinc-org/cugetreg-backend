@@ -3,6 +3,7 @@ type Review {
   courseNo: String!
   semester: String!
   academicYear: String!
+  studyProgram: StudyProgram!
   content: String
   likeCount: Int!
   dislikeCount: Int!
@@ -15,11 +16,12 @@ input CreateReviewInput {
   courseNo: String!
   semester: String!
   academicYear: String!
+  studyProgram: StudyProgram!
   content: String
 }
 
 type Query {
-  review(courseNo: Int!, studyProgram: StudyProgram): [Review!]!
+  review(courseNo: Int!, studyProgram: StudyProgram!): [Review!]!
 }
 
 type Mutation {
