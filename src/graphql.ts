@@ -54,6 +54,14 @@ export class CourseGroupInput {
     studyProgram: StudyProgram;
 }
 
+export class CreateReviewInput {
+    rating: number;
+    courseNo: string;
+    semester: string;
+    academicYear: string;
+    content?: string;
+}
+
 export class AccessTokenDTO {
     accessToken: string;
     _id: string;
@@ -62,6 +70,10 @@ export class AccessTokenDTO {
 
 export abstract class IMutation {
     abstract verify(code: string, redirectURI: string): AccessTokenDTO | Promise<AccessTokenDTO>;
+
+    abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
+
+    abstract removeReview(id: string): Review | Promise<Review>;
 }
 
 export class Period {
@@ -121,9 +133,23 @@ export abstract class IQuery {
 
     abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
 
+    abstract review(courseNo: number, studyProgram?: StudyProgram): Review[] | Promise<Review[]>;
+
     abstract me(): User | Promise<User>;
 
     abstract users(): User[] | Promise<User[]>;
+}
+
+export class Review {
+    rating: number;
+    courseNo: string;
+    semester: string;
+    academicYear: string;
+    content?: string;
+    likeCount: number;
+    dislikeCount: number;
+    hasLiked: boolean;
+    hasDisliked: boolean;
 }
 
 export class TimetableCourse {

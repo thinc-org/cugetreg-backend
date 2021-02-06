@@ -1,0 +1,28 @@
+type Review {
+  rating: Int!
+  courseNo: String!
+  semester: String!
+  academicYear: String!
+  content: String
+  likeCount: Int!
+  dislikeCount: Int!
+  hasLiked: Boolean!
+  hasDisliked: Boolean!
+}
+
+input CreateReviewInput {
+  rating: Int!
+  courseNo: String!
+  semester: String!
+  academicYear: String!
+  content: String
+}
+
+type Query {
+  review(courseNo: Int!, studyProgram: StudyProgram): [Review!]!
+}
+
+type Mutation {
+  createReview(createReviewInput: CreateReviewInput!): Review!
+  removeReview(id: String!): Review
+}
