@@ -21,7 +21,7 @@ input CreateReviewInput {
 }
 
 type Query {
-  review(courseNo: Int!, studyProgram: StudyProgram!): [Review!]!
+  reviews(courseNo: String!, studyProgram: StudyProgram!): [Review!]!
 }
 
 type Mutation {

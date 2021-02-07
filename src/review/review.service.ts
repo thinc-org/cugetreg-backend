@@ -48,8 +48,13 @@ export class ReviewService {
     return this.transformReview(await newReview.save(), userId)
   }
 
-  find(courseNo: string, studyProgram: StudyProgram) {
-    return `This action returns all review`
+  async find(
+    courseNo: string,
+    studyProgram: StudyProgram,
+    userId: string
+  ): Promise<Review[]> {
+    const reviews = await this.reviewModel.find({ courseNo, studyProgram })
+    return reviews.map((rawReview) => this.transformReview(rawReview, userId))
   }
 
   remove(reviewId: string, userId: string) {
@@ -74,8 +79,12 @@ export class ReviewService {
       content: rawReview.content,
       likeCount: rawReview.likes.length,
       dislikeCount: rawReview.dislikes.length,
-      hasLiked: rawReview.likes.includes(Types.ObjectId(userId)),
-      hasDisliked: rawReview.dislikes.includes(Types.ObjectId(userId)),
+      hasLiked: userId
+        ? rawReview.likes.includes(Types.ObjectId(userId))
+        : false,
+      hasDisliked: userId
+        ? rawReview.dislikes.includes(Types.ObjectId(userId))
+        : false,
     }
   }
 }

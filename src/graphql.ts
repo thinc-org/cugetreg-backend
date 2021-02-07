@@ -138,7 +138,7 @@ export abstract class IQuery {
 
     abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
 
-    abstract review(courseNo: number, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
+    abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
 
     abstract me(): User | Promise<User>;
 
