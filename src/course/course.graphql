@@ -15,10 +15,10 @@ type Capacity {
 
 type Class {
   type: ClassType!
-  dayOfWeek: DayOfWeek!
-  period: Period!
-  building: String!
-  room: String!
+  dayOfWeek: DayOfWeek
+  period: Period
+  building: String
+  room: String
   teachers: [String!]!
 }
 
@@ -42,7 +42,7 @@ type Course {
   courseNameTh: String!
   courseNameEn: String!
   faculty: String!
-  credit: Int!
+  credit: Float!
   creditHours: String!
   courseCondition: String!
   genEdType: GenEdType!
