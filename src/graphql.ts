@@ -81,10 +81,10 @@ export class Capacity {
 
 export class Class {
     type: ClassType;
-    dayOfWeek: DayOfWeek;
-    period: Period;
-    building: string;
-    room: string;
+    dayOfWeek?: DayOfWeek;
+    period?: Period;
+    building?: string;
+    room?: string;
     teachers: string[];
 }
 
