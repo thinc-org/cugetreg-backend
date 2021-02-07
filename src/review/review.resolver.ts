@@ -6,17 +6,21 @@ import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt.guard'
 import { CurrentUser } from 'src/common/decorators/currentUser.decorator'
 import { AccessTokenPayload } from 'src/auth/auth.dto'
+import { AllowUnauthorized } from 'src/common/decorators/allowUnauthorized.decorator'
 
 @Resolver('Review')
 export class ReviewResolver {
   constructor(private readonly reviewService: ReviewService) {}
 
-  @Query('review')
-  find(
+  @UseGuards(JwtAuthGuard)
+  @AllowUnauthorized()
+  @Query('reviews')
+  async find(
     @Args('courseNo') courseNo: string,
-    @Args('studyProgram') studyProgram: StudyProgram
-  ) {
-    return this.reviewService.find(courseNo, studyProgram)
+    @Args('studyProgram') studyProgram: StudyProgram,
+    @CurrentUser() user: AccessTokenPayload
+  ): Promise<Review[]> {
+    return this.reviewService.find(courseNo, studyProgram, user?._id)
   }
 
   @UseGuards(JwtAuthGuard)
