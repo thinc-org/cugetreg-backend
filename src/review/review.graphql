@@ -1,4 +1,5 @@
 type Review {
+  _id: String!
   rating: Int!
   courseNo: String!
   semester: String!
