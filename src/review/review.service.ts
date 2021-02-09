@@ -71,6 +71,7 @@ export class ReviewService {
 
   private transformReview(rawReview: ReviewDocument, userId: string): Review {
     return {
+      _id: rawReview._id,
       rating: rawReview.rating,
       courseNo: rawReview.courseNo,
       semester: rawReview.semester,

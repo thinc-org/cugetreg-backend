@@ -146,6 +146,7 @@ export abstract class IQuery {
 }
 
 export class Review {
+    _id: string;
     rating: number;
     courseNo: string;
     semester: string;
