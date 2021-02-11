@@ -43,19 +43,19 @@ export class ReviewResolver {
 
   @UseGuards(JwtAuthGuard)
   @Mutation('likeReview')
-  like(
+  async like(
     @Args('reviewId') reviewId: string,
     @CurrentUser() user: AccessTokenPayload
-  ) {
+  ): Promise<Review> {
     return this.reviewService.like(reviewId, user._id)
   }
 
   @UseGuards(JwtAuthGuard)
   @Mutation('dislikeReview')
-  dislike(
+  async dislike(
     @Args('reviewId') reviewId: string,
     @CurrentUser() user: AccessTokenPayload
-  ) {
+  ): Promise<Review> {
     return this.reviewService.dislike(reviewId, user._id)
   }
 }
