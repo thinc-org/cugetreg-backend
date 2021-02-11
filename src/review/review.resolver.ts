@@ -42,7 +42,7 @@ export class ReviewResolver {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Mutation('like')
+  @Mutation('likeReview')
   like(
     @Args('reviewId') reviewId: string,
     @CurrentUser() user: AccessTokenPayload
@@ -51,7 +51,7 @@ export class ReviewResolver {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Mutation('dislike')
+  @Mutation('dislikeReview')
   dislike(
     @Args('reviewId') reviewId: string,
     @CurrentUser() user: AccessTokenPayload
