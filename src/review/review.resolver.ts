@@ -3,59 +3,56 @@ import { ReviewService } from './review.service'
 import { StudyProgram } from '@thinc-org/chula-courses'
 import { CreateReviewInput, Review } from 'src/graphql'
 import { UseGuards } from '@nestjs/common'
-import { JwtAuthGuard } from 'src/auth/jwt.guard'
+import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/auth/jwt.guard'
 import { CurrentUser } from 'src/common/decorators/currentUser.decorator'
-import { AccessTokenPayload } from 'src/auth/auth.dto'
-import { AllowUnauthorized } from 'src/common/decorators/allowUnauthorized.decorator'
 
 @Resolver('Review')
 export class ReviewResolver {
   constructor(private readonly reviewService: ReviewService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @AllowUnauthorized()
+  @UseGuards(JwtAuthGuardOptional)
   @Query('reviews')
   async find(
     @Args('courseNo') courseNo: string,
     @Args('studyProgram') studyProgram: StudyProgram,
-    @CurrentUser() user: AccessTokenPayload
+    @CurrentUser() userId: string
   ): Promise<Review[]> {
-    return this.reviewService.find(courseNo, studyProgram, user?._id)
+    return this.reviewService.find(courseNo, studyProgram, userId)
   }
 
   @UseGuards(JwtAuthGuard)
   @Mutation('createReview')
   async create(
     @Args('createReviewInput') createReviewInput: CreateReviewInput,
-    @CurrentUser() user: AccessTokenPayload
+    @CurrentUser() userId: string
   ): Promise<Review> {
-    return this.reviewService.create(createReviewInput, user._id)
+    return this.reviewService.create(createReviewInput, userId)
   }
 
   @UseGuards(JwtAuthGuard)
   @Mutation('removeReview')
   async remove(
     @Args('reviewId') reviewId: string,
-    @CurrentUser() user: AccessTokenPayload
+    @CurrentUser() userId: string
   ): Promise<Review> {
-    return this.reviewService.remove(reviewId, user._id)
+    return this.reviewService.remove(reviewId, userId)
   }
 
   @UseGuards(JwtAuthGuard)
   @Mutation('likeReview')
   async like(
     @Args('reviewId') reviewId: string,
-    @CurrentUser() user: AccessTokenPayload
+    @CurrentUser() userId: string
   ): Promise<Review> {
-    return this.reviewService.like(reviewId, user._id)
+    return this.reviewService.like(reviewId, userId)
   }
 
   @UseGuards(JwtAuthGuard)
   @Mutation('dislikeReview')
   async dislike(
     @Args('reviewId') reviewId: string,
-    @CurrentUser() user: AccessTokenPayload
+    @CurrentUser() userId: string
   ): Promise<Review> {
-    return this.reviewService.dislike(reviewId, user._id)
+    return this.reviewService.dislike(reviewId, userId)
   }
 }
