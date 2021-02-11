@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common'
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { StudyProgram } from '@thinc-org/chula-courses'
 import { Model, Types } from 'mongoose'
@@ -61,15 +65,68 @@ export class ReviewService {
     return `This action removes a #${reviewId} review`
   }
 
-  like(reviewId: string, userId: string) {
-    return `like!`
+  async like(reviewId: string, userId: string): Promise<Review> {
+    const review = await this.reviewModel.findById(reviewId)
+    if (!review) {
+      throw new NotFoundException({
+        reason: 'REVIEW_NOT_FOUND',
+        message: 'Review with the given id does not exist.',
+      })
+    }
+
+    const index = review.interactions.findIndex((interaction) =>
+      interaction.userId.equals(userId)
+    )
+    if (index === -1) {
+      review.interactions.push({
+        userId: Types.ObjectId(userId),
+        type: 'L',
+      })
+    } else if (review.interactions[index].type === 'L') {
+      review.interactions[index].remove()
+    } else {
+      review.interactions[index].set('type', 'L')
+    }
+
+    await review.save()
+    return this.transformReview(review, userId)
   }
 
-  dislike(reviewId: string, userId: string) {
-    return `dislike!`
+  async dislike(reviewId: string, userId: string) {
+    const review = await this.reviewModel.findById(reviewId)
+    if (!review) {
+      throw new NotFoundException({
+        reason: 'REVIEW_NOT_FOUND',
+        message: 'Review with the given id does not exist.',
+      })
+    }
+
+    const index = review.interactions.findIndex((interaction) =>
+      interaction.userId.equals(userId)
+    )
+    if (index === -1) {
+      review.interactions.push({
+        userId: Types.ObjectId(userId),
+        type: 'D',
+      })
+    } else if (review.interactions[index].type === 'D') {
+      review.interactions[index].remove()
+    } else {
+      review.interactions[index].set('type', 'D')
+    }
+
+    await review.save()
+    return this.transformReview(review, userId)
   }
 
   private transformReview(rawReview: ReviewDocument, userId: string): Review {
+    const likeCount = rawReview.interactions.filter(
+      (interaction) => interaction.type === 'L'
+    ).length
+    const dislikeCount = rawReview.interactions.length - likeCount
+    const interactionType = rawReview.interactions.find((interaction) =>
+      interaction.userId.equals(userId)
+    )?.type
     return {
       _id: rawReview._id,
       rating: rawReview.rating,
@@ -78,14 +135,10 @@ export class ReviewService {
       academicYear: rawReview.academicYear,
       studyProgram: rawReview.studyProgram as GraphQLStudyProgram,
       content: rawReview.content,
-      likeCount: rawReview.likes.length,
-      dislikeCount: rawReview.dislikes.length,
-      hasLiked: userId
-        ? rawReview.likes.includes(Types.ObjectId(userId))
-        : false,
-      hasDisliked: userId
-        ? rawReview.dislikes.includes(Types.ObjectId(userId))
-        : false,
+      likeCount: likeCount,
+      dislikeCount: dislikeCount,
+      hasLiked: interactionType ? interactionType === 'L' : false,
+      hasDisliked: interactionType ? interactionType === 'D' : false,
     }
   }
 }
