@@ -34,10 +34,10 @@ export class ReviewResolver {
 
   @UseGuards(JwtAuthGuard)
   @Mutation('removeReview')
-  remove(
+  async remove(
     @Args('reviewId') reviewId: string,
     @CurrentUser() user: AccessTokenPayload
-  ) {
+  ): Promise<Review> {
     return this.reviewService.remove(reviewId, user._id)
   }
 

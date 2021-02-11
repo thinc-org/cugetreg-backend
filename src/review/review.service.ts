@@ -28,7 +28,7 @@ export class ReviewService {
     userId: string
   ): Promise<Review> {
     const review = await this.reviewModel.findOne({
-      userId,
+      ownerId: userId,
       courseNo,
       studyProgram,
     })
@@ -40,7 +40,7 @@ export class ReviewService {
     }
 
     const newReview = new this.reviewModel({
-      userId: Types.ObjectId(userId),
+      ownerId: Types.ObjectId(userId),
       courseNo,
       semester,
       academicYear,
@@ -61,8 +61,18 @@ export class ReviewService {
     return reviews.map((rawReview) => this.transformReview(rawReview, userId))
   }
 
-  remove(reviewId: string, userId: string) {
-    return `This action removes a #${reviewId} review`
+  async remove(reviewId: string, userId: string): Promise<Review> {
+    const review = await this.reviewModel.findOneAndDelete({
+      _id: reviewId,
+      ownerId: userId,
+    })
+    if (!review) {
+      throw new NotFoundException({
+        reason: 'REVIEW_NOT_FOUND',
+        message: `Either the review does not exist or the user is not the owner of the review`,
+      })
+    }
+    return this.transformReview(review, userId)
   }
 
   async like(reviewId: string, userId: string): Promise<Review> {

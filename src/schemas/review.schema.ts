@@ -7,7 +7,11 @@ export const InteractionSchema = new mongoose.Schema({
 })
 
 export const ReviewSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'user' },
+  ownerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'user',
+  },
   courseNo: { type: String, required: true },
   semester: { type: String, required: true },
   academicYear: { type: String, required: true },
@@ -23,7 +27,7 @@ interface InteractionDocument extends mongoose.Document {
 }
 
 export interface ReviewDocument extends mongoose.Document {
-  userId: mongoose.Types.ObjectId
+  ownerId: mongoose.Types.ObjectId
   rating: number
   courseNo: string
   semester: string
