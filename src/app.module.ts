@@ -11,6 +11,7 @@ import { UserModule } from './user/user.module'
 import { AuthModule } from './auth/auth.module'
 import configuration from './config/configuration'
 import { GraphQLExpressContext } from './common/types/context.type'
+import { GraphQLError } from 'graphql'
 
 @Module({
   imports: [
@@ -25,6 +26,17 @@ import { GraphQLExpressContext } from './common/types/context.type'
         outputAs: 'class',
       },
       context: ({ req, res }: GraphQLExpressContext) => ({ req, res }),
+      formatError: (error: GraphQLError) => {
+        const graphQLFormattedError = {
+          message:
+            error?.extensions?.exception?.response?.message || error.message,
+          path: error.path,
+          locations: error.locations,
+          reason: error?.extensions?.exception?.response?.reason,
+          status: error?.extensions?.exception?.status,
+        }
+        return graphQLFormattedError
+      },
     }),
     CourseModule,
     CommonModule,
