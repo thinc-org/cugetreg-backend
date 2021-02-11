@@ -1,6 +1,5 @@
 import { UseGuards } from '@nestjs/common'
 import { Resolver, Query } from '@nestjs/graphql'
-import { AccessTokenPayload } from 'src/auth/auth.dto'
 import { JwtAuthGuard } from 'src/auth/jwt.guard'
 import { CurrentUser } from 'src/common/decorators/currentUser.decorator'
 import { UserDocument } from 'src/schemas/user.schema'
@@ -12,10 +11,8 @@ export class UserResolver {
 
   @Query('me')
   @UseGuards(JwtAuthGuard)
-  async getCurrentUser(
-    @CurrentUser() user: AccessTokenPayload
-  ): Promise<UserDocument> {
-    return this.userService.getUser(user._id)
+  async getCurrentUser(@CurrentUser() userId: string): Promise<UserDocument> {
+    return this.userService.getUser(userId)
   }
 
   // for dev only
