@@ -76,9 +76,9 @@ export abstract class IMutation {
 
     abstract removeReview(reviewId: string): Review | Promise<Review>;
 
-    abstract like(reviewId: string): Review | Promise<Review>;
+    abstract likeReview(reviewId: string): Review | Promise<Review>;
 
-    abstract dislike(reviewId: string): Review | Promise<Review>;
+    abstract dislikeReview(reviewId: string): Review | Promise<Review>;
 }
 
 export class Period {
