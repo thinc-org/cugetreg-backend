@@ -65,7 +65,7 @@ export class CreateReviewInput {
     semester: string;
     academicYear: string;
     studyProgram: StudyProgram;
-    content: string;
+    content?: string;
 }
 
 export class AccessTokenDTO {

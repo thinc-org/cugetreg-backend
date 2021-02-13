@@ -22,7 +22,7 @@ input CreateReviewInput {
   semester: String!
   academicYear: String!
   studyProgram: StudyProgram!
-  content: String!
+  content: String
 }
 
 type Query {
