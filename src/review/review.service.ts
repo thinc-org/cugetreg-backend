@@ -62,7 +62,9 @@ export class ReviewService {
     userId: string
   ): Promise<Review[]> {
     const reviews = await this.reviewModel.find({ courseNo, studyProgram })
-    return reviews.map((rawReview) => this.transformReview(rawReview, userId))
+    return reviews
+      .filter((review) => review.content)
+      .map((rawReview) => this.transformReview(rawReview, userId))
   }
 
   async remove(reviewId: string, userId: string): Promise<Review> {
