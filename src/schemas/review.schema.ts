@@ -17,7 +17,7 @@ export const ReviewSchema = new mongoose.Schema({
   academicYear: { type: String, required: true },
   studyProgram: { type: String, required: true },
   rating: { type: Number, required: true },
-  content: { type: String, required: true },
+  content: { type: String },
   interactions: [InteractionSchema],
 })
 
@@ -35,6 +35,6 @@ export interface ReviewDocument extends mongoose.Document {
   semester: string
   academicYear: string
   studyProgram: StudyProgram
-  content: string
+  content?: string
   interactions: mongoose.Types.DocumentArray<InteractionDocument>
 }
