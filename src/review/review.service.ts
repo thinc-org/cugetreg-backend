@@ -6,9 +6,13 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { StudyProgram } from '@thinc-org/chula-courses'
 import { Model, Types } from 'mongoose'
-import { CreateReviewInput, Interaction, Review } from 'src/graphql'
-import { ReviewDocument } from 'src/schemas/review.schema'
-import { StudyProgram as GraphQLStudyProgram } from 'src/graphql'
+import { Interaction, ReviewDocument } from 'src/schemas/review.schema'
+import {
+  CreateReviewInput,
+  Review,
+  StudyProgram as GraphQLStudyProgram,
+  Interaction as GraphQLInteraction,
+} from 'src/graphql'
 
 @Injectable()
 export class ReviewService {
@@ -75,7 +79,11 @@ export class ReviewService {
     return this.transformReview(review, userId)
   }
 
-  async like(reviewId: string, userId: string): Promise<Review> {
+  async setInteraction(
+    reviewId: string,
+    interaction: Interaction,
+    userId: string
+  ): Promise<Review> {
     const review = await this.reviewModel.findById(reviewId)
     if (!review) {
       throw new NotFoundException({
@@ -90,39 +98,12 @@ export class ReviewService {
     if (index === -1) {
       review.interactions.push({
         userId: Types.ObjectId(userId),
-        type: 'L',
+        type: interaction,
       })
-    } else if (review.interactions[index].type === 'L') {
+    } else if (review.interactions[index].type === interaction) {
       review.interactions[index].remove()
     } else {
-      review.interactions[index].set('type', 'L')
-    }
-
-    await review.save()
-    return this.transformReview(review, userId)
-  }
-
-  async dislike(reviewId: string, userId: string) {
-    const review = await this.reviewModel.findById(reviewId)
-    if (!review) {
-      throw new NotFoundException({
-        reason: 'REVIEW_NOT_FOUND',
-        message: 'Review with the given id does not exist.',
-      })
-    }
-
-    const index = review.interactions.findIndex((interaction) =>
-      interaction.userId.equals(userId)
-    )
-    if (index === -1) {
-      review.interactions.push({
-        userId: Types.ObjectId(userId),
-        type: 'D',
-      })
-    } else if (review.interactions[index].type === 'D') {
-      review.interactions[index].remove()
-    } else {
-      review.interactions[index].set('type', 'D')
+      review.interactions[index].set('type', interaction)
     }
 
     await review.save()
@@ -147,7 +128,7 @@ export class ReviewService {
       content: rawReview.content,
       likeCount: likeCount,
       dislikeCount: dislikeCount,
-      myInteraction: interactionType as Interaction,
+      myInteraction: interactionType as GraphQLInteraction,
     }
   }
 }
