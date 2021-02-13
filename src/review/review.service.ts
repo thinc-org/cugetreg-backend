@@ -6,7 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { StudyProgram } from '@thinc-org/chula-courses'
 import { Model, Types } from 'mongoose'
-import { CreateReviewInput, Review } from 'src/graphql'
+import { CreateReviewInput, Interaction, Review } from 'src/graphql'
 import { ReviewDocument } from 'src/schemas/review.schema'
 import { StudyProgram as GraphQLStudyProgram } from 'src/graphql'
 
@@ -147,8 +147,7 @@ export class ReviewService {
       content: rawReview.content,
       likeCount: likeCount,
       dislikeCount: dislikeCount,
-      hasLiked: interactionType ? interactionType === 'L' : false,
-      hasDisliked: interactionType ? interactionType === 'D' : false,
+      myInteraction: interactionType as Interaction,
     }
   }
 }

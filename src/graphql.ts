@@ -40,6 +40,11 @@ export enum GenEdType {
     NO = "NO"
 }
 
+export enum Interaction {
+    L = "L",
+    D = "D"
+}
+
 export class FilterInput {
     keyword?: string;
     genEdTypes?: GenEdType[];
@@ -155,8 +160,7 @@ export class Review {
     content?: string;
     likeCount: number;
     dislikeCount: number;
-    hasLiked: boolean;
-    hasDisliked: boolean;
+    myInteraction?: Interaction;
 }
 
 export class TimetableCourse {

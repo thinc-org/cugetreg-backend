@@ -1,3 +1,8 @@
+enum Interaction {
+  L
+  D
+}
+
 type Review {
   _id: String!
   rating: Int!
@@ -8,8 +13,7 @@ type Review {
   content: String
   likeCount: Int!
   dislikeCount: Int!
-  hasLiked: Boolean!
-  hasDisliked: Boolean!
+  myInteraction: Interaction
 }
 
 input CreateReviewInput {
