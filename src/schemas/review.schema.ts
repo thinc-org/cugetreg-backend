@@ -21,9 +21,11 @@ export const ReviewSchema = new mongoose.Schema({
   interactions: [InteractionSchema],
 })
 
-interface InteractionDocument extends mongoose.Document {
+export type Interaction = 'L' | 'D'
+
+export interface InteractionDocument extends mongoose.Document {
   userId: mongoose.Types.ObjectId
-  type: 'L' | 'D'
+  type: Interaction
 }
 
 export interface ReviewDocument extends mongoose.Document {

@@ -5,6 +5,7 @@ import { CreateReviewInput, Review } from 'src/graphql'
 import { UseGuards } from '@nestjs/common'
 import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/auth/jwt.guard'
 import { CurrentUser } from 'src/common/decorators/currentUser.decorator'
+import { Interaction } from 'src/schemas/review.schema'
 
 @Resolver('Review')
 export class ReviewResolver {
@@ -39,20 +40,12 @@ export class ReviewResolver {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Mutation('likeReview')
+  @Mutation('setInteraction')
   async like(
     @Args('reviewId') reviewId: string,
+    @Args('interaction') interaction: Interaction,
     @CurrentUser() userId: string
   ): Promise<Review> {
-    return this.reviewService.like(reviewId, userId)
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Mutation('dislikeReview')
-  async dislike(
-    @Args('reviewId') reviewId: string,
-    @CurrentUser() userId: string
-  ): Promise<Review> {
-    return this.reviewService.dislike(reviewId, userId)
+    return this.reviewService.setInteraction(reviewId, interaction, userId)
   }
 }
