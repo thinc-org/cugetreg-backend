@@ -35,6 +35,7 @@ import { ReviewModule } from './review/review.module'
           locations: error.locations,
           reason: error?.extensions?.exception?.response?.reason,
           status: error?.extensions?.exception?.status,
+          exception: error?.extensions?.exception,
         }
         return graphQLFormattedError
       },
