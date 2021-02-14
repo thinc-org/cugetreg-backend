@@ -53,6 +53,9 @@ type Course {
 
   # Section
   sections: [Section!]!
+
+  # Rating
+  rating: Float
 }
 
 input FilterInput {

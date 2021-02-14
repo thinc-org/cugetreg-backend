@@ -1,3 +1,5 @@
+import { Review } from 'src/graphql'
+
 /**
  * Binary searches the array for the given key.
  * @param array The array to be searched
@@ -23,4 +25,16 @@ export function lowerBound<T>(
     return null
   }
   return low
+}
+
+/**
+ * Calculates the average rating of all reviews in an array.
+ * @param reviews Array of reviews to calculate average rating
+ */
+export function findAvgRating(reviews: Review[]): number {
+  let total = 0
+  for (const review of reviews) {
+    total += review.rating
+  }
+  return total / (2 * reviews.length)
 }

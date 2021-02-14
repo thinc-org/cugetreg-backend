@@ -18,7 +18,7 @@ export class ReviewResolver {
     @Args('studyProgram') studyProgram: StudyProgram,
     @CurrentUser() userId: string
   ): Promise<Review[]> {
-    return this.reviewService.find(courseNo, studyProgram, userId)
+    return this.reviewService.find(courseNo, studyProgram, userId, true)
   }
 
   @UseGuards(JwtAuthGuard)

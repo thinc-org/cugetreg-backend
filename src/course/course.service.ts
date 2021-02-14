@@ -1,16 +1,19 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   OnApplicationBootstrap,
 } from '@nestjs/common'
 import {
-  Course,
   getMockCourses,
   Semester,
   StudyProgram,
 } from '@thinc-org/chula-courses'
 import Fuse from 'fuse.js'
+import { Course } from 'src/common/types/course.type'
 import { CourseGroupInput, FilterInput } from 'src/graphql'
+import { ReviewService } from 'src/review/review.service'
+import { findAvgRating } from 'src/util/functions'
 
 const fuseOptions = {
   useExtendedSearch: true,
@@ -32,16 +35,32 @@ const fuseOptions = {
 export class CourseService implements OnApplicationBootstrap {
   private courses: Course[] = []
   private fuse = new Fuse([] as Course[], fuseOptions)
+  private logger = new Logger(CourseService.name)
+
+  constructor(private reviewService: ReviewService) {}
 
   async onApplicationBootstrap(): Promise<void> {
     await this.refresh()
   }
 
   async refresh(): Promise<void> {
-    this.courses = await getMockCourses()
+    this.courses = (await getMockCourses()) as Course[]
+
+    for (const course of this.courses) {
+      const reviews = await this.reviewService.find(
+        course.courseNo,
+        course.studyProgram,
+        null,
+        false
+      )
+      if (reviews.length > 0) {
+        course.rating = findAvgRating(reviews)
+      }
+    }
+
     const fuseIndex = Fuse.createIndex(fuseOptions.keys, this.courses)
     this.fuse.setCollection(this.courses, fuseIndex)
-    console.log(`${new Date().toISOString()} -  Course data refreshed`)
+    this.logger.log('Course data refreshed')
   }
 
   findAll(): Course[] {

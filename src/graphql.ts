@@ -132,6 +132,7 @@ export class Course {
     midterm?: ExamPeriod;
     final?: ExamPeriod;
     sections: Section[];
+    rating?: number;
 }
 
 export abstract class IQuery {
