@@ -161,20 +161,6 @@ export class Review {
     myInteraction?: Interaction;
 }
 
-export class TimetableCourse {
-    courseNo: string;
-    sectionNo: string;
-    isVisible: boolean;
-}
-
-export class Timetable {
-    semester: string;
-    academicYear: string;
-    studyProgram: StudyProgram;
-    name: string;
-    courses: TimetableCourse[];
-}
-
 export class User {
     _id: string;
     email: string;
