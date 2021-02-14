@@ -59,11 +59,12 @@ export class ReviewService {
   async find(
     courseNo: string,
     studyProgram: StudyProgram,
-    userId: string
+    userId: string,
+    filterEmpty: boolean
   ): Promise<Review[]> {
     const reviews = await this.reviewModel.find({ courseNo, studyProgram })
     return reviews
-      .filter((review) => review.content)
+      .filter((review) => !filterEmpty || review.content)
       .map((rawReview) => this.transformReview(rawReview, userId))
   }
 
