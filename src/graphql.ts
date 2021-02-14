@@ -132,7 +132,7 @@ export class Course {
     midterm?: ExamPeriod;
     final?: ExamPeriod;
     sections: Section[];
-    rating?: number;
+    rating?: string;
 }
 
 export abstract class IQuery {
