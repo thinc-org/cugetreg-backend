@@ -31,10 +31,10 @@ export function lowerBound<T>(
  * Calculates the average rating of all reviews in an array.
  * @param reviews Array of reviews to calculate average rating
  */
-export function findAvgRating(reviews: Review[]): number {
+export function findAvgRating(reviews: Review[]): string {
   let total = 0
   for (const review of reviews) {
     total += review.rating
   }
-  return total / (2 * reviews.length)
+  return (total / (2 * reviews.length)).toFixed(2)
 }
