@@ -1,8 +1,14 @@
+type GoogleCredential {
+  accessToken: String
+  expiresIn: Date
+}
+
 type User {
   _id: String!
   email: String!
   firstName: String
   lastName: String
+  google: GoogleCredential!
 }
 
 type Query {

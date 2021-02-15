@@ -162,9 +162,15 @@ export class Review {
     myInteraction?: Interaction;
 }
 
+export class GoogleCredential {
+    accessToken?: string;
+    expiresIn?: Date;
+}
+
 export class User {
     _id: string;
     email: string;
     firstName?: string;
     lastName?: string;
+    google: GoogleCredential;
 }
