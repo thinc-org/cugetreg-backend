@@ -21,15 +21,21 @@ interface GoogleOAuthResponse {
   id_token: string
 }
 
-interface UserInfo {
-  family_name: string
-  name: string
-  picture: string
-  locale: string
-  email: string
-  given_name: string
-  id: string
-  verified_email: boolean
+interface IDTokenPayload {
+  iss: string // Always https://accounts.google.com or accounts.google.com
+  azp: string // CU Get Reg's client id
+  aud: string // CU Get Reg's client id
+  sub: string // Unique Google account's identifier
+  email: string // User's email address
+  email_verified: boolean // True if the user's e-mail address has been verified; otherwise false
+  at_hash: string // Access token hash
+  name: string // The user's full name, in a displayable form
+  picture: string // The URL of the user's profile picture
+  given_name: string // The user's given name or first name
+  family_name: string // The user's surname or last name
+  locale: string // The user's locale
+  iat: number // The time the ID token was issued
+  exp: number // Expiration time on or after which the ID token must not be accepted
 }
 
 @Injectable()
@@ -69,13 +75,9 @@ export class AuthService {
         })
         .toPromise()
 
-      const { data: userInfo } = await this.httpService
-        .get<UserInfo>('https://www.googleapis.com/userinfo/v2/me', {
-          headers: {
-            Authorization: `Bearer ${googleResponse.access_token}`,
-          },
-        })
-        .toPromise()
+      const userInfo = this.jwtService.decode(
+        googleResponse.id_token
+      ) as IDTokenPayload
 
       const user = await this.updateOrCreateUser(userInfo, googleResponse)
 
@@ -104,7 +106,7 @@ export class AuthService {
   }
 
   private async updateOrCreateUser(
-    userInfo: UserInfo,
+    userInfo: IDTokenPayload,
     googleResponse: GoogleOAuthResponse
   ): Promise<UserDocument> {
     const expiredDate = new Date()
@@ -117,7 +119,7 @@ export class AuthService {
         firstName: userInfo.given_name,
         lastName: userInfo.family_name,
         google: {
-          googleId: userInfo.id,
+          googleId: userInfo.sub,
           accessToken: googleResponse.access_token,
           expiresIn: expiredDate,
           refreshToken: googleResponse.refresh_token,
