@@ -1,6 +1,6 @@
 # CU Get Reg API Documentation
 
-Last updated: 2/2/2021
+Last updated: 2/16/2021
 
 ## Table of contents
 
