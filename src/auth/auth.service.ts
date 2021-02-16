@@ -12,11 +12,14 @@ import { serializeError } from 'serialize-error'
 import { UserDocument } from 'src/schemas/user.schema'
 import { AccessTokenDTO } from 'src/graphql'
 
-interface GoogleOAuthResponse {
+interface AccessToken {
   access_token: string
   expires_in: number
   scope: string
   token_type: string
+}
+
+interface GoogleVerifyResponse extends AccessToken {
   refresh_token: string
   id_token: string
 }
@@ -66,7 +69,7 @@ export class AuthService {
 
     try {
       const { data: googleResponse } = await this.httpService
-        .post<GoogleOAuthResponse>('https://oauth2.googleapis.com/token', {
+        .post<GoogleVerifyResponse>('https://oauth2.googleapis.com/token', {
           client_id: clientId,
           client_secret: clientSecret,
           code: code,
@@ -86,8 +89,32 @@ export class AuthService {
       return { accessToken, _id: user._id, firstName: user.firstName }
     } catch (err) {
       throw new ServiceUnavailableException({
-        reason: 'OAUTH_ERROR',
+        reason: 'GOOGLE_OAUTH_ERROR',
         message: 'Unknown error during OAuth token verification',
+        error: serializeError(err),
+      })
+    }
+  }
+
+  async refreshGoogleToken(refreshToken: string) {
+    const clientId = this.configService.get<string>('googleOAuthId')
+    const clientSecret = this.configService.get<string>('googleOAuthSecret')
+
+    try {
+      const { data: accessTokenInfo } = await this.httpService
+        .post<AccessToken>('https://oauth2.googleapis.com/token', {
+          client_id: clientId,
+          client_secret: clientSecret,
+          refresh_token: refreshToken,
+          grant_type: 'refresh_token',
+        })
+        .toPromise()
+
+      return accessTokenInfo
+    } catch (err) {
+      throw new ServiceUnavailableException({
+        reason: 'GOOGLE_REFRESH_ERROR',
+        message: `Unknown error while refreshing Google's accessToken`,
         error: serializeError(err),
       })
     }
@@ -107,7 +134,7 @@ export class AuthService {
 
   private async updateOrCreateUser(
     userInfo: IDTokenPayload,
-    googleResponse: GoogleOAuthResponse
+    googleResponse: GoogleVerifyResponse
   ): Promise<UserDocument> {
     const expiredDate = new Date()
     expiredDate.setSeconds(expiredDate.getSeconds() + googleResponse.expires_in)
