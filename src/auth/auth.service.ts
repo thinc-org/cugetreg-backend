@@ -17,6 +17,7 @@ interface GoogleOAuthResponse {
   expires_in: number
   scope: string
   token_type: string
+  refresh_token: string
   id_token: string
 }
 
@@ -58,7 +59,7 @@ export class AuthService {
     const clientSecret = this.configService.get<string>('googleOAuthSecret')
 
     try {
-      const verifyResponse = await this.httpService
+      const { data: googleResponse } = await this.httpService
         .post<GoogleOAuthResponse>('https://oauth2.googleapis.com/token', {
           client_id: clientId,
           client_secret: clientSecret,
@@ -71,12 +72,12 @@ export class AuthService {
       const { data: userInfo } = await this.httpService
         .get<UserInfo>('https://www.googleapis.com/userinfo/v2/me', {
           headers: {
-            Authorization: `Bearer ${verifyResponse.data?.access_token}`,
+            Authorization: `Bearer ${googleResponse.access_token}`,
           },
         })
         .toPromise()
 
-      const user = await this.findOrCreateUser(userInfo)
+      const user = await this.updateOrCreateUser(userInfo, googleResponse)
 
       const accessToken = this.generateAccessToken(user)
 
@@ -84,7 +85,7 @@ export class AuthService {
     } catch (err) {
       throw new ServiceUnavailableException({
         reason: 'OAUTH_ERROR',
-        message: 'Unknown error during OAuth token verification request',
+        message: 'Unknown error during OAuth token verification',
         error: serializeError(err),
       })
     }
@@ -102,19 +103,36 @@ export class AuthService {
     return accessToken
   }
 
-  private async findOrCreateUser(userInfo: UserInfo): Promise<UserDocument> {
+  private async updateOrCreateUser(
+    userInfo: UserInfo,
+    googleResponse: GoogleOAuthResponse
+  ): Promise<UserDocument> {
+    const expiredDate = new Date()
+    expiredDate.setSeconds(expiredDate.getSeconds() + googleResponse.expires_in)
+
     let user = await this.userModel.findOne({ email: userInfo.email })
     if (!user) {
       user = new this.userModel({
         email: userInfo.email,
         firstName: userInfo.given_name,
         lastName: userInfo.family_name,
-        googleId: userInfo.id,
-        timetables: [],
+        google: {
+          googleId: userInfo.id,
+          accessToken: googleResponse.access_token,
+          expiresIn: expiredDate,
+          refreshToken: googleResponse.refresh_token,
+        },
       })
-      await user.save()
+    } else {
+      user.google = {
+        googleId: user.google.googleId,
+        accessToken: googleResponse.access_token,
+        expiresIn: expiredDate,
+        refreshToken: googleResponse.refresh_token,
+      }
     }
 
+    await user.save()
     return user
   }
 }
