@@ -25,7 +25,7 @@ Redirect to `https://accounts.google.com/o/oauth2/v2/auth` with the following qu
 | client_id | Must be set to `297489937770-g4p9q7jsmgaddbl074tbn9b6j2ba2kf4.apps.googleusercontent.com` (staging). |
 | redirect_uri | Your frontend's callback URI which can handle the code in the query string and send to backend for verification. For Render PR Deployments, this value must be set to backend's callback URI which is `https://cugetreg.com/api/auth/callback` (production) or `https://<STAGING_HOST>/api/auth/callback` (staging).
 | response_type | Must be set to `code`. |
-| scope | Must be set to `https://www.googleapis.com/auth/userinfo.profile+https://www.googleapis.com/auth/userinfo.email`. |
+| scope | Must be set to `https://www.googleapis.com/auth/userinfo.profile+https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/drive.appdata`. |
 | access_type | Must be set to `offline`. |
 | include_granted_scopes | Should be `true`. See [Incremental Authorization](https://developers.google.com/identity/protocols/oauth2/web-server#incrementalAuth) |.
 | state | Only set this parameter for PR Deployments. Use this parameter to set the `returnURI` so backend knows where to redirect after Google sends the authorization code to backend. For example: `returnURI=https://cugetreg-pr-x.render.com/auth/callback` |
