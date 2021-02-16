@@ -11,16 +11,18 @@ export default () => ({
   isProduction: process.env.IS_PRODUCTION === 'true',
 })
 
+const requiredConfigs = [
+  'googleOAuthId',
+  'googleOAuthSecret',
+  'jwtSecret',
+  'refreshSecret',
+]
+
 export function validateConfig(configService: ConfigService): void {
   const logger = new Logger('ConfigService')
-  const config = {
-    googleOAuthId: configService.get<string>('googleOAuthId'),
-    googleOAuthSecret: configService.get<string>('googleOAuthSecret'),
-    jwtSecret: configService.get<string>('jwtSecret'),
-    refreshSecret: configService.get<string>('refreshSecret'),
-  }
-  for (const key in config) {
-    if (!config[key]) {
+  for (const key of requiredConfigs) {
+    const value = configService.get(key)
+    if (!value) {
       logger.error(`Config "${key}" is undefined.`)
     }
   }
