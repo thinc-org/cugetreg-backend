@@ -6,6 +6,7 @@ Last updated: 2/2/2021
 
 1. [GraphQL Queries and Mutations](#graphql-queries-and-mutations)
 2. [Authentication Flow](#authentication-flow)
+3. [Retrieving Google's Access Token](#retrieving-google's-access-token)
 
 ## GraphQL Queries and Mutations
 
@@ -67,3 +68,9 @@ The verify mutation returns the following response
 | firstName | The user's first name |
 
 Store the accessToken somewhere safe and include this token in the header of every request.
+
+## Retrieving Google's Access Token
+
+To access Google Drive API for storing timetable data, you need the user's access token. Access token can be retrieved by calling `me` GraphQL query in `google.accessToken` field. The access token's expire date is stored in `google.expiresIn` field. To refresh the token, simply call `me` query again as backend already handles refreshing access tokens if token is already expired.
+
+_Note: Don't forget to put our own JWT access token in the header to call `me` query._
