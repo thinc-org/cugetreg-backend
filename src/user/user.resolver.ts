@@ -14,10 +14,4 @@ export class UserResolver {
   async getCurrentUser(@CurrentUser() userId: string): Promise<UserDocument> {
     return this.userService.getUser(userId)
   }
-
-  // for dev only
-  @Query('users')
-  async getAllUsers(): Promise<UserDocument[]> {
-    return this.userService.getAllUsers()
-  }
 }
