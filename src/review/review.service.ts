@@ -1,11 +1,13 @@
 import {
   ConflictException,
+  forwardRef,
   HttpService,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { StudyProgram } from '@thinc-org/chula-courses'
+import { Semester, StudyProgram } from '@thinc-org/chula-courses'
 import { Model, Types } from 'mongoose'
 import { Interaction, ReviewDocument } from 'src/schemas/review.schema'
 import {
@@ -14,12 +16,15 @@ import {
   StudyProgram as GraphQLStudyProgram,
   Interaction as GraphQLInteraction,
 } from 'src/graphql'
+import { CourseService } from 'src/course/course.service'
 
 @Injectable()
 export class ReviewService {
   constructor(
     @InjectModel('review') private reviewModel: Model<ReviewDocument>,
-    private airtableClient: HttpService
+    private airtableClient: HttpService,
+    @Inject(forwardRef(() => CourseService))
+    private courseService: CourseService
   ) {}
 
   async create(
@@ -55,6 +60,28 @@ export class ReviewService {
       content,
       status: 'PENDING',
     })
+
+    const abbrName = this.courseService.findOne(
+      courseNo,
+      semester as Semester,
+      academicYear,
+      studyProgram
+    ).abbrName
+
+    await this.airtableClient
+      .post('/', {
+        fields: {
+          reviewId: newReview._id,
+          status: 'Awaiting approval',
+          rating: `${rating / 2}/5`,
+          course: `${courseNo} ${abbrName}`,
+          semester,
+          studyProgram,
+          academicYear,
+          content,
+        },
+      })
+      .toPromise()
 
     return this.transformReview(await newReview.save(), userId)
   }
