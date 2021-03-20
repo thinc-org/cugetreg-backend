@@ -53,6 +53,7 @@ export class ReviewService {
       studyProgram,
       rating,
       content,
+      status: 'PENDING',
     })
 
     return this.transformReview(await newReview.save(), userId)
@@ -66,9 +67,14 @@ export class ReviewService {
   ): Promise<Review[]> {
     const reviews = await this.reviewModel.find({ courseNo, studyProgram })
     return reviews
-      .filter((review) => !filterEmpty || review.content)
+      .filter(
+        (review) =>
+          review.status === 'ACCEPTED' && (!filterEmpty || review.content)
+      )
       .map((rawReview) => this.transformReview(rawReview, userId))
   }
+
+  // TODO: hide reviews?
 
   async remove(reviewId: string, userId: string): Promise<Review> {
     const review = await this.reviewModel.findOneAndDelete({

@@ -29,6 +29,7 @@ export const ReviewSchema = new mongoose.Schema({
 })
 
 export type Interaction = 'L' | 'D'
+export type ReviewStatus = 'PENDING' | 'ACCEPTED' | 'HIDDEN'
 
 export interface InteractionDocument extends mongoose.Document {
   userId: mongoose.Types.ObjectId
@@ -44,4 +45,5 @@ export interface ReviewDocument extends mongoose.Document {
   studyProgram: StudyProgram
   content?: string
   interactions: mongoose.Types.DocumentArray<InteractionDocument>
+  status: ReviewStatus
 }
