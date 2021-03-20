@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  HttpService,
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
@@ -17,7 +18,8 @@ import {
 @Injectable()
 export class ReviewService {
   constructor(
-    @InjectModel('review') private reviewModel: Model<ReviewDocument>
+    @InjectModel('review') private reviewModel: Model<ReviewDocument>,
+    private airtableClient: HttpService
   ) {}
 
   async create(

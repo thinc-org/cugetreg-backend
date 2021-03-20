@@ -9,6 +9,7 @@ export default () => ({
   jwtSecret: process.env.JWT_SECRET,
   refreshSecret: process.env.REFRESH_SECRET,
   isProduction: process.env.IS_PRODUCTION === 'true',
+  airtableApiKey: process.env.AIRTABLE_API_KEY,
 })
 
 const requiredConfigs = [
@@ -16,6 +17,7 @@ const requiredConfigs = [
   'googleOAuthSecret',
   'jwtSecret',
   'refreshSecret',
+  'airtableApiKey',
 ]
 
 export function validateConfig(configService: ConfigService): void {
