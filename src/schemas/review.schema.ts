@@ -6,6 +6,12 @@ export const InteractionSchema = new mongoose.Schema({
   type: { type: String, required: true, enum: ['L', 'D'] },
 })
 
+/**
+ * Review statuses:
+ * - PENDING
+ * - ACCEPTED
+ * - HIDDEN
+ */
 export const ReviewSchema = new mongoose.Schema({
   ownerId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -19,6 +25,7 @@ export const ReviewSchema = new mongoose.Schema({
   rating: { type: Number, required: true },
   content: { type: String },
   interactions: [InteractionSchema],
+  status: { type: String, default: 'PENDING' },
 })
 
 export type Interaction = 'L' | 'D'
