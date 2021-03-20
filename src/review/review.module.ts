@@ -1,9 +1,10 @@
-import { HttpModule, Module } from '@nestjs/common'
+import { forwardRef, HttpModule, Module } from '@nestjs/common'
 import { ReviewService } from './review.service'
 import { ReviewResolver } from './review.resolver'
 import { MongooseModule } from '@nestjs/mongoose'
 import { ReviewSchema } from 'src/schemas/review.schema'
-import { ConfigModule, ConfigService } from '@nestjs/config'
+import { ConfigService } from '@nestjs/config'
+import { CourseModule } from 'src/course/course.module'
 
 @Module({
   imports: [
@@ -17,8 +18,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
           )}`,
         },
       }),
-      inject: [ConfigModule],
+      inject: [ConfigService],
     }),
+    forwardRef(() => CourseModule),
   ],
   providers: [ReviewResolver, ReviewService],
   exports: [ReviewService],

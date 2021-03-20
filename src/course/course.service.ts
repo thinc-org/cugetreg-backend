@@ -1,4 +1,6 @@
 import {
+  forwardRef,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -37,7 +39,10 @@ export class CourseService implements OnApplicationBootstrap {
   private fuse = new Fuse([] as Course[], fuseOptions)
   private logger = new Logger(CourseService.name)
 
-  constructor(private reviewService: ReviewService) {}
+  constructor(
+    @Inject(forwardRef(() => ReviewService))
+    private reviewService: ReviewService
+  ) {}
 
   async onApplicationBootstrap(): Promise<void> {
     await this.refresh()
