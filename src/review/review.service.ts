@@ -4,6 +4,7 @@ import {
   HttpService,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
@@ -96,7 +97,7 @@ export class ReviewService {
     return reviews
       .filter(
         (review) =>
-          review.status === 'ACCEPTED' && (!filterEmpty || review.content)
+          review.status === 'APPROVED' && (!filterEmpty || review.content)
       )
       .map((rawReview) => this.transformReview(rawReview, userId))
   }
@@ -115,6 +116,28 @@ export class ReviewService {
       })
     }
     return this.transformReview(review, userId)
+  }
+
+  async approve(reviewId: string): Promise<ReviewDocument> {
+    const review = await this.reviewModel.findByIdAndUpdate(reviewId, {
+      $set: {
+        status: 'APPROVED',
+      },
+    })
+    if (!review) {
+      const logger = new Logger('ReviewApproval')
+      logger.error(`Error approving review ${reviewId}: Review not found`)
+    }
+    return review
+  }
+
+  async reject(reviewId: string): Promise<ReviewDocument> {
+    const review = await this.reviewModel.findByIdAndDelete(reviewId)
+    if (!review) {
+      const logger = new Logger('ReviewApproval')
+      logger.error(`Error rejecting review ${reviewId}: Review not found`)
+    }
+    return review
   }
 
   async setInteraction(

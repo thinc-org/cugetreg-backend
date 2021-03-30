@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { ReviewSchema } from 'src/schemas/review.schema'
 import { ConfigService } from '@nestjs/config'
 import { CourseModule } from 'src/course/course.module'
+import { ReviewCron } from './review.cron'
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { CourseModule } from 'src/course/course.module'
     }),
     forwardRef(() => CourseModule),
   ],
-  providers: [ReviewResolver, ReviewService],
+  providers: [ReviewResolver, ReviewService, ReviewCron],
   exports: [ReviewService],
 })
 export class ReviewModule {}
