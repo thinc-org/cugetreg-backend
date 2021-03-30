@@ -17,7 +17,8 @@ export class ReviewCron {
     private reviewService: ReviewService
   ) {}
 
-  @Cron('*/10 * * * * *')
+  // Every hour
+  @Cron('0 0 * * * *')
   async pullAirtable() {
     try {
       const { data } = await this.airtableClient
