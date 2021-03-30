@@ -29,7 +29,7 @@ export const ReviewSchema = new mongoose.Schema({
 })
 
 export type Interaction = 'L' | 'D'
-export type ReviewStatus = 'PENDING' | 'ACCEPTED' | 'HIDDEN'
+export type ReviewStatus = 'PENDING' | 'APPROVED' | 'HIDDEN'
 
 export interface InteractionDocument extends mongoose.Document {
   userId: mongoose.Types.ObjectId

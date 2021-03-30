@@ -13,6 +13,7 @@ import configuration from './config/configuration'
 import { GraphQLExpressContext } from './common/types/context.type'
 import { GraphQLError } from 'graphql'
 import { ReviewModule } from './review/review.module'
+import { ScheduleModule } from '@nestjs/schedule'
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ReviewModule } from './review/review.module'
     UserModule,
     AuthModule,
     ReviewModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
