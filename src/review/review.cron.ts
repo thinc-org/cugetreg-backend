@@ -29,24 +29,28 @@ export class ReviewCron {
           },
         })
         .toPromise()
-
-      const promises: Promise<ReviewDocument>[] = []
-      for (const record of data.records) {
-        if (record.fields.status === 'Approved') {
-          promises.push(this.reviewService.approve(record.fields.reviewId))
-        } else {
-          promises.push(this.reviewService.reject(record.fields.reviewId))
+      if (data.records.length > 0) {
+        const promises: Promise<ReviewDocument>[] = []
+        for (const record of data.records) {
+          if (record.fields.status === 'Approved') {
+            promises.push(this.reviewService.approve(record.fields.reviewId))
+          } else {
+            promises.push(this.reviewService.reject(record.fields.reviewId))
+          }
         }
-      }
-      await Promise.allSettled(promises)
+        await Promise.allSettled(promises)
 
-      await this.airtableClient
-        .delete('/', {
-          params: {
-            records: data.records.map((record) => record.id),
-          },
-        })
-        .toPromise()
+        await this.airtableClient
+          .delete('/', {
+            params: {
+              records: data.records.map((record) => record.id),
+            },
+          })
+          .toPromise()
+      }
+      this.logger.log(
+        `Airtable cronjob finished: ${data.records.length} reviews changed.`
+      )
     } catch (err) {
       this.logger.error({
         message: 'Error while sending request to Airtable',
