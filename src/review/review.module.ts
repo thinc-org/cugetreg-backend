@@ -12,7 +12,7 @@ import { ReviewCron } from './review.cron'
     MongooseModule.forFeature([{ name: 'review', schema: ReviewSchema }]),
     HttpModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
-        baseURL: 'https://api.airtable.com/v0/appDUOJ3KIOgYiYZy/Reviews',
+        baseURL: configService.get<string>('airtableReviewUrl'),
         headers: {
           Authorization: `Bearer ${configService.get<string>(
             'airtableApiKey'
