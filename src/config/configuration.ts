@@ -9,6 +9,7 @@ export default () => ({
   jwtSecret: process.env.JWT_SECRET,
   refreshSecret: process.env.REFRESH_SECRET,
   isProduction: process.env.IS_PRODUCTION === 'true',
+  airtableReviewUrl: process.env.AIRTABLE_REVIEW_URL,
   airtableApiKey: process.env.AIRTABLE_API_KEY,
 })
 
@@ -17,6 +18,7 @@ const requiredConfigs = [
   'googleOAuthSecret',
   'jwtSecret',
   'refreshSecret',
+  'airtableReviewUrl',
   'airtableApiKey',
 ]
 
