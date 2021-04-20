@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   HttpService,
   Injectable,
   ServiceUnavailableException,
@@ -37,6 +38,7 @@ interface IDTokenPayload {
   given_name: string // The user's given name or first name
   family_name: string // The user's surname or last name
   locale: string // The user's locale
+  hd: string // User's hosted domain (G Suite)
   iat: number // The time the ID token was issued
   exp: number // Expiration time on or after which the ID token must not be accepted
 }
@@ -81,6 +83,13 @@ export class AuthService {
       const userInfo = this.jwtService.decode(
         googleResponse.id_token
       ) as IDTokenPayload
+
+      if (userInfo.hd != 'student.chula.ac.th') {
+        throw new ForbiddenException({
+          reason: 'CHULA_ACCOUNT_ONLY',
+          message: 'Only @student.chula.ac.th accounts are allowed',
+        })
+      }
 
       const user = await this.updateOrCreateUser(userInfo, googleResponse)
 
