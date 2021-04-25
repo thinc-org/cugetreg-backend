@@ -1,11 +1,17 @@
-version: '3.8'
+version: '3.9'
 
 services:
   mongo:
-    container_name: cgr-mongo
-    image: mongo
+    image: mongo:latest
+    container_name: cugetreg-mongo
     restart: unless-stopped
     volumes:
       - ./volumes/mongo:/data/db
     ports:
       - 27017:27017
+    networks:
+      - cugetreg-network
+
+networks:
+  cugetreg-network:
+    name: cugetreg-network

@@ -1,0 +1,23 @@
+# Packages
+node_modules
+
+# Local Build files
+dist
+
+# Local setting
+.git
+.github
+.vscode
+dockerfile
+docker-compose.yaml
+.dockerignore
+.prettierrc
+.gitignore
+
+# Test files
+**/*.test.ts
+**/*.test.js
+test
+
+# Other files
+.DS_Store
