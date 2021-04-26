@@ -13,13 +13,12 @@ async function bootstrap() {
   const port = configService.get<number>('port')
   const isProduction = configService.get<boolean>('isProduction')
 
-  if (!isProduction) {
-    app.enableCors({
-      origin: '*',
-    })
-  }
+  const origin = isProduction ? 'cugetreg.saenyakorn.dev' : '*'
+  app.enableCors({ origin: origin })
 
-  app.useGlobalFilters(new HttpExceptionFilter())
+  app.setGlobalPrefix('api/v1')
+
+  // app.useGlobalFilters(new HttpExceptionFilter())
 
   await app.listen(port, () => {
     console.log(`App listening on port ${port}`)
