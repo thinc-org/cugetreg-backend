@@ -16,9 +16,7 @@ async function bootstrap() {
   const origin = isProduction ? 'cugetreg.saenyakorn.dev' : '*'
   app.enableCors({ origin: origin })
 
-  app.setGlobalPrefix('api/v1')
-
-  // app.useGlobalFilters(new HttpExceptionFilter())
+  app.useGlobalFilters(new HttpExceptionFilter())
 
   await app.listen(port, () => {
     console.log(`App listening on port ${port}`)
