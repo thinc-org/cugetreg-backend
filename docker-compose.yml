@@ -1,6 +1,18 @@
 version: '3.9'
 
 services:
+  cugetreg-backend:
+    build: ./
+    image: cugetreg-backend:latest
+    container_name: cugetreg-backend
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    env_file:
+      - ./.env.production
+    networks:
+      - cugetreg-network
+
   mongo:
     image: mongo:latest
     container_name: cugetreg-mongo

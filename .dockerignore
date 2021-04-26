@@ -14,6 +14,9 @@ docker-compose.yaml
 .prettierrc
 .gitignore
 
+# Local volumes
+volumes
+
 # Test files
 **/*.test.ts
 **/*.test.js
