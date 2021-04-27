@@ -44,6 +44,7 @@ jobs:
         env:
           PORT: ${{ secrets.PORT }}
           MONGO_URI: ${{ secrets.MONGO_URI }}
+          ORIGIN: ${{ secrets.ORIGIN }}
           GOOGLE_OAUTH_ID: ${{ secrets.GOOGLE_OAUTH_ID }}
           GOOGLE_OAUTH_SECRET: ${{ secrets.GOOGLE_OAUTH_SECRET }}
           AIRTABLE_REVIEW_URL: ${{ secrets.AIRTABLE_REVIEW_URL }}
