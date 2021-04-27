@@ -11,9 +11,8 @@ async function bootstrap() {
   validateConfig(configService)
 
   const port = configService.get<number>('port')
-  const isProduction = configService.get<boolean>('isProduction')
+  const origin = configService.get<string>('origin')
 
-  const origin = isProduction ? 'cugetreg.saenyakorn.dev' : '*'
   app.enableCors({ origin: origin })
 
   app.useGlobalFilters(new HttpExceptionFilter())
