@@ -2,7 +2,7 @@ name: Deploy to Production
 
 on:
   push:
-    branches: [cicd]
+    branches: [master]
 
 jobs:
   deploy:
