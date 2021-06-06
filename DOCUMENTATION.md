@@ -10,7 +10,104 @@ Last updated: 2/16/2021
 
 ## GraphQL Queries and Mutations
 
-WIP
+### **Course**
+
+#### Input Types
+
+```graphql
+input FilterInput {
+  keyword: String
+  genEdTypes: [GenEdType!]
+  dayOfWeeks: [DayOfWeek!]
+  limit: Int
+  offset: Int
+}
+
+input CourseGroupInput {
+  semester: String!
+  academicYear: String!
+  studyProgram: StudyProgram!
+}
+```
+
+#### Queries
+
+```graphql
+courses: [Course!]!
+```
+
+Returns all courses stored on backend, fetched from scraper.
+
+```graphql
+course(courseNo: String!, courseGroup: CourseGroupInput!): Course!
+```
+
+Returns a single course with given courseNo and courseGroup (semester, academicYear, and studentProgram).
+
+```graphql
+search(filter: FilterInput!, courseGroup: CourseGroupInput!): [Course!]!
+```
+
+Returns a list of courses matching the given filter.  
+Note: noConflict filter currently not implemented.
+
+### **Review**
+
+#### Input Types
+
+```graphql
+enum Interaction {
+  L
+  D
+}
+
+input CreateReviewInput {
+  rating: Int!
+  courseNo: String!
+  semester: String!
+  academicYear: String!
+  studyProgram: StudyProgram!
+  content: String
+}
+```
+
+#### Queries
+
+```graphql
+reviews(courseNo: String!, studyProgram: StudyProgram!): [Review!]!
+```
+
+Returns all reviews of the course that matches the input.
+
+#### Mutations
+
+```graphql
+createReview(createReviewInput: CreateReviewInput!): Review!
+```
+
+Creates a review with the given input. The review will have a `PENDING` status and must be approved by an admin.
+
+```graphql
+removeReview(reviewId: String!): Review!
+```
+
+Removes the review with the given `reviewId`. Only review owner can remove their own review.
+
+```graphql
+setInteraction(reviewId: String!, interaction: Interaction!): Review!
+```
+
+Likes or dislikes the given review, depending on `interaction`. To unlike or undislike, simple call the mutation again with the same interaction.
+
+### **User**
+
+#### Queries
+
+```graphql
+me: User
+```
+
+Returns the current user's info.
 
 ## Authentication Flow
 
