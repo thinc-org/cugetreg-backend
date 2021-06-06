@@ -27,6 +27,7 @@ import { ScheduleModule } from '@nestjs/schedule'
         path: join(process.cwd(), 'src/graphql.ts'),
         outputAs: 'class',
       },
+      playground: true,
       context: ({ req, res }: GraphQLExpressContext) => ({ req, res }),
       formatError: (error: GraphQLError) => {
         const graphQLFormattedError = {
