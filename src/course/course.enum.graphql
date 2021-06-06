@@ -1,0 +1,33 @@
+enum DayOfWeek {
+  MO
+  TU
+  WE
+  TH
+  FR
+  SA
+  SU
+}
+
+enum StudyProgram {
+  S
+  T
+  I
+}
+
+enum ClassType {
+  LECT
+  LAB
+  DISC
+  FWK
+  PRAC
+  IDPS
+  SMNA
+}
+
+enum GenEdType {
+  SO
+  SC
+  HU
+  IN
+  NO
+}
