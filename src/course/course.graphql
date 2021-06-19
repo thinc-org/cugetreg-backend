@@ -4,7 +4,7 @@ type Period {
 }
 
 type ExamPeriod {
-  date: Date!
+  date: String!
   period: Period!
 }
 
