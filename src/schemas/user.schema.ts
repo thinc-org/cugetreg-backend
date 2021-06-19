@@ -1,5 +1,4 @@
 import * as mongoose from 'mongoose'
-import { User } from 'src/graphql'
 
 export const GoogleCredentialSchema = new mongoose.Schema({
   googleId: { type: String, required: true },
