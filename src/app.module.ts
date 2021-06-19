@@ -22,7 +22,7 @@ import { ScheduleModule } from '@nestjs/schedule'
       load: [configuration],
     }),
     GraphQLModule.forRoot({
-      typePaths: ['./src/**/*.graphql'],
+      typePaths: ['./**/*.graphql'],
       definitions: {
         path: join(process.cwd(), 'src/graphql.ts'),
         outputAs: 'class',
@@ -46,13 +46,9 @@ import { ScheduleModule } from '@nestjs/schedule'
     CommonModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => {
-        const uri = configService.get<string>('mongoURI')
-        console.log()
-        return {
-          uri: uri,
-        }
-      },
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('mongoURI'),
+      }),
       inject: [ConfigService],
     }),
     UserModule,
