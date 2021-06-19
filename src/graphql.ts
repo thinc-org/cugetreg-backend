@@ -90,7 +90,7 @@ export class Period {
 }
 
 export class ExamPeriod {
-    date: Date;
+    date: string;
     period: Period;
 }
 
@@ -145,8 +145,6 @@ export abstract class IQuery {
     abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
 
     abstract me(): User | Promise<User>;
-
-    abstract users(): User[] | Promise<User[]>;
 }
 
 export class Review {

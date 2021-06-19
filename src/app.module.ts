@@ -46,9 +46,13 @@ import { ScheduleModule } from '@nestjs/schedule'
     CommonModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('mongoURI'),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const uri = configService.get<string>('mongoURI')
+        console.log()
+        return {
+          uri: uri,
+        }
+      },
       inject: [ConfigService],
     }),
     UserModule,
