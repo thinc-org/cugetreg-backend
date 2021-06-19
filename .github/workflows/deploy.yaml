@@ -70,8 +70,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            pwd
-            ls
             docker pull ghcr.io/thinc-org/cugetreg/cugetreg-backend:latest
             docker-compose up -d 
             if [[ "$(docker images --filter "dangling=true" -q)" == "" ]]; 
