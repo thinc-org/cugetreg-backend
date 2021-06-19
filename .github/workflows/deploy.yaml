@@ -4,6 +4,11 @@ on:
   push:
     branches: [master]
 
+permissions:
+  contents: read
+  pull-requests: write
+  repository-projects: read
+
 jobs:
   deploy:
     strategy:
@@ -41,22 +46,22 @@ jobs:
           tags: ghcr.io/thinc-org/cugetreg/cugetreg-backend:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
-        env:
-          PORT: ${{ secrets.PORT }}
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          ORIGIN: ${{ secrets.ORIGIN }}
-          GOOGLE_OAUTH_ID: ${{ secrets.GOOGLE_OAUTH_ID }}
-          GOOGLE_OAUTH_SECRET: ${{ secrets.GOOGLE_OAUTH_SECRET }}
-          AIRTABLE_REVIEW_URL: ${{ secrets.AIRTABLE_REVIEW_URL }}
-          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          REFRESH_SECRET: ${{ secrets.REFRESH_SECRET }}
-          IS_PRODUCTION: true
+          context: .
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+      - name: Connect SSLVPN
+        uses: thinc-org/openfortivpn-action@master
+        with:
+          host: ${{ secrets.SSLVPN_HOST }}
+          username: ${{ secrets.SSLVPN_USERNAME }}
+          password: ${{ secrets.SSLVPN_PASSWORD }}
+          trustedCert: ${{ secrets.SSLVPN_TRUSTED_CERT }}
 
       - name: Deploy to VM
         uses: appleboy/ssh-action@master
@@ -67,7 +72,6 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             docker pull ghcr.io/thinc-org/cugetreg/cugetreg-backend:latest
-            cd /home/sharedFolder/
             docker-compose up -d 
             if [[ "$(docker images --filter "dangling=true" -q)" == "" ]]; 
               then echo "No image with <none> tag";
