@@ -21,26 +21,32 @@ import { ScheduleModule } from '@nestjs/schedule'
       isGlobal: true,
       load: [configuration],
     }),
-    GraphQLModule.forRoot({
-      typePaths: ['./**/*.graphql'],
-      definitions: {
-        path: join(process.cwd(), 'src/graphql.ts'),
-        outputAs: 'class',
-      },
-      playground: true,
-      context: ({ req, res }: GraphQLExpressContext) => ({ req, res }),
-      formatError: (error: GraphQLError) => {
-        const graphQLFormattedError = {
-          message:
-            error?.extensions?.exception?.response?.message || error.message,
-          path: error.path,
-          locations: error.locations,
-          reason: error?.extensions?.exception?.response?.reason,
-          status: error?.extensions?.exception?.status,
-          exception: error?.extensions?.exception,
-        }
-        return graphQLFormattedError
-      },
+    GraphQLModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        typePaths: ['./**/*.graphql'],
+        definitions: {
+          path: join(process.cwd(), 'src/graphql.ts'),
+          outputAs: 'class',
+        },
+        playground: true,
+        cors: {
+          origin: configService.get<string>('origin'),
+        },
+        context: ({ req, res }: GraphQLExpressContext) => ({ req, res }),
+        formatError: (error: GraphQLError) => {
+          const graphQLFormattedError = {
+            message:
+              error?.extensions?.exception?.response?.message || error.message,
+            path: error.path,
+            locations: error.locations,
+            reason: error?.extensions?.exception?.response?.reason,
+            status: error?.extensions?.exception?.status,
+            exception: error?.extensions?.exception,
+          }
+          return graphQLFormattedError
+        },
+      }),
+      inject: [ConfigService],
     }),
     CourseModule,
     CommonModule,
