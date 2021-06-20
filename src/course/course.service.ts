@@ -45,6 +45,7 @@ export class CourseService implements OnApplicationBootstrap {
   }
 
   async refresh(): Promise<void> {
+    this.logger.log(`Fetching courses...`)
     this.courses = (await getCourses()) as Course[]
 
     for (const course of this.courses) {
