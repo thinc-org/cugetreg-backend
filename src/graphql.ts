@@ -13,7 +13,9 @@ export enum DayOfWeek {
     TH = "TH",
     FR = "FR",
     SA = "SA",
-    SU = "SU"
+    SU = "SU",
+    IA = "IA",
+    AR = "AR"
 }
 
 export enum StudyProgram {
@@ -29,7 +31,15 @@ export enum ClassType {
     FWK = "FWK",
     PRAC = "PRAC",
     IDPS = "IDPS",
-    SMNA = "SMNA"
+    SMNA = "SMNA",
+    STU = "STU",
+    IA = "IA",
+    OTHER = "OTHER",
+    IDVS = "IDVS",
+    AR = "AR",
+    CLIN = "CLIN",
+    TUT = "TUT",
+    REFL = "REFL"
 }
 
 export enum GenEdType {

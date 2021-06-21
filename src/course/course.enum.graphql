@@ -6,6 +6,8 @@ enum DayOfWeek {
   FR
   SA
   SU
+  IA
+  AR
 }
 
 enum StudyProgram {
@@ -22,6 +24,15 @@ enum ClassType {
   PRAC
   IDPS
   SMNA
+  STU
+  "L/T"
+  IA
+  OTHER
+  IDVS
+  AR
+  CLIN
+  TUT
+  REFL
 }
 
 enum GenEdType {
