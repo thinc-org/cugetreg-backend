@@ -29,6 +29,7 @@ import { ScheduleModule } from '@nestjs/schedule'
           outputAs: 'class',
         },
         playground: true,
+        introspection: true,
         cors: {
           origin: configService.get<string>('origin'),
         },
