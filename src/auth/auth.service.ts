@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
   HttpService,
   Injectable,
   ServiceUnavailableException,
@@ -97,6 +98,9 @@ export class AuthService {
 
       return { accessToken, _id: user._id, firstName: user.firstName }
     } catch (err) {
+      if (err instanceof HttpException) {
+        throw err
+      }
       throw new ServiceUnavailableException({
         reason: 'GOOGLE_OAUTH_ERROR',
         message: 'Unknown error during OAuth token verification',
