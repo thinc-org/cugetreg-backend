@@ -110,7 +110,7 @@ export class Capacity {
 }
 
 export class Class {
-    type: ClassType;
+    type: string;
     dayOfWeek?: DayOfWeek;
     period?: Period;
     building?: string;

@@ -1393,13 +1393,12 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@thinc-org/chula-courses@1.1.6":
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/@thinc-org/chula-courses/-/chula-courses-1.1.6.tgz#41fe027acaf74d4d02e93c949a0adbfce0570153"
-  integrity sha512-79dTxhWQx8s+H03uSWczCJAJLLuKZY8f8cpe45bxRNbxEB0Ad5ZrjlG71iwURBm6FH7Fc5W4b8YTQIXd+x6qMw==
+"@thinc-org/chula-courses@^1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@thinc-org/chula-courses/-/chula-courses-1.1.9.tgz#b1b0b7ffaee45f7bf338ec854d8750e101a02b69"
+  integrity sha512-SoKScqX/qtRREZNNYIZMA85Pw0rAzc/saWcAOP6s+hj58awre4YH5PLp4rLfT2dHA0H4MzGIMrsULm45PS/Iow==
   dependencies:
     axios "^0.21.1"
-    fs "^0.0.1-security"
 
 "@tootallnate/once@1":
   version "1.1.2"
@@ -4454,11 +4453,6 @@ fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
   integrity sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
-
-fs@^0.0.1-security:
-  version "0.0.1-security"
-  resolved "https://registry.yarnpkg.com/fs/-/fs-0.0.1-security.tgz#8a7bd37186b6dddf3813f23858b57ecaaf5e41d4"
-  integrity sha1-invTcYa23d84E/I4WLV+yq9eQdQ=
 
 fsevents@^2.1.2, fsevents@~2.3.1:
   version "2.3.1"
