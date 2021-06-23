@@ -14,7 +14,7 @@ type Capacity {
 }
 
 type Class {
-  type: ClassType!
+  type: String!
   dayOfWeek: DayOfWeek
   period: Period
   building: String
