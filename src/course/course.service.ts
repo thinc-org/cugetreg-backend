@@ -6,11 +6,7 @@ import {
   NotFoundException,
   OnApplicationBootstrap,
 } from '@nestjs/common'
-import {
-  getMockCourses,
-  Semester,
-  StudyProgram,
-} from '@thinc-org/chula-courses'
+import { getCourses, Semester, StudyProgram } from '@thinc-org/chula-courses'
 import Fuse from 'fuse.js'
 import { Course } from 'src/common/types/course.type'
 import { CourseGroupInput, FilterInput } from 'src/graphql'
@@ -49,7 +45,8 @@ export class CourseService implements OnApplicationBootstrap {
   }
 
   async refresh(): Promise<void> {
-    this.courses = (await getMockCourses()) as Course[]
+    this.logger.log(`Fetching courses...`)
+    this.courses = (await getCourses()) as Course[]
 
     for (const course of this.courses) {
       const reviews = await this.reviewService.find(
@@ -65,7 +62,7 @@ export class CourseService implements OnApplicationBootstrap {
 
     const fuseIndex = Fuse.createIndex(fuseOptions.keys, this.courses)
     this.fuse.setCollection(this.courses, fuseIndex)
-    this.logger.log('Course data refreshed')
+    this.logger.log(`Course data refreshed - ${this.courses.length} courses`)
   }
 
   findAll(): Course[] {

@@ -21,38 +21,41 @@ import { ScheduleModule } from '@nestjs/schedule'
       isGlobal: true,
       load: [configuration],
     }),
-    GraphQLModule.forRoot({
-      typePaths: ['./src/**/*.graphql'],
-      definitions: {
-        path: join(process.cwd(), 'src/graphql.ts'),
-        outputAs: 'class',
-      },
-      playground: true,
-      context: ({ req, res }: GraphQLExpressContext) => ({ req, res }),
-      formatError: (error: GraphQLError) => {
-        const graphQLFormattedError = {
-          message:
-            error?.extensions?.exception?.response?.message || error.message,
-          path: error.path,
-          locations: error.locations,
-          reason: error?.extensions?.exception?.response?.reason,
-          status: error?.extensions?.exception?.status,
-          exception: error?.extensions?.exception,
-        }
-        return graphQLFormattedError
-      },
+    GraphQLModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        typePaths: ['./**/*.graphql'],
+        definitions: {
+          path: join(process.cwd(), 'src/graphql.ts'),
+          outputAs: 'class',
+        },
+        playground: true,
+        introspection: true,
+        cors: {
+          origin: configService.get<string>('origin'),
+        },
+        context: ({ req, res }: GraphQLExpressContext) => ({ req, res }),
+        formatError: (error: GraphQLError) => {
+          const graphQLFormattedError = {
+            message:
+              error?.extensions?.exception?.response?.message || error.message,
+            path: error.path,
+            locations: error.locations,
+            reason: error?.extensions?.exception?.response?.reason,
+            status: error?.extensions?.exception?.status,
+            exception: error?.extensions?.exception,
+          }
+          return graphQLFormattedError
+        },
+      }),
+      inject: [ConfigService],
     }),
     CourseModule,
     CommonModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => {
-        const uri = configService.get<string>('mongoURI')
-        console.log()
-        return {
-          uri: uri,
-        }
-      },
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('mongoURI'),
+      }),
       inject: [ConfigService],
     }),
     UserModule,
