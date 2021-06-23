@@ -27,10 +27,10 @@ FROM base
 
 # Copy the previous build file to this image
 COPY --from=build /usr/src/app/dist /usr/src/app/dist
+COPY --from=build /usr/src/app/src /usr/src/app/src
 
 # Expose listening port
 EXPOSE 3000
 
 # Starting scripts
 CMD node dist/main
-
