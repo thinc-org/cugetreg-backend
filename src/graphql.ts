@@ -135,6 +135,7 @@ export class Course {
     courseNameTh: string;
     courseNameEn: string;
     faculty: string;
+    department: string;
     credit: number;
     creditHours: string;
     courseCondition: string;

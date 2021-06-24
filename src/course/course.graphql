@@ -42,6 +42,7 @@ type Course {
   courseNameTh: String!
   courseNameEn: String!
   faculty: String!
+  department: String!
   credit: Float!
   creditHours: String!
   courseCondition: String!
