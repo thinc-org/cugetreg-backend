@@ -10,7 +10,7 @@ export class CourseController {
   ) {}
 
   @Post('refresh')
-  async refresh(@Query('secret') secret: string): Promise<void> {
+  async refresh(@Query('secret') secret: string): Promise<string> {
     if (secret !== this.configService.get<string>('refreshSecret')) {
       throw new BadRequestException({
         reason: 'SECRET_INVALID',
@@ -18,5 +18,6 @@ export class CourseController {
       })
     }
     this.courseService.refresh()
+    return 'Refreshing courses...'
   }
 }
