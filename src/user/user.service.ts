@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { AuthService } from 'src/auth/auth.service'
@@ -20,6 +24,12 @@ export class UserService {
       })
     }
     if (new Date() > user.google.expiresIn) {
+      if (!user.google.refreshToken) {
+        throw new UnauthorizedException({
+          reason: 'REFRESH_TOKEN_NOT_FOUND',
+          message: 'Refresh token is missing.',
+        })
+      }
       const newAccessToken = await this.authService.refreshGoogleToken(
         user.google.refreshToken
       )

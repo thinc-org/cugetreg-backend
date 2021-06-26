@@ -170,7 +170,7 @@ export class AuthService {
         googleId: user.google.googleId,
         accessToken: googleResponse.access_token,
         expiresIn: expiredDate,
-        refreshToken: googleResponse.refresh_token,
+        refreshToken: user.google.refreshToken,
       }
     }
 
