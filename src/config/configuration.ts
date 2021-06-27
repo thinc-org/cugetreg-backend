@@ -12,6 +12,7 @@ export default () => ({
   isProduction: process.env.IS_PRODUCTION === 'true',
   airtableReviewUrl: process.env.AIRTABLE_REVIEW_URL,
   airtableApiKey: process.env.AIRTABLE_API_KEY,
+  clientLoggerUrl: process.env.CLIENT_LOGGER_URL,
 })
 
 const requiredConfigs = [
@@ -21,6 +22,7 @@ const requiredConfigs = [
   'refreshSecret',
   'airtableReviewUrl',
   'airtableApiKey',
+  'clientLoggerUrl',
 ]
 
 export function validateConfig(configService: ConfigService): void {
