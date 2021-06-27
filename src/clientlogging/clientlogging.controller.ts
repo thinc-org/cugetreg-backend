@@ -3,13 +3,12 @@ import {
   Controller,
   Post,
   Req,
-  UnauthorizedException,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { AccessTokenPayload } from 'src/auth/auth.dto'
-import { ClientloggingService } from './clientlogging.service'
+import { ClientLoggingService } from './clientlogging.service'
 import { Request } from 'express'
 import { IsOptional, IsString } from 'class-validator'
 
@@ -33,9 +32,9 @@ class ClientLogDto {
 }
 
 @Controller('clientlogging')
-export class ClientloggingController {
+export class ClientLoggingController {
   constructor(
-    readonly service: ClientloggingService,
+    readonly service: ClientLoggingService,
     readonly jwt: JwtService
   ) {}
 

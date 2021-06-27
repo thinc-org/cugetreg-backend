@@ -1,5 +1,4 @@
 import {
-  HttpModule,
   HttpService,
   Injectable,
   InternalServerErrorException,
@@ -20,7 +19,7 @@ export interface GelfLogEntry {
 }
 
 @Injectable()
-export class ClientloggingService {
+export class ClientLoggingService {
   httpAg: http.Agent
   httpsAg: https.Agent
 

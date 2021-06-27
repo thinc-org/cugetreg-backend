@@ -1,12 +1,11 @@
 import { HttpModule, Module } from '@nestjs/common'
-import { ClientloggingService } from './clientlogging.service'
-import { ClientloggingController } from './clientlogging.controller'
-import { JwtModule } from '@nestjs/jwt'
+import { ClientLoggingService } from './clientlogging.service'
+import { ClientLoggingController } from './clientlogging.controller'
 import { AuthModule } from 'src/auth/auth.module'
 
 @Module({
-  providers: [ClientloggingService],
-  controllers: [ClientloggingController],
+  providers: [ClientLoggingService],
+  controllers: [ClientLoggingController],
   imports: [AuthModule, HttpModule],
 })
 export class ClientLoggingModule {}
