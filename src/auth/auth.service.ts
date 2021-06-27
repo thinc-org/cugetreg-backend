@@ -101,6 +101,7 @@ export class AuthService {
       if (err instanceof HttpException) {
         throw err
       }
+      delete err?.config?.data
       throw new ServiceUnavailableException({
         reason: 'GOOGLE_OAUTH_ERROR',
         message: 'Unknown error during OAuth token verification',
