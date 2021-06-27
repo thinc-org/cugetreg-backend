@@ -26,10 +26,10 @@ class ClientLogDto {
 
   @IsOptional()
   @IsString()
-  accesstoken?: string
+  accessToken?: string
 
   @IsString()
-  deviceid: string
+  deviceId: string
 }
 
 @Controller('clientlogging')
@@ -44,9 +44,9 @@ export class ClientloggingController {
   postClientLog(@Body() dto: ClientLogDto, @Req() req: Request) {
     let accessToken: AccessTokenPayload | null = null
 
-    if (dto.accesstoken) {
+    if (dto.accessToken) {
       try {
-        accessToken = this.jwt.verify<AccessTokenPayload>(dto.accesstoken)
+        accessToken = this.jwt.verify<AccessTokenPayload>(dto.accessToken)
       } catch (e) {
         accessToken = null
       }
@@ -54,11 +54,11 @@ export class ClientloggingController {
 
     return this.service.sendLogEntry({
       version: '1.1',
-      host: dto.deviceid,
+      host: dto.deviceId,
       short_message: dto.message,
       full_message: dto.detail,
       _kind: dto.kind,
-      _app: 'frontend-cllient',
+      _app: 'frontend-client',
       _source_ip: req.ip,
       _user_id: accessToken?._id,
     })

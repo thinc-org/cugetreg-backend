@@ -14,7 +14,7 @@ import { GraphQLExpressContext } from './common/types/context.type'
 import { GraphQLError } from 'graphql'
 import { ReviewModule } from './review/review.module'
 import { ScheduleModule } from '@nestjs/schedule'
-import { ClientloggingModule } from './clientlogging/clientlogging.module'
+import { ClientLoggingModule } from './clientlogging/clientlogging.module'
 
 @Module({
   imports: [
@@ -63,7 +63,7 @@ import { ClientloggingModule } from './clientlogging/clientlogging.module'
     AuthModule,
     ReviewModule,
     ScheduleModule.forRoot(),
-    ClientloggingModule,
+    ClientLoggingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -9,4 +9,4 @@ import { AuthModule } from 'src/auth/auth.module'
   controllers: [ClientloggingController],
   imports: [AuthModule, HttpModule],
 })
-export class ClientloggingModule {}
+export class ClientLoggingModule {}
