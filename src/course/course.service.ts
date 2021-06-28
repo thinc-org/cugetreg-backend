@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   forwardRef,
   Inject,
   Injectable,
@@ -31,6 +32,7 @@ const fuseOptions = {
 
 @Injectable()
 export class CourseService implements OnApplicationBootstrap {
+  private isRefreshing = false
   private courses: Course[] = []
   private fuse = new Fuse([] as Course[], fuseOptions)
   private logger = new Logger(CourseService.name)
@@ -44,7 +46,15 @@ export class CourseService implements OnApplicationBootstrap {
     await this.refresh()
   }
 
+  getIsRefreshing(): boolean {
+    return this.isRefreshing
+  }
+
   async refresh(): Promise<void> {
+    if (this.isRefreshing) {
+      throw new ConflictException('Course is already refreshing. Rejected.')
+    }
+    this.isRefreshing = true
     this.logger.log(`Fetching courses...`)
     this.courses = (await getCourses()) as Course[]
 
@@ -63,6 +73,7 @@ export class CourseService implements OnApplicationBootstrap {
     const fuseIndex = Fuse.createIndex(fuseOptions.keys, this.courses)
     this.fuse.setCollection(this.courses, fuseIndex)
     this.logger.log(`Course data refreshed - ${this.courses.length} courses`)
+    this.isRefreshing = false
   }
 
   findAll(): Course[] {
