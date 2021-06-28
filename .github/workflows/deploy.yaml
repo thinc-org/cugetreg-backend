@@ -2,7 +2,7 @@ name: Deploy to Production
 
 on:
   push:
-    branches: [master]
+    branches: [master, dev]
 
 permissions:
   contents: read
@@ -41,6 +41,7 @@ jobs:
 
       - name: Push to GitHub Packages - Prod
         uses: docker/build-push-action@v2
+        if: ${{ github.ref == 'refs/heads/master' }}
         with:
           push: true
           tags: ghcr.io/thinc-org/cugetreg/cugetreg-backend:latest
@@ -77,6 +78,7 @@ jobs:
 
       - name: Deploy to VM - Prod
         uses: appleboy/ssh-action@master
+        if: ${{ github.ref == 'refs/heads/master' }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
