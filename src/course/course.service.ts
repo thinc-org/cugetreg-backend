@@ -7,11 +7,19 @@ import {
   NotFoundException,
   OnApplicationBootstrap,
 } from '@nestjs/common'
-import { getCourses, Semester, StudyProgram } from '@thinc-org/chula-courses'
+import { InjectModel } from '@nestjs/mongoose'
+import {
+  GenEdType,
+  getCourses,
+  Semester,
+  StudyProgram,
+} from '@thinc-org/chula-courses'
 import Fuse from 'fuse.js'
+import { Model } from 'mongoose'
 import { Course } from 'src/common/types/course.type'
 import { CourseGroupInput, FilterInput } from 'src/graphql'
 import { ReviewService } from 'src/review/review.service'
+import { GenEdTypeDocument } from 'src/schemas/gened.schema'
 import { findAvgRating } from 'src/util/functions'
 
 const fuseOptions = {
@@ -39,7 +47,8 @@ export class CourseService implements OnApplicationBootstrap {
 
   constructor(
     @Inject(forwardRef(() => ReviewService))
-    private reviewService: ReviewService
+    private reviewService: ReviewService,
+    @InjectModel('genedtype') private genEdTypeModel: Model<GenEdTypeDocument>
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
@@ -56,9 +65,28 @@ export class CourseService implements OnApplicationBootstrap {
     }
     this.isRefreshing = true
     this.logger.log(`Fetching courses...`)
+
+    const documents = await this.genEdTypeModel.find()
+    const genEdTypeMap: Record<string, GenEdTypeDocument> = {}
+    for (const document of documents) {
+      genEdTypeMap[document.courseNo] = document
+    }
+
     this.courses = (await getCourses()) as Course[]
 
     for (const course of this.courses) {
+      if (course.courseNo in genEdTypeMap) {
+        course.genEdType = genEdTypeMap[course.courseNo].genEdType
+      } else {
+        course.genEdType = 'NO'
+      }
+      for (const section of course.sections) {
+        section.genEdType = genEdTypeMap[course.courseNo]?.sections.includes(
+          section.sectionNo
+        )
+          ? genEdTypeMap[course.courseNo].genEdType
+          : 'NO'
+      }
       const reviews = await this.reviewService.find(
         course.courseNo,
         course.studyProgram,

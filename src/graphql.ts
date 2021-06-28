@@ -126,6 +126,7 @@ export class Section {
     capacity: Capacity;
     note?: string;
     classes: Class[];
+    genEdType: GenEdType;
 }
 
 export class Course {

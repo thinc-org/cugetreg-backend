@@ -31,7 +31,7 @@
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.5.1",
     "@nestjs/schedule": "^0.4.3",
-    "@thinc-org/chula-courses": "^1.1.9",
+    "@thinc-org/chula-courses": "^1.1.12",
     "apollo-server-express": "^2.19.2",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",

@@ -28,6 +28,7 @@ type Section {
   capacity: Capacity!
   note: String
   classes: [Class!]!
+  genEdType: GenEdType!
 }
 
 type Course {
