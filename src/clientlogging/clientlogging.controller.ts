@@ -4,17 +4,13 @@ import {
   Controller,
   Post,
   Req,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { AccessTokenPayload } from 'src/auth/auth.dto'
 import { ClientLoggingService, GelfLogEntry } from './clientlogging.service'
 import { Request } from 'express'
-import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator'
 import { hostname } from 'os'
-import { Type } from 'class-transformer'
-import { validate, Validator } from 'jsonschema'
+import { validate } from 'jsonschema'
 
 class ClientLogDto {
   kind: string
