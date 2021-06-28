@@ -67,14 +67,13 @@ export class ClientLoggingController {
 
   @Post()
   async postClientLog(@Body() dtos: ClientLogDto[], @Req() req: Request) {
-    let accessToken: AccessTokenPayload | null = null
-
     const validationRes = validate(dtos, clientLogDtoArraySchema)
     if (!validationRes.valid) {
       throw new BadRequestException(validationRes.errors.toString())
     }
 
     for (const dto of dtos) {
+      let accessToken: AccessTokenPayload | null = null
       if (dto.accessToken) {
         try {
           accessToken = this.jwt.verify<AccessTokenPayload>(dto.accessToken)
@@ -91,7 +90,7 @@ export class ClientLoggingController {
         _kind: dto.kind,
         _app: 'frontend-client',
         _source_ip: req.ip,
-        _user_id: accessToken?._id,
+        _user_id: accessToken?._id || undefined,
         _session_id: dto.sessionId,
         _device_id: dto.deviceId,
       }
