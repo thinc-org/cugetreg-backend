@@ -35,7 +35,7 @@ export class ClientLoggingService {
     })
   }
 
-  async sendLogEntry(entry: GelfLogEntry) {
+  async sendLogEntry(entry: GelfLogEntry & Record<string, string>) {
     try {
       const res = await this.httpService
         .post(this.configService.get('clientLoggerUrl'), entry, {

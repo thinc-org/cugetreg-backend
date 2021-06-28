@@ -1,34 +1,61 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Post,
   Req,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { AccessTokenPayload } from 'src/auth/auth.dto'
-import { ClientLoggingService } from './clientlogging.service'
+import { ClientLoggingService, GelfLogEntry } from './clientlogging.service'
 import { Request } from 'express'
-import { IsOptional, IsString } from 'class-validator'
+import { hostname } from 'os'
+import { validate } from 'jsonschema'
 
 class ClientLogDto {
-  @IsString()
   kind: string
-
-  @IsString()
   message: string
-
-  @IsOptional()
-  @IsString()
   detail?: string
-
-  @IsOptional()
-  @IsString()
   accessToken?: string
-
-  @IsString()
   deviceId: string
+  sessionId: string
+  additionalData?: Record<string, string>
+}
+
+const clientLogDtoArraySchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      kind: {
+        type: 'string',
+      },
+      message: {
+        type: 'string',
+      },
+      detail: {
+        type: 'string',
+      },
+      accessToken: {
+        type: 'string',
+      },
+      deviceId: {
+        type: 'string',
+      },
+      sessionId: {
+        type: 'string',
+      },
+      additionalData: {
+        type: 'object',
+        patternProperties: {
+          '^[\\w\\.\\-]*$': { type: 'string' },
+        },
+        additionalProperties: false,
+      },
+    },
+    additionalProperties: false,
+    required: ['kind', 'message', 'deviceId', 'sessionId'],
+  },
 }
 
 @Controller('clientlogging')
@@ -39,27 +66,41 @@ export class ClientLoggingController {
   ) {}
 
   @Post()
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  postClientLog(@Body() dto: ClientLogDto, @Req() req: Request) {
-    let accessToken: AccessTokenPayload | null = null
-
-    if (dto.accessToken) {
-      try {
-        accessToken = this.jwt.verify<AccessTokenPayload>(dto.accessToken)
-      } catch (e) {
-        accessToken = null
-      }
+  async postClientLog(@Body() dtos: ClientLogDto[], @Req() req: Request) {
+    const validationRes = validate(dtos, clientLogDtoArraySchema)
+    if (!validationRes.valid) {
+      throw new BadRequestException(validationRes.errors.toString())
     }
 
-    return this.service.sendLogEntry({
-      version: '1.1',
-      host: dto.deviceId,
-      short_message: dto.message,
-      full_message: dto.detail,
-      _kind: dto.kind,
-      _app: 'frontend-client',
-      _source_ip: req.ip,
-      _user_id: accessToken?._id,
-    })
+    for (const dto of dtos) {
+      let accessToken: AccessTokenPayload | null = null
+      if (dto.accessToken) {
+        try {
+          accessToken = this.jwt.verify<AccessTokenPayload>(dto.accessToken)
+        } catch (e) {
+          accessToken = null
+        }
+      }
+
+      const logEntry: GelfLogEntry & Record<string, string> = {
+        version: '1.1',
+        host: hostname(),
+        short_message: dto.message,
+        full_message: dto.detail,
+        _kind: dto.kind,
+        _app: 'frontend-client',
+        _source_ip: req.ip,
+        _user_id: accessToken?._id || undefined,
+        _session_id: dto.sessionId,
+        _device_id: dto.deviceId,
+      }
+
+      if (dto.additionalData)
+        Object.entries(dto.additionalData).forEach(
+          ([k, v]) => (logEntry[`_a_${k}`] = v)
+        )
+
+      await this.service.sendLogEntry(logEntry)
+    }
   }
 }
