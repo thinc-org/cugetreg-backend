@@ -107,7 +107,7 @@ export class CourseService implements OnApplicationBootstrap {
     if (keyword) {
       expressions.push({
         $or: [
-          { courseNo: `'${keyword}` },
+          { courseNo: `^${keyword}` },
           { abbrName: `'${keyword}` },
           { courseNameTh: `'${keyword}` },
           { courseNameEn: `'${keyword}` },
