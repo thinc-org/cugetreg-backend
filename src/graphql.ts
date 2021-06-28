@@ -87,6 +87,8 @@ export class AccessTokenDTO {
 export abstract class IMutation {
     abstract verify(code: string, redirectURI: string): AccessTokenDTO | Promise<AccessTokenDTO>;
 
+    abstract refresh(): string | Promise<string>;
+
     abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
 
     abstract removeReview(reviewId: string): Review | Promise<Review>;
