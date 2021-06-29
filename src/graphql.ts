@@ -69,6 +69,12 @@ export class CourseGroupInput {
     studyProgram: StudyProgram;
 }
 
+export class GenEdInput {
+    courseNo?: string;
+    genEdType?: GenEdType;
+    sections: string[];
+}
+
 export class CreateReviewInput {
     rating: number;
     courseNo: string;
@@ -88,6 +94,10 @@ export abstract class IMutation {
     abstract verify(code: string, redirectURI: string): AccessTokenDTO | Promise<AccessTokenDTO>;
 
     abstract refresh(): string | Promise<string>;
+
+    abstract createOrUpdateGenEd(genEdInput: GenEdInput): GenEd | Promise<GenEd>;
+
+    abstract removeGenEd(courseNo: string): GenEd | Promise<GenEd>;
 
     abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
 
@@ -159,6 +169,12 @@ export abstract class IQuery {
     abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
 
     abstract me(): User | Promise<User>;
+}
+
+export class GenEd {
+    courseNo?: string;
+    genEdType?: GenEdType;
+    sections: string[];
 }
 
 export class Review {

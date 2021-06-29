@@ -8,18 +8,13 @@ import {
   OnApplicationBootstrap,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import {
-  GenEdType,
-  getCourses,
-  Semester,
-  StudyProgram,
-} from '@thinc-org/chula-courses'
+import { getCourses, Semester, StudyProgram } from '@thinc-org/chula-courses'
 import Fuse from 'fuse.js'
 import { Model } from 'mongoose'
 import { Course } from 'src/common/types/course.type'
 import { CourseGroupInput, FilterInput } from 'src/graphql'
 import { ReviewService } from 'src/review/review.service'
-import { GenEdTypeDocument } from 'src/schemas/gened.schema'
+import { GenEdDocument } from 'src/schemas/gened.schema'
 import { findAvgRating } from 'src/util/functions'
 
 const fuseOptions = {
@@ -48,7 +43,7 @@ export class CourseService implements OnApplicationBootstrap {
   constructor(
     @Inject(forwardRef(() => ReviewService))
     private reviewService: ReviewService,
-    @InjectModel('genedtype') private genEdTypeModel: Model<GenEdTypeDocument>
+    @InjectModel('gened') private genEdModel: Model<GenEdDocument>
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
@@ -66,8 +61,8 @@ export class CourseService implements OnApplicationBootstrap {
     this.isRefreshing = true
     this.logger.log(`Fetching courses...`)
 
-    const documents = await this.genEdTypeModel.find()
-    const genEdTypeMap: Record<string, GenEdTypeDocument> = {}
+    const documents = await this.genEdModel.find()
+    const genEdTypeMap: Record<string, GenEdDocument> = {}
     for (const document of documents) {
       genEdTypeMap[document.courseNo] = document
     }
