@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common'
-import { Resolver, Query } from '@nestjs/graphql'
+import { Query, Resolver } from '@nestjs/graphql'
 import { JwtAuthGuard } from 'src/auth/jwt.guard'
 import { CurrentUser } from 'src/common/decorators/currentUser.decorator'
 import { UserDocument } from 'src/schemas/user.schema'

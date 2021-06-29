@@ -1,7 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common'
-import { CourseService } from './course.service'
-import { CourseResolver } from './course.resolver'
 import { ReviewModule } from 'src/review/review.module'
+import { CourseResolver } from './course.resolver'
+import { CourseService } from './course.service'
 
 @Module({
   imports: [forwardRef(() => ReviewModule)],

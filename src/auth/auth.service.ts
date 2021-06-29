@@ -11,8 +11,8 @@ import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { serializeError } from 'serialize-error'
-import { UserDocument } from 'src/schemas/user.schema'
 import { AccessTokenDTO } from 'src/graphql'
+import { UserDocument } from 'src/schemas/user.schema'
 
 interface AccessToken {
   access_token: string

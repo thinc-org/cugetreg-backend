@@ -1,5 +1,5 @@
 import { ConflictException, UseGuards } from '@nestjs/common'
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { Course, Semester } from '@thinc-org/chula-courses'
 import { AdminAuthGuard } from 'src/auth/admin.guard'
 import { CourseGroupInput, FilterInput } from 'src/graphql'

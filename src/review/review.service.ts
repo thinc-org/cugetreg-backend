@@ -10,14 +10,14 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { Semester, StudyProgram } from '@thinc-org/chula-courses'
 import { Model, Types } from 'mongoose'
-import { Interaction, ReviewDocument } from 'src/schemas/review.schema'
+import { CourseService } from 'src/course/course.service'
 import {
   CreateReviewInput,
+  Interaction as GraphQLInteraction,
   Review,
   StudyProgram as GraphQLStudyProgram,
-  Interaction as GraphQLInteraction,
 } from 'src/graphql'
-import { CourseService } from 'src/course/course.service'
+import { Interaction, ReviewDocument } from 'src/schemas/review.schema'
 
 @Injectable()
 export class ReviewService {

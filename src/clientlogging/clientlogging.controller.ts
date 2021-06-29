@@ -6,11 +6,11 @@ import {
   Req,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
+import { Request } from 'express'
+import { validate } from 'jsonschema'
+import { hostname } from 'os'
 import { AccessTokenPayload } from 'src/auth/auth.dto'
 import { ClientLoggingService, GelfLogEntry } from './clientlogging.service'
-import { Request } from 'express'
-import { hostname } from 'os'
-import { validate } from 'jsonschema'
 
 class ClientLogDto {
   kind: string

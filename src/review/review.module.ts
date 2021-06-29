@@ -1,11 +1,11 @@
 import { forwardRef, HttpModule, Module } from '@nestjs/common'
-import { ReviewService } from './review.service'
-import { ReviewResolver } from './review.resolver'
-import { MongooseModule } from '@nestjs/mongoose'
-import { ReviewSchema } from 'src/schemas/review.schema'
 import { ConfigService } from '@nestjs/config'
+import { MongooseModule } from '@nestjs/mongoose'
 import { CourseModule } from 'src/course/course.module'
+import { ReviewSchema } from 'src/schemas/review.schema'
 import { ReviewCron } from './review.cron'
+import { ReviewResolver } from './review.resolver'
+import { ReviewService } from './review.service'
 
 @Module({
   imports: [

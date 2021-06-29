@@ -1,7 +1,7 @@
 import { HttpModule, Module } from '@nestjs/common'
-import { ClientLoggingService } from './clientlogging.service'
-import { ClientLoggingController } from './clientlogging.controller'
 import { AuthModule } from 'src/auth/auth.module'
+import { ClientLoggingController } from './clientlogging.controller'
+import { ClientLoggingService } from './clientlogging.service'
 
 @Module({
   providers: [ClientLoggingService],
