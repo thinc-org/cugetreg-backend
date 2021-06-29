@@ -115,6 +115,7 @@ export class CourseService implements OnApplicationBootstrap {
     { semester, academicYear, studyProgram }: CourseGroupInput
   ): Promise<Course[]> {
     const expressions = []
+    keyword = keyword.trim()
     if (keyword) {
       expressions.push({
         $or: [
