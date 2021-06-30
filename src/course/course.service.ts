@@ -8,7 +8,13 @@ import {
   OnApplicationBootstrap,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { getCourses, Semester, StudyProgram } from '@thinc-org/chula-courses'
+import {
+  GenEdType,
+  getCourses,
+  Section,
+  Semester,
+  StudyProgram,
+} from '@thinc-org/chula-courses'
 import Fuse from 'fuse.js'
 import { Model } from 'mongoose'
 import { Course } from 'src/common/types/course.type'
@@ -31,6 +37,25 @@ const fuseOptions = {
     { name: 'genEdType', weight: 1 },
     { name: 'sections.classes.dayOfWeek', weight: 1 },
   ],
+}
+
+function getGenEdType(section: Section): GenEdType {
+  if (section.note === undefined) return 'NO'
+  if (section.note.includes('GENED')) {
+    const result = section.note.match(/GENED-(\w+)/)
+    if (result == null) {
+      return 'NO'
+    }
+    if (['SO', 'SC', 'HU', 'IN'].includes(result[1])) {
+      return <GenEdType>result[1]
+    }
+    // edge case
+    if (['SCI', 'SCIENCE'].includes(result[1])) {
+      return 'SC'
+    }
+    return 'NO'
+  }
+  return 'NO'
 }
 
 @Injectable()
@@ -78,6 +103,10 @@ export class CourseService implements OnApplicationBootstrap {
           )
             ? genEdTypeMap[course.courseNo].genEdType
             : 'NO'
+        }
+      } else {
+        for (const section of course.sections) {
+          section.genEdType = getGenEdType(section)
         }
       }
       const reviews = await this.reviewService.find(
