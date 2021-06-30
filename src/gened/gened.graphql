@@ -1,0 +1,16 @@
+type GenEd {
+  courseNo: String
+  genEdType: GenEdType
+  sections: [String!]!
+}
+
+input GenEdInput {
+  courseNo: String
+  genEdType: GenEdType
+  sections: [String!]!
+}
+
+type Mutation {
+  createOrUpdateGenEd(genEdInput: GenEdInput!): GenEd!
+  removeGenEd(courseNo: String!): GenEd
+}
