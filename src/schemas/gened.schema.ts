@@ -3,7 +3,11 @@ import * as mongoose from 'mongoose'
 
 export const GenEdSchema = new mongoose.Schema({
   courseNo: { type: String, required: true },
-  genEdType: { type: String, required: true, enum: ['SC', 'SO', 'HU', 'IN'] },
+  genEdType: {
+    type: String,
+    required: true,
+    enum: ['SC', 'SO', 'HU', 'IN', 'NO'],
+  },
   sections: { type: [String], required: true },
 })
 

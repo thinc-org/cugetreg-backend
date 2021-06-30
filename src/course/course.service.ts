@@ -72,15 +72,13 @@ export class CourseService implements OnApplicationBootstrap {
     for (const course of this.courses) {
       if (course.courseNo in genEdTypeMap) {
         course.genEdType = genEdTypeMap[course.courseNo].genEdType
-      } else {
-        course.genEdType = 'NO'
-      }
-      for (const section of course.sections) {
-        section.genEdType = genEdTypeMap[course.courseNo]?.sections.includes(
-          section.sectionNo
-        )
-          ? genEdTypeMap[course.courseNo].genEdType
-          : 'NO'
+        for (const section of course.sections) {
+          section.genEdType = genEdTypeMap[course.courseNo]?.sections.includes(
+            section.sectionNo
+          )
+            ? genEdTypeMap[course.courseNo].genEdType
+            : 'NO'
+        }
       }
       const reviews = await this.reviewService.find(
         course.courseNo,
