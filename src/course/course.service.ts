@@ -10,7 +10,6 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import {
   GenEdType,
-  getCourses,
   Section,
   Semester,
   StudyProgram,
@@ -20,6 +19,7 @@ import { Model } from 'mongoose'
 import { Course } from 'src/common/types/course.type'
 import { CourseGroupInput, FilterInput } from 'src/graphql'
 import { ReviewService } from 'src/review/review.service'
+import { CourseDocument } from 'src/schemas/course.schema'
 import { GenEdDocument } from 'src/schemas/gened.schema'
 import { findAvgRating } from 'src/util/functions'
 
@@ -68,7 +68,8 @@ export class CourseService implements OnApplicationBootstrap {
   constructor(
     @Inject(forwardRef(() => ReviewService))
     private reviewService: ReviewService,
-    @InjectModel('gened') private genEdModel: Model<GenEdDocument>
+    @InjectModel('gened') private genEdModel: Model<GenEdDocument>,
+    @InjectModel('course') private courseModel: Model<CourseDocument>
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
@@ -92,7 +93,7 @@ export class CourseService implements OnApplicationBootstrap {
       genEdTypeMap[document.courseNo] = document
     }
 
-    this.courses = (await getCourses()) as Course[]
+    this.courses = await this.courseModel.find()
 
     for (const course of this.courses) {
       if (course.courseNo in genEdTypeMap) {
