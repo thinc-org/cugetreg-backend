@@ -1,8 +1,8 @@
-name: Deploy to Production
+name: Deploy to Beta
 
 on:
   push:
-    branches: [master, dev]
+    branches: [beta]
 
 permissions:
   contents: read
@@ -39,24 +39,11 @@ jobs:
           username: ${{ secrets.GH_USERNAME }}
           password: ${{ secrets.GH_TOKEN }}
 
-      - name: Push to GitHub Packages - Prod
+      - name: Push to GitHub Packages
         uses: docker/build-push-action@v2
-        if: ${{ github.ref == 'refs/heads/master' }}
         with:
           push: true
-          tags: ghcr.io/thinc-org/cugetreg/cugetreg-backend:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-          context: .
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push to GitHub Packages - Dev
-        uses: docker/build-push-action@v2
-        if: ${{ github.ref == 'refs/heads/dev' }}
-        with:
-          push: true
-          tags: ghcr.io/thinc-org/cugetreg/cugetreg-backend-dev:latest
+          tags: ghcr.io/thinc-org/cugetreg/cugetreg-backend-beta:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           context: .
@@ -76,31 +63,14 @@ jobs:
           password: ${{ secrets.SSLVPN_PASSWORD }}
           trustedCert: ${{ secrets.SSLVPN_TRUSTED_CERT }}
 
-      - name: Deploy to VM - Prod
+      - name: Deploy to VM
         uses: appleboy/ssh-action@master
-        if: ${{ github.ref == 'refs/heads/master' }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker pull ghcr.io/thinc-org/cugetreg/cugetreg-backend:latest
-            docker-compose up -d 
-            if [[ "$(docker images --filter "dangling=true" -q)" == "" ]]; 
-              then echo "No image with <none> tag";
-              else docker rmi $(docker images --filter "dangling=true" -q);
-            fi
-
-      - name: Deploy to VM - Dev
-        uses: appleboy/ssh-action@master
-        if: ${{ github.ref == 'refs/heads/dev' }}
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          script: |
-            docker pull ghcr.io/thinc-org/cugetreg/cugetreg-backend-dev:latest
+            docker pull ghcr.io/thinc-org/cugetreg/cugetreg-backend-beta:latest
             docker-compose up -d 
             if [[ "$(docker images --filter "dangling=true" -q)" == "" ]]; 
               then echo "No image with <none> tag";
