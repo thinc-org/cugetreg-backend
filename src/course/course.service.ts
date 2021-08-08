@@ -93,7 +93,7 @@ export class CourseService implements OnApplicationBootstrap {
       genEdTypeMap[document.courseNo] = document
     }
 
-    this.courses = await this.courseModel.find()
+    this.courses = await this.courseModel.find().lean()
 
     for (const course of this.courses) {
       if (course.courseNo in genEdTypeMap) {
@@ -203,8 +203,6 @@ export class CourseService implements OnApplicationBootstrap {
       )
       .splice(offset, limit)
       .map((result) => result.item)
-
-    // TODO: Populate search results with average ratings
 
     return results
   }
