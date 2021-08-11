@@ -1,11 +1,11 @@
 import { HttpModule, Module } from '@nestjs/common'
-import { AuthModule } from 'src/auth/auth.module'
 import { ClientLoggingController } from './clientlogging.controller'
 import { ClientLoggingService } from './clientlogging.service'
+import { GoogleIdTokenService } from './googleidtoken.service'
 
 @Module({
-  providers: [ClientLoggingService],
+  providers: [ClientLoggingService, GoogleIdTokenService],
   controllers: [ClientLoggingController],
-  imports: [AuthModule, HttpModule],
+  imports: [HttpModule],
 })
 export class ClientLoggingModule {}
