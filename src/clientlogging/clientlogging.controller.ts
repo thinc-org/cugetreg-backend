@@ -5,12 +5,12 @@ import {
   Post,
   Req,
 } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
+import { TokenPayload } from 'google-auth-library'
 import { validate } from 'jsonschema'
 import { hostname } from 'os'
-import { AccessTokenPayload } from 'src/auth/auth.dto'
 import { ClientLoggingService, GelfLogEntry } from './clientlogging.service'
+import { GoogleIdTokenService } from './googleidtoken.service'
 
 class ClientLogDto {
   kind: string
@@ -61,8 +61,8 @@ const clientLogDtoArraySchema = {
 @Controller('clientlogging')
 export class ClientLoggingController {
   constructor(
-    readonly service: ClientLoggingService,
-    readonly jwt: JwtService
+    readonly loggingService: ClientLoggingService,
+    readonly googleIdTokenService: GoogleIdTokenService
   ) {}
 
   @Post()
@@ -73,12 +73,13 @@ export class ClientLoggingController {
     }
 
     for (const dto of dtos) {
-      let accessToken: AccessTokenPayload | null = null
+      let accessToken: TokenPayload | null = null
       if (dto.accessToken) {
         try {
-          accessToken = this.jwt.verify<AccessTokenPayload>(dto.accessToken)
+          accessToken = await this.googleIdTokenService.verify(dto.accessToken)
         } catch (e) {
           accessToken = null
+          console.error('Failed to validate accesstoken for clientlogging', e)
         }
       }
 
@@ -90,7 +91,9 @@ export class ClientLoggingController {
         _kind: dto.kind,
         _app: 'frontend-client',
         _source_ip: req.ip,
-        _user_id: accessToken?._id || undefined,
+        _google_id: accessToken?.sub || undefined,
+        _google_name: accessToken?.name || undefined,
+        _google_email: accessToken?.email || undefined,
         _session_id: dto.sessionId,
         _device_id: dto.deviceId,
       }
@@ -100,7 +103,7 @@ export class ClientLoggingController {
           ([k, v]) => (logEntry[`_a_${k}`] = v)
         )
 
-      await this.service.sendLogEntry(logEntry)
+      await this.loggingService.sendLogEntry(logEntry)
     }
   }
 }
