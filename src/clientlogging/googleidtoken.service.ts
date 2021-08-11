@@ -8,7 +8,7 @@ export class GoogleIdTokenService {
   private clientId: string
 
   constructor(readonly configService: ConfigService) {
-    this.clientId = configService.get('googleAuthClientId')
+    this.clientId = configService.get<string>('googleAuthClientId')
     this.client = new OAuth2Client(this.clientId)
   }
 
