@@ -7,6 +7,7 @@ export default () => ({
   origin: process.env.CORS_ORIGIN || '*',
   googleOAuthId: process.env.GOOGLE_OAUTH_ID,
   googleOAuthSecret: process.env.GOOGLE_OAUTH_SECRET,
+  googleAuthClientId: process.env.GOOGLE_AUTH_CLIENTID,
   jwtSecret: process.env.JWT_SECRET,
   adminToken: process.env.ADMIN_TOKEN,
   isProduction: process.env.IS_PRODUCTION === 'true',
@@ -18,6 +19,7 @@ export default () => ({
 const requiredConfigs = [
   'googleOAuthId',
   'googleOAuthSecret',
+  'googleAuthClientId',
   'jwtSecret',
   'adminToken',
   'airtableReviewUrl',
