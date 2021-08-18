@@ -15,7 +15,7 @@ export interface GelfLogEntry {
   _kind: string
   _app: 'frontend-client'
   _source_ip: string
-  _user_id?: string
+  _google_id?: string
 }
 
 @Injectable()
