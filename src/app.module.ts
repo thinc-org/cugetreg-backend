@@ -14,6 +14,7 @@ import { GraphQLExpressContext } from './common/types/context.type'
 import configuration from './config/configuration'
 import { CourseModule } from './course/course.module'
 import { GenedModule } from './gened/gened.module'
+import { OverrideModule } from './override/override.module'
 import { ReviewModule } from './review/review.module'
 import { UserModule } from './user/user.module'
 
@@ -66,6 +67,7 @@ import { UserModule } from './user/user.module'
     ScheduleModule.forRoot(),
     ClientLoggingModule,
     GenedModule,
+    OverrideModule,
   ],
   controllers: [AppController],
   providers: [AppService],

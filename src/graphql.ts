@@ -75,6 +75,16 @@ export class GenEdInput {
     sections: string[];
 }
 
+export class GenEdOverrideInput {
+    genEdType: GenEdType;
+    sections: string[];
+}
+
+export class OverrideInput {
+    courseNo: string;
+    genEd?: GenEdOverrideInput;
+}
+
 export class CreateReviewInput {
     rating: number;
     courseNo: string;
@@ -98,6 +108,10 @@ export abstract class IMutation {
     abstract createOrUpdateGenEd(genEdInput: GenEdInput): GenEd | Promise<GenEd>;
 
     abstract removeGenEd(courseNo: string): GenEd | Promise<GenEd>;
+
+    abstract createOrUpdateOverride(override: OverrideInput): Override | Promise<Override>;
+
+    abstract deleteOverride(courseNo: string): Override | Promise<Override>;
 
     abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
 
@@ -175,6 +189,16 @@ export class GenEd {
     courseNo?: string;
     genEdType?: GenEdType;
     sections: string[];
+}
+
+export class GenEdOverride {
+    genEdType: GenEdType;
+    sections: string[];
+}
+
+export class Override {
+    courseNo: string;
+    genEd?: GenEdOverride;
 }
 
 export class Review {

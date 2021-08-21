@@ -18,9 +18,10 @@ import Fuse from 'fuse.js'
 import { Model } from 'mongoose'
 import { Course } from 'src/common/types/course.type'
 import { CourseGroupInput, FilterInput } from 'src/graphql'
+import { OverrideService } from 'src/override/override.service'
 import { ReviewService } from 'src/review/review.service'
 import { CourseDocument } from 'src/schemas/course.schema'
-import { GenEdDocument } from 'src/schemas/gened.schema'
+import { Override } from 'src/schemas/override.schema'
 import { findAvgRating } from 'src/util/functions'
 
 const fuseOptions = {
@@ -68,7 +69,7 @@ export class CourseService implements OnApplicationBootstrap {
   constructor(
     @Inject(forwardRef(() => ReviewService))
     private reviewService: ReviewService,
-    @InjectModel('gened') private genEdModel: Model<GenEdDocument>,
+    private overrideService: OverrideService,
     @InjectModel('course') private courseModel: Model<CourseDocument>
   ) {}
 
@@ -87,24 +88,17 @@ export class CourseService implements OnApplicationBootstrap {
     this.isRefreshing = true
     this.logger.log(`Fetching courses...`)
 
-    const documents = await this.genEdModel.find()
-    const genEdTypeMap: Record<string, GenEdDocument> = {}
-    for (const document of documents) {
-      genEdTypeMap[document.courseNo] = document
+    const overrides = await this.overrideService.getOverrides()
+    const overridesMap: Record<string, Override> = {}
+    for (const override of overrides) {
+      overridesMap[override.courseNo] = override
     }
-
     this.courses = await this.courseModel.find().lean()
 
     for (const course of this.courses) {
-      if (course.courseNo in genEdTypeMap) {
-        course.genEdType = genEdTypeMap[course.courseNo].genEdType
-        for (const section of course.sections) {
-          section.genEdType = genEdTypeMap[course.courseNo]?.sections.includes(
-            section.sectionNo
-          )
-            ? genEdTypeMap[course.courseNo].genEdType
-            : 'NO'
-        }
+      const override = overridesMap[course.courseNo]
+      if (override) {
+        this.applyOverride(course, override)
       } else {
         for (const section of course.sections) {
           section.genEdType = getGenEdType(section)
@@ -125,6 +119,18 @@ export class CourseService implements OnApplicationBootstrap {
     this.fuse.setCollection(this.courses, fuseIndex)
     this.logger.log(`Course data refreshed - ${this.courses.length} courses`)
     this.isRefreshing = false
+  }
+
+  applyOverride(course: Course, override: Override) {
+    if (override.genEd) {
+      const { genEdType, sections: genEdSections } = override.genEd
+      course.genEdType = genEdType
+      for (const section of course.sections) {
+        section.genEdType = genEdSections.includes(section.sectionNo)
+          ? override.genEd.genEdType
+          : 'NO'
+      }
+    }
   }
 
   findAll(): Course[] {

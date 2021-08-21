@@ -1,0 +1,24 @@
+type GenEdOverride {
+  genEdType: GenEdType!
+  sections: [String!]!
+}
+
+type Override {
+  courseNo: String!
+  genEd: GenEdOverride
+}
+
+input GenEdOverrideInput {
+  genEdType: GenEdType!
+  sections: [String!]!
+}
+
+input OverrideInput {
+  courseNo: String!
+  genEd: GenEdOverrideInput
+}
+
+type Mutation {
+  createOrUpdateOverride(override: OverrideInput!): Override!
+  deleteOverride(courseNo: String!): Override
+}
