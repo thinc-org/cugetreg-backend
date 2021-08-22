@@ -2,7 +2,6 @@ import { GenEdType } from '@thinc-org/chula-courses'
 import * as mongoose from 'mongoose'
 
 export const GenEdSchema = new mongoose.Schema({
-  courseNo: { type: String, required: true },
   genEdType: {
     type: String,
     required: true,
@@ -11,8 +10,17 @@ export const GenEdSchema = new mongoose.Schema({
   sections: { type: [String], required: true },
 })
 
-export interface GenEdDocument extends mongoose.Document {
+export const OverrideSchema = new mongoose.Schema({
+  courseNo: { type: String, required: true },
+  genEd: { type: GenEdSchema },
+})
+
+export interface Override {
   courseNo: string
-  genEdType: GenEdType
-  sections: string[]
+  genEd?: {
+    genEdType: GenEdType
+    sections: string[]
+  }
 }
+
+export type OverrideDocument = Override & mongoose.Document
