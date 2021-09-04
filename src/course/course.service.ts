@@ -15,7 +15,7 @@ import {
   StudyProgram,
 } from '@thinc-org/chula-courses'
 import Fuse from 'fuse.js'
-import { Model } from 'mongoose'
+import { FilterQuery, Model } from 'mongoose'
 import { Course } from 'src/common/types/course.type'
 import { CourseGroupInput, FilterInput } from 'src/graphql'
 import { OverrideService } from 'src/override/override.service'
@@ -74,7 +74,7 @@ export class CourseService implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
-    await this.refresh()
+    // await this.refresh()
   }
 
   getIsRefreshing(): boolean {
@@ -171,45 +171,32 @@ export class CourseService implements OnApplicationBootstrap {
     }: FilterInput,
     { semester, academicYear, studyProgram }: CourseGroupInput
   ): Promise<Course[]> {
-    const expressions = []
+    const query = {
+      semester,
+      academicYear,
+      studyProgram,
+    } as FilterQuery<CourseDocument>
     keyword = keyword.trim()
     if (keyword) {
-      expressions.push({
-        $or: [
-          { courseNo: `^${keyword}` },
-          { abbrName: `'${keyword}` },
-          { courseNameTh: `'${keyword}` },
-          { courseNameEn: `'${keyword}` },
-        ],
-      })
+      query.$or = [
+        { courseNo: new RegExp('^' + keyword, 'i') },
+        { abbrName: new RegExp(keyword, 'i') },
+        { courseNameTh: new RegExp(keyword, 'i') },
+        { courseNameEn: new RegExp(keyword, 'i') },
+      ]
     }
     if (genEdTypes.length > 0) {
-      expressions.push({
-        genEdType: genEdTypes.map((genEdType) => `=${genEdType}`).join(' | '),
-      })
+      query.genEdType = { $in: genEdTypes }
     }
     if (dayOfWeeks.length > 0) {
-      expressions.push({
-        'sections.classes.dayOfWeek': dayOfWeeks
-          .map((dayOfWeek) => `=${dayOfWeek}`)
-          .join(' | '),
-      })
+      query['sections.classes.dayOfWeek'] = { $in: dayOfWeeks }
     }
-    expressions.push({
-      semester: `=${semester}`,
-      academicYear: `=${academicYear}`,
-      studyProgram: `=${studyProgram}`,
-    })
-    const results = this.fuse
-      .search(
-        {
-          $and: expressions,
-        },
-        { limit: offset + limit }
-      )
-      .splice(offset, limit)
-      .map((result) => result.item)
 
-    return results
+    const result = await this.courseModel
+      .find(query)
+      .limit(limit)
+      .skip(offset)
+      .lean()
+    return result
   }
 }
