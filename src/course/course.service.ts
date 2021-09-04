@@ -4,7 +4,6 @@ import {
   Inject,
   Injectable,
   Logger,
-  NotFoundException,
   OnApplicationBootstrap,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
@@ -133,32 +132,16 @@ export class CourseService implements OnApplicationBootstrap {
     }
   }
 
-  findAll(): Course[] {
-    return this.courses
-  }
-
-  findOne(
+  async findOne(
     courseNo: string,
     semester: Semester,
     academicYear: string,
     studyProgram: StudyProgram
-  ): Course {
-    const results = this.fuse.search({
-      $and: [
-        { courseNo: `=${courseNo}` },
-        { semester: `=${semester}` },
-        { academicYear: `=${academicYear}` },
-        { studyProgram: `=${studyProgram}` },
-      ],
-    })
-    if (results.length === 0) {
-      throw new NotFoundException({
-        reason: 'COURSE_NOT_FOUND',
-        message: 'Cannot find a course that match the given properties',
-      })
-    }
-
-    return results[0].item
+  ): Promise<Course> {
+    const result = await this.courseModel
+      .findOne({ courseNo, semester, academicYear, studyProgram })
+      .lean()
+    return result
   }
 
   async search(

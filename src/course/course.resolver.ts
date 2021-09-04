@@ -9,17 +9,12 @@ import { CourseService } from './course.service'
 export class CourseResolver {
   constructor(private readonly courseService: CourseService) {}
 
-  @Query('courses')
-  findAll(): Course[] {
-    return this.courseService.findAll()
-  }
-
   @Query('course')
   findOne(
     @Args('courseNo') courseNo: string,
     @Args('courseGroup')
     { semester, academicYear, studyProgram }: CourseGroupInput
-  ): Course {
+  ): Promise<Course> {
     return this.courseService.findOne(
       courseNo,
       semester as Semester,
