@@ -35,6 +35,6 @@ export class CourseResolver {
   @Mutation('refresh')
   async refresh(): Promise<string> {
     this.courseService.refresh()
-    return 'Refreshed course overrides.'
+    return 'Refreshed course overrides and ratings.'
   }
 }

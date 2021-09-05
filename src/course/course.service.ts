@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
   OnApplicationBootstrap,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
@@ -21,44 +22,14 @@ import { ReviewService } from 'src/review/review.service'
 import { CourseDocument } from 'src/schemas/course.schema'
 import { Override } from 'src/schemas/override.schema'
 
-const fuseOptions = {
-  useExtendedSearch: true,
-  shouldSort: true,
-  keys: [
-    { name: 'courseNo', weight: 3 },
-    { name: 'semester', weight: 1 },
-    { name: 'academicYear', weight: 1 },
-    { name: 'studyProgram', weight: 1 },
-    { name: 'abbrName', weight: 2 },
-    { name: 'courseNameTh', weight: 1 },
-    { name: 'courseNameEn', weight: 1 },
-    { name: 'genEdType', weight: 1 },
-    { name: 'sections.classes.dayOfWeek', weight: 1 },
-  ],
-}
-
-function getGenEdType(section: Section): GenEdType {
-  if (section.note === undefined) return 'NO'
-  if (section.note.includes('GENED')) {
-    const result = section.note.match(/GENED-(\w+)/)
-    if (result == null) {
-      return 'NO'
-    }
-    if (['SO', 'SC', 'HU', 'IN'].includes(result[1])) {
-      return <GenEdType>result[1]
-    }
-    // edge case
-    if (['SCI', 'SCIENCE'].includes(result[1])) {
-      return 'SC'
-    }
-    return 'NO'
-  }
-  return 'NO'
-}
-
 @Injectable()
 export class CourseService implements OnApplicationBootstrap {
   private overrides: Record<string, Override> = {}
+  private ratings: Record<StudyProgram, Record<string, string>> = {
+    S: {},
+    T: {},
+    I: {},
+  }
   private logger = new Logger(CourseService.name)
 
   constructor(
@@ -75,12 +46,34 @@ export class CourseService implements OnApplicationBootstrap {
   // Every 30 minutes
   @Cron('0 */30 * * * *')
   async refresh(): Promise<void> {
+    // refresh override
     const overridesList = await this.overrideService.getOverrides()
     this.overrides = {}
     for (const override of overridesList) {
       this.overrides[override.courseNo] = override
     }
-    this.logger.log(`Course override refreshed`)
+
+    // refresh review ratings
+    const reviewsList = await this.reviewService.getReviews()
+    const reviews: Record<StudyProgram, Record<string, number[]>> = {
+      S: {},
+      T: {},
+      I: {},
+    }
+    for (const review of reviewsList) {
+      if (!(review.courseNo in reviews[review.studyProgram])) {
+        reviews[review.studyProgram][review.courseNo] = []
+      }
+      reviews[review.studyProgram][review.courseNo].push(review.rating)
+    }
+    for (const studyProgram in reviews) {
+      for (const courseNo in reviews[studyProgram]) {
+        this.ratings[studyProgram][courseNo] = findAvgRating(
+          reviews[studyProgram][courseNo]
+        )
+      }
+    }
+    this.logger.log(`Course override and ratings refreshed`)
   }
 
   async findOne(
@@ -92,7 +85,13 @@ export class CourseService implements OnApplicationBootstrap {
     const course = await this.courseModel
       .findOne({ courseNo, semester, academicYear, studyProgram })
       .lean()
-    return this.applyOverride(course)
+    if (!course) {
+      throw new NotFoundException({
+        reason: 'COURSE_NOT_FOUND',
+        message: "Can't find a course with the given properties",
+      })
+    }
+    return this.populate(course)
   }
 
   async search(
@@ -131,13 +130,17 @@ export class CourseService implements OnApplicationBootstrap {
       .limit(limit)
       .skip(offset)
       .lean()
-    return this.applyOverrideList(courses)
+    return this.populateList(courses)
   }
 
   // TODO: add apply reviews
 
   // warning: this method mutates the original course ohject with the override
-  private applyOverride(course: Course): Course {
+  private populate(course: Course): Course {
+    if (!course) {
+      return null
+    }
+    // populate override
     const override = this.overrides[course.courseNo]
     if (override?.genEd) {
       const { genEdType, sections: genEdSections } = override.genEd
@@ -152,10 +155,43 @@ export class CourseService implements OnApplicationBootstrap {
         section.genEdType = getGenEdType(section)
       }
     }
+
+    // populate rating
+    course.rating = this.ratings[course.studyProgram][course.courseNo]
     return course
   }
 
-  private applyOverrideList(courses: Course[]): Course[] {
-    return courses.map(this.applyOverride)
+  private populateList(courses: Course[]): Course[] {
+    for (const course of courses) {
+      this.populate(course)
+    }
+    return courses
   }
+}
+
+function findAvgRating(ratings: number[]): string {
+  let total = 0
+  for (const rating of ratings) {
+    total += rating
+  }
+  return (total / (2 * ratings.length)).toFixed(2)
+}
+
+function getGenEdType(section: Section): GenEdType {
+  if (section.note === undefined) return 'NO'
+  if (section.note.includes('GENED')) {
+    const result = section.note.match(/GENED-(\w+)/)
+    if (result == null) {
+      return 'NO'
+    }
+    if (['SO', 'SC', 'HU', 'IN'].includes(result[1])) {
+      return <GenEdType>result[1]
+    }
+    // edge case
+    if (['SCI', 'SCIENCE'].includes(result[1])) {
+      return 'SC'
+    }
+    return 'NO'
+  }
+  return 'NO'
 }

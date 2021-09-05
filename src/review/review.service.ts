@@ -28,6 +28,11 @@ export class ReviewService {
     private courseService: CourseService
   ) {}
 
+  async getReviews(): Promise<ReviewDocument[]> {
+    const reviews = await this.reviewModel.find()
+    return reviews
+  }
+
   async create(
     {
       courseNo,
