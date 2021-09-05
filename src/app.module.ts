@@ -57,6 +57,7 @@ import { UserModule } from './user/user.module'
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('mongoURI'),
+        useFindAndModify: false,
       }),
       inject: [ConfigService],
     }),
