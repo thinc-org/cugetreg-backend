@@ -133,9 +133,7 @@ export class CourseService implements OnApplicationBootstrap {
     return this.populateList(courses)
   }
 
-  // TODO: add apply reviews
-
-  // warning: this method mutates the original course ohject with the override
+  // warning: this method mutates the original course ohject with the override and rating
   private populate(course: Course): Course {
     if (!course) {
       return null
