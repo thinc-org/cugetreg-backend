@@ -28,6 +28,11 @@ export class ReviewService {
     private courseService: CourseService
   ) {}
 
+  async getReviews(): Promise<ReviewDocument[]> {
+    const reviews = await this.reviewModel.find()
+    return reviews
+  }
+
   async create(
     {
       courseNo,
@@ -62,11 +67,13 @@ export class ReviewService {
       status: 'PENDING',
     })
 
-    const abbrName = this.courseService.findOne(
-      courseNo,
-      semester as Semester,
-      academicYear,
-      studyProgram
+    const abbrName = (
+      await this.courseService.findOne(
+        courseNo,
+        semester as Semester,
+        academicYear,
+        studyProgram
+      )
     ).abbrName
 
     await this.airtableClient

@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   forwardRef,
   Inject,
   Injectable,
@@ -8,36 +7,172 @@ import {
   OnApplicationBootstrap,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
+import { Cron } from '@nestjs/schedule'
 import {
   GenEdType,
   Section,
   Semester,
   StudyProgram,
 } from '@thinc-org/chula-courses'
-import Fuse from 'fuse.js'
-import { Model } from 'mongoose'
+import { FilterQuery, Model } from 'mongoose'
 import { Course } from 'src/common/types/course.type'
 import { CourseGroupInput, FilterInput } from 'src/graphql'
 import { OverrideService } from 'src/override/override.service'
 import { ReviewService } from 'src/review/review.service'
 import { CourseDocument } from 'src/schemas/course.schema'
 import { Override } from 'src/schemas/override.schema'
-import { findAvgRating } from 'src/util/functions'
 
-const fuseOptions = {
-  useExtendedSearch: true,
-  shouldSort: true,
-  keys: [
-    { name: 'courseNo', weight: 3 },
-    { name: 'semester', weight: 1 },
-    { name: 'academicYear', weight: 1 },
-    { name: 'studyProgram', weight: 1 },
-    { name: 'abbrName', weight: 2 },
-    { name: 'courseNameTh', weight: 1 },
-    { name: 'courseNameEn', weight: 1 },
-    { name: 'genEdType', weight: 1 },
-    { name: 'sections.classes.dayOfWeek', weight: 1 },
-  ],
+@Injectable()
+export class CourseService implements OnApplicationBootstrap {
+  private overrides: Record<string, Override> = {}
+  private ratings: Record<StudyProgram, Record<string, string>> = {
+    S: {},
+    T: {},
+    I: {},
+  }
+  private logger = new Logger(CourseService.name)
+
+  constructor(
+    @Inject(forwardRef(() => ReviewService))
+    private reviewService: ReviewService,
+    private overrideService: OverrideService,
+    @InjectModel('course') private courseModel: Model<CourseDocument>
+  ) {}
+
+  async onApplicationBootstrap(): Promise<void> {
+    await this.refresh()
+  }
+
+  // Every 30 minutes
+  @Cron('0 */30 * * * *')
+  async refresh(): Promise<void> {
+    // refresh override
+    const overridesList = await this.overrideService.getOverrides()
+    this.overrides = {}
+    for (const override of overridesList) {
+      this.overrides[override.courseNo] = override
+    }
+
+    // refresh review ratings
+    const reviewsList = await this.reviewService.getReviews()
+    const reviews: Record<StudyProgram, Record<string, number[]>> = {
+      S: {},
+      T: {},
+      I: {},
+    }
+    for (const review of reviewsList) {
+      if (!(review.courseNo in reviews[review.studyProgram])) {
+        reviews[review.studyProgram][review.courseNo] = []
+      }
+      reviews[review.studyProgram][review.courseNo].push(review.rating)
+    }
+    for (const studyProgram in reviews) {
+      for (const courseNo in reviews[studyProgram]) {
+        this.ratings[studyProgram][courseNo] = findAvgRating(
+          reviews[studyProgram][courseNo]
+        )
+      }
+    }
+    this.logger.log(`Course override and ratings refreshed`)
+  }
+
+  async findOne(
+    courseNo: string,
+    semester: Semester,
+    academicYear: string,
+    studyProgram: StudyProgram
+  ): Promise<Course> {
+    const course = await this.courseModel
+      .findOne({ courseNo, semester, academicYear, studyProgram })
+      .lean()
+    if (!course) {
+      throw new NotFoundException({
+        reason: 'COURSE_NOT_FOUND',
+        message: "Can't find a course with the given properties",
+      })
+    }
+    return this.populate(course)
+  }
+
+  async search(
+    {
+      keyword = '',
+      genEdTypes = [],
+      dayOfWeeks = [],
+      limit = 10,
+      offset = 0,
+    }: FilterInput,
+    { semester, academicYear, studyProgram }: CourseGroupInput
+  ): Promise<Course[]> {
+    const query = {
+      semester,
+      academicYear,
+      studyProgram,
+    } as FilterQuery<CourseDocument>
+    keyword = keyword.trim()
+    if (keyword) {
+      query.$or = [
+        { courseNo: new RegExp('^' + keyword, 'i') },
+        { abbrName: new RegExp(keyword, 'i') },
+        { courseNameTh: new RegExp(keyword, 'i') },
+        { courseNameEn: new RegExp(keyword, 'i') },
+      ]
+    }
+    if (genEdTypes.length > 0) {
+      query.genEdType = { $in: genEdTypes }
+    }
+    if (dayOfWeeks.length > 0) {
+      query['sections.classes.dayOfWeek'] = { $in: dayOfWeeks }
+    }
+
+    const courses = await this.courseModel
+      .find(query)
+      .limit(limit)
+      .skip(offset)
+      .lean()
+    return this.populateList(courses)
+  }
+
+  // warning: this method mutates the original course object with the override and rating
+  private populate(course: Course): Course {
+    if (!course) {
+      return null
+    }
+    // populate override
+    const override = this.overrides[course.courseNo]
+    if (override?.genEd) {
+      const { genEdType, sections: genEdSections } = override.genEd
+      course.genEdType = genEdType
+      for (const section of course.sections) {
+        section.genEdType = genEdSections.includes(section.sectionNo)
+          ? override.genEd.genEdType
+          : 'NO'
+      }
+    } else {
+      for (const section of course.sections) {
+        section.genEdType = getGenEdType(section)
+      }
+    }
+
+    // populate rating
+    course.rating = this.ratings[course.studyProgram][course.courseNo]
+    return course
+  }
+
+  private populateList(courses: Course[]): Course[] {
+    for (const course of courses) {
+      this.populate(course)
+    }
+    return courses
+  }
+}
+
+function findAvgRating(ratings: number[]): string {
+  let total = 0
+  for (const rating of ratings) {
+    total += rating
+  }
+  return (total / (2 * ratings.length)).toFixed(2)
 }
 
 function getGenEdType(section: Section): GenEdType {
@@ -57,159 +192,4 @@ function getGenEdType(section: Section): GenEdType {
     return 'NO'
   }
   return 'NO'
-}
-
-@Injectable()
-export class CourseService implements OnApplicationBootstrap {
-  private isRefreshing = false
-  private courses: Course[] = []
-  private fuse = new Fuse([] as Course[], fuseOptions)
-  private logger = new Logger(CourseService.name)
-
-  constructor(
-    @Inject(forwardRef(() => ReviewService))
-    private reviewService: ReviewService,
-    private overrideService: OverrideService,
-    @InjectModel('course') private courseModel: Model<CourseDocument>
-  ) {}
-
-  async onApplicationBootstrap(): Promise<void> {
-    await this.refresh()
-  }
-
-  getIsRefreshing(): boolean {
-    return this.isRefreshing
-  }
-
-  async refresh(): Promise<void> {
-    if (this.isRefreshing) {
-      throw new ConflictException('Course is already refreshing. Rejected.')
-    }
-    this.isRefreshing = true
-    this.logger.log(`Fetching courses...`)
-
-    const overrides = await this.overrideService.getOverrides()
-    const overridesMap: Record<string, Override> = {}
-    for (const override of overrides) {
-      overridesMap[override.courseNo] = override
-    }
-    this.courses = await this.courseModel.find().lean()
-
-    for (const course of this.courses) {
-      const override = overridesMap[course.courseNo]
-      if (override) {
-        this.applyOverride(course, override)
-      } else {
-        for (const section of course.sections) {
-          section.genEdType = getGenEdType(section)
-        }
-      }
-      const reviews = await this.reviewService.find(
-        course.courseNo,
-        course.studyProgram,
-        null,
-        false
-      )
-      if (reviews.length > 0) {
-        course.rating = findAvgRating(reviews)
-      }
-    }
-
-    const fuseIndex = Fuse.createIndex(fuseOptions.keys, this.courses)
-    this.fuse.setCollection(this.courses, fuseIndex)
-    this.logger.log(`Course data refreshed - ${this.courses.length} courses`)
-    this.isRefreshing = false
-  }
-
-  applyOverride(course: Course, override: Override) {
-    if (override.genEd) {
-      const { genEdType, sections: genEdSections } = override.genEd
-      course.genEdType = genEdType
-      for (const section of course.sections) {
-        section.genEdType = genEdSections.includes(section.sectionNo)
-          ? override.genEd.genEdType
-          : 'NO'
-      }
-    }
-  }
-
-  findAll(): Course[] {
-    return this.courses
-  }
-
-  findOne(
-    courseNo: string,
-    semester: Semester,
-    academicYear: string,
-    studyProgram: StudyProgram
-  ): Course {
-    const results = this.fuse.search({
-      $and: [
-        { courseNo: `=${courseNo}` },
-        { semester: `=${semester}` },
-        { academicYear: `=${academicYear}` },
-        { studyProgram: `=${studyProgram}` },
-      ],
-    })
-    if (results.length === 0) {
-      throw new NotFoundException({
-        reason: 'COURSE_NOT_FOUND',
-        message: 'Cannot find a course that match the given properties',
-      })
-    }
-
-    return results[0].item
-  }
-
-  async search(
-    {
-      keyword = '',
-      genEdTypes = [],
-      dayOfWeeks = [],
-      limit = 10,
-      offset = 0,
-    }: FilterInput,
-    { semester, academicYear, studyProgram }: CourseGroupInput
-  ): Promise<Course[]> {
-    const expressions = []
-    keyword = keyword.trim()
-    if (keyword) {
-      expressions.push({
-        $or: [
-          { courseNo: `^${keyword}` },
-          { abbrName: `'${keyword}` },
-          { courseNameTh: `'${keyword}` },
-          { courseNameEn: `'${keyword}` },
-        ],
-      })
-    }
-    if (genEdTypes.length > 0) {
-      expressions.push({
-        genEdType: genEdTypes.map((genEdType) => `=${genEdType}`).join(' | '),
-      })
-    }
-    if (dayOfWeeks.length > 0) {
-      expressions.push({
-        'sections.classes.dayOfWeek': dayOfWeeks
-          .map((dayOfWeek) => `=${dayOfWeek}`)
-          .join(' | '),
-      })
-    }
-    expressions.push({
-      semester: `=${semester}`,
-      academicYear: `=${academicYear}`,
-      studyProgram: `=${studyProgram}`,
-    })
-    const results = this.fuse
-      .search(
-        {
-          $and: expressions,
-        },
-        { limit: offset + limit }
-      )
-      .splice(offset, limit)
-      .map((result) => result.item)
-
-    return results
-  }
 }

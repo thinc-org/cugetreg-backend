@@ -1,4 +1,4 @@
-import { ConflictException, UseGuards } from '@nestjs/common'
+import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { Course, Semester } from '@thinc-org/chula-courses'
 import { AdminAuthGuard } from 'src/auth/admin.guard'
@@ -9,17 +9,12 @@ import { CourseService } from './course.service'
 export class CourseResolver {
   constructor(private readonly courseService: CourseService) {}
 
-  @Query('courses')
-  findAll(): Course[] {
-    return this.courseService.findAll()
-  }
-
   @Query('course')
   findOne(
     @Args('courseNo') courseNo: string,
     @Args('courseGroup')
     { semester, academicYear, studyProgram }: CourseGroupInput
-  ): Course {
+  ): Promise<Course> {
     return this.courseService.findOne(
       courseNo,
       semester as Semester,
@@ -39,10 +34,7 @@ export class CourseResolver {
   @UseGuards(AdminAuthGuard)
   @Mutation('refresh')
   async refresh(): Promise<string> {
-    if (this.courseService.getIsRefreshing()) {
-      throw new ConflictException('Course is already refreshing. Rejected.')
-    }
     this.courseService.refresh()
-    return 'Refreshing courses...'
+    return 'Refreshed course overrides and ratings.'
   }
 }

@@ -164,8 +164,6 @@ export class Course {
 }
 
 export abstract class IQuery {
-    abstract courses(): Course[] | Promise<Course[]>;
-
     abstract course(courseNo: string, courseGroup: CourseGroupInput): Course | Promise<Course>;
 
     abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
