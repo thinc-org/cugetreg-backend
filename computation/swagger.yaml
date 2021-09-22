@@ -1,0 +1,8 @@
+openapi: 3.0.3
+info:
+  title: "CUGetReg Computation Backend"
+  version: 0.0.1
+paths:
+  "/" :
+    get:
+      description: "Hello World"
