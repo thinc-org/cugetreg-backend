@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module'
 import { ClientLoggingModule } from './clientlogging/clientlogging.module'
 import { CommonModule } from './common/common.module'
 import { GraphQLExpressContext } from './common/types/context.type'
+import { ComputationModule } from './computation/computation.module'
 import configuration from './config/configuration'
 import { CourseModule } from './course/course.module'
 import { OverrideModule } from './override/override.module'
@@ -67,6 +68,7 @@ import { UserModule } from './user/user.module'
     ScheduleModule.forRoot(),
     ClientLoggingModule,
     OverrideModule,
+    ComputationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

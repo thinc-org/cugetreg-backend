@@ -55,6 +55,11 @@ export enum Interaction {
     D = "D"
 }
 
+export class CourseEntryInput {
+    courseId: string;
+    studyProgram: string;
+}
+
 export class FilterInput {
     keyword?: string;
     genEdTypes?: GenEdType[];
@@ -110,6 +115,23 @@ export abstract class IMutation {
     abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
 }
 
+export abstract class IQuery {
+    abstract recommendCourses(selectedCourse: CourseEntryInput[]): CourseEntry[] | Promise<CourseEntry[]>;
+
+    abstract course(courseNo: string, courseGroup: CourseGroupInput): Course | Promise<Course>;
+
+    abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
+
+    abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
+
+    abstract me(): User | Promise<User>;
+}
+
+export class CourseEntry {
+    courseId: string;
+    studyProgram: string;
+}
+
 export class Period {
     start: string;
     end: string;
@@ -161,16 +183,6 @@ export class Course {
     final?: ExamPeriod;
     sections: Section[];
     rating?: string;
-}
-
-export abstract class IQuery {
-    abstract course(courseNo: string, courseGroup: CourseGroupInput): Course | Promise<Course>;
-
-    abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
-
-    abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
-
-    abstract me(): User | Promise<User>;
 }
 
 export class GenEdOverride {

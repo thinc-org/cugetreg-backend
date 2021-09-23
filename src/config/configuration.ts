@@ -14,6 +14,7 @@ export default () => ({
   airtableReviewUrl: process.env.AIRTABLE_REVIEW_URL,
   airtableApiKey: process.env.AIRTABLE_API_KEY,
   clientLoggerUrl: process.env.CLIENT_LOGGER_URL,
+  computationBackendUrl: process.env.COMPUTATION_BACKEND_URL,
 })
 
 const requiredConfigs = [
@@ -25,6 +26,7 @@ const requiredConfigs = [
   'airtableReviewUrl',
   'airtableApiKey',
   'clientLoggerUrl',
+  'computationBackendUrl',
 ]
 
 export function validateConfig(configService: ConfigService): void {
