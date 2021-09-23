@@ -1,5 +1,5 @@
 import pandas as pd
-from suggestion.coursesuggestservice import CourseSuggestModel
+from computation.service.course_suggestion import CourseSuggestModel
 import pickle
 
 # Read CSV
@@ -29,5 +29,5 @@ print("Training")
 model = CourseSuggestModel.train(obsv)
 
 print("Writing Model")
-with open('./coursesuggestmodel.pkl', 'wb') as f:
+with open('../computation/blob/coursesuggestmodel.pkl', 'wb') as f:
     pickle.dump(model, f)

@@ -21,6 +21,6 @@ An Internal Backend Service for tasks that are not suited for the main NodeJS ba
 1. Create virtual environment `python -m venv venv`
 2. Enter virtual environment `source ./venv/bin/activate`
 3. Install dependencies `pip install -r requirements.txt`
-4. Run the service using `FLASK_APP=app flask run`
+4. Run the service using `FLASK_APP=computation.api flask run`
 5. Run the broker using `docker run -p 6379:6379 redis`
-6. Run the worker using `celery -A celery_entrypoint worker`
+6. Run the worker using `celery -A computation.celery_entrypoint worker`

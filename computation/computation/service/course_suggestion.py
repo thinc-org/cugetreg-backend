@@ -1,13 +1,10 @@
-from typing import NamedTuple
-
-from dependency_injector.wiring import Provide, inject
-from scipy.sparse import lil_matrix
-from sklearn.metrics.pairwise import cosine_similarity
-from celery import Task
 import pickle
 from os import path
 
-from worker.workerservice import WorkerService
+from celery import Task
+from dependency_injector.wiring import inject
+from scipy.sparse import lil_matrix
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 class CourseSuggestModel:
@@ -36,11 +33,11 @@ class CourseSuggestModel:
             ccmtx[cid] = dict(neigh)
         return CourseSuggestModel(ccmtx)
 
-    def infer(self, selectedCourses: list[str]) -> dict[str, float]:
+    def infer(self, selected_courses: list[str]) -> dict[str, float]:
         """Predicting all courses that will be selected using the given array of course id.
         returning mapping of course id => score """
         d = dict()
-        for c in selectedCourses:
+        for c in selected_courses:
             try:
                 cscr = self.ccmtx[c]
                 for (pcid, scr) in cscr.items():
@@ -51,56 +48,58 @@ class CourseSuggestModel:
                 pass
         return dict(sorted(d.items(), key=lambda x: x[1])[-10:])
 
+
 class CourseSuggestTask(Task):
     """Celery task for course suggestion"""
 
-    def __init__(self, workerService:WorkerService):
+    def __init__(self):
         self.model = None
-        workerService.registerTask(self)
 
-    def run(self, selectedCourse: list[str]) -> dict[str, float]:
+    def run(self, selected_course: list[str]) -> dict[str, float]:
         if self.model is None:
-            self.model = CourseSuggestTask.loadModel()
-        return self.model.infer(selectedCourse)
+            self.model = CourseSuggestTask.load_model()
+        return self.model.infer(selected_course)
 
     @staticmethod
-    def loadModel() -> CourseSuggestModel:
-        modelPath = path.join(path.dirname(__file__), "blob", "coursesuggestmodel.pkl")
-        with open(modelPath, mode="rb") as f:
+    def load_model() -> CourseSuggestModel:
+        model_path = path.join(path.dirname(__file__), "../blob", "coursesuggestmodel.pkl")
+        with open(model_path, mode="rb") as f:
             return pickle.load(f)
 
 
 class CourseVal:
-    courseId: str
-    studyProgram: str
+    course_id: str
+    study_program: str
 
-    def __init__(self, courseId: str, studyProgram: str):
-        self.courseId = courseId
-        self.studyProgram = studyProgram
+    def __init__(self, course_id: str, study_program: str):
+        self.course_id = course_id
+        self.study_program = study_program
 
     def __eq__(self, other):
-        return type(other) == CourseVal and self.courseId == other.courseId and self.studyProgram == other.studyProgram
+        return type(
+            other) == CourseVal and self.course_id == other.course_id and self.study_program == other.study_program
 
     def __repr__(self):
-        return f'CourseVal(studyProgram="{self.studyProgram}",courseId="{self.courseId}")'
+        return f'CourseVal(studyProgram="{self.study_program}",courseId="{self.course_id}")'
+
 
 @inject
 class CourseSuggestService:
     """Provide course suggestion from user's course cart"""
 
-    def __init__(self, courseSuggestTask: CourseSuggestTask):
-        self.courseSuggestTask = courseSuggestTask
+    def __init__(self, course_suggest_task: CourseSuggestTask):
+        self.courseSuggestTask = course_suggest_task
 
-    def suggestCourse(self, selectedCourse: list[CourseVal]) -> list[CourseVal]:
+    def suggest_course(self, selected_course: list[CourseVal]) -> list[CourseVal]:
         """
         Suggest course from given selected courses
-        :param selectedCourse: list of selected course
+        :param selected_course: list of selected course
         :return: list of predicted course sorted by highly likely
         """
-        selectedCourse = [c.studyProgram + ":" + c.courseId for c in selectedCourse]
-        result = self.courseSuggestTask.delay(selectedCourse).get()
+        selected_course = [c.study_program + ":" + c.course_id for c in selected_course]
+        result = self.courseSuggestTask.delay(selected_course).get()
         res = []
-        for (courseStr, _) in sorted(result.items(), key=lambda x: -x[1]):
-            std, cid = courseStr.split(':', 2)
-            res.append(CourseVal(studyProgram=std, courseId=cid))
+        for (course_str, _) in sorted(result.items(), key=lambda x: -x[1]):
+            std, cid = course_str.split(':', 2)
+            res.append(CourseVal(study_program=std, course_id=cid))
         return res

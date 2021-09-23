@@ -1,13 +1,11 @@
 from unittest import TestCase, mock, main
-from suggestion.coursesuggestservice import CourseSuggestModel, CourseSuggestTask, CourseSuggestService, CourseVal
+from computation.service.course_suggestion import CourseSuggestModel, CourseSuggestTask, CourseSuggestService, CourseVal
 from math import sqrt
-
-from worker.workerservice import WorkerService
 
 
 class SuggestionModelTest(TestCase):
 
-    def test_infer_shouldSumVec(self):
+    def test_infer_should_sum_vec(self):
         ccvec = {
             'courseA': {'courseP': 0.1,  'courseQ': 0.2, 'courseR': 0.3},
             'courseB': {'courseP': 0.7, 'courseQ': 0.1}
@@ -24,7 +22,7 @@ class SuggestionModelTest(TestCase):
         self.assertAlmostEqual(res['courseQ'], 0.3)
         self.assertAlmostEqual(res['courseR'], 0.3)
 
-    def test_infer_shouldKeepMax20(self):
+    def test_infer_should_keep_max_20(self):
         ccvec = {
             'courseA': dict(('course' + str(i), i) for i in range(50))
         }
@@ -42,29 +40,26 @@ class SuggestionModelTest(TestCase):
         model = CourseSuggestModel.train([{'a', 'b'},  {'a', 'b'}, {'a', 'c'}])
         self.assertAlmostEqual(model.ccmtx['a']['a'], 1)
         self.assertAlmostEqual(model.ccmtx['a']['b'], 2/sqrt(6))
-        self.assertAlmostEqual(model.ccmtx['a']['c'], 1/ sqrt(3))
+        self.assertAlmostEqual(model.ccmtx['a']['c'], 1 / sqrt(3))
         self.assertAlmostEqual(model.ccmtx['b']['a'], 2/sqrt(6))
         self.assertAlmostEqual(model.ccmtx['b']['b'], 1)
         self.assertAlmostEqual(model.ccmtx['c']['a'], 1 / sqrt(3))
         self.assertAlmostEqual(model.ccmtx['c']['c'], 1)
 
+
 class CourseSuggestTaskTest(TestCase):
 
-    def test_shouldRegisterSelf(self):
-        wkr = mock.Mock(spec=WorkerService)
-        task = CourseSuggestTask(workerService=wkr)
-        wkr.registerTask.assert_called_with(task)
-
     def test_canloadmodel(self):
-        task = CourseSuggestTask(workerService=mock.Mock())
-        model = task.loadModel()
+        task = CourseSuggestTask()
+        model = task.load_model()
         model.infer([])
 
     def test_canrun(self):
-        task = CourseSuggestTask(workerService=mock.Mock())
+        task = CourseSuggestTask()
         task.model = mock.Mock()
         task.model.infer.return_value= ["MyCourse"]
         self.assertListEqual(task.run([]), ["MyCourse"])
+
 
 class CourseSuggestServiceTest(TestCase):
 
@@ -72,11 +67,12 @@ class CourseSuggestServiceTest(TestCase):
         task = mock.Mock()
         task.delay().get.return_value = {"S:ABC": 2, "T:III": 10}
         srv = CourseSuggestService(task)
-        result = srv.suggestCourse([CourseVal(courseId="123", studyProgram="S")])
+        result = srv.suggest_course([CourseVal(course_id="123", study_program="S")])
 
         task.delay.assert_called_with(["S:123"])
-        self.assertEqual(result[0], CourseVal(studyProgram="T", courseId="III"))
-        self.assertEqual(result[1], CourseVal(studyProgram='S', courseId='ABC'))
+        self.assertEqual(result[0], CourseVal(study_program="T", course_id="III"))
+        self.assertEqual(result[1], CourseVal(study_program='S', course_id='ABC'))
+
 
 if __name__ == '__main__':
     main()

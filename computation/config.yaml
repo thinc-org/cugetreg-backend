@@ -1,2 +1,2 @@
 celery:
-  broker_url: "redis://redis"
+  broker_url: ${REDIS_URL:"redis://localhost"}
