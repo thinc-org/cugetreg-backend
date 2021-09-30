@@ -39,6 +39,7 @@ type Course {
 
   # Course info
   courseNo: String!
+  courseDesc: String
   abbrName: String!
   courseNameTh: String!
   courseNameEn: String!
