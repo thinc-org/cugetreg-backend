@@ -55,6 +55,11 @@ export enum Interaction {
     D = "D"
 }
 
+export enum Status {
+    APPROVED = "APPROVED",
+    REJECTED = "REJECTED"
+}
+
 export class FilterInput {
     keyword?: string;
     genEdTypes?: GenEdType[];
@@ -109,6 +114,8 @@ export abstract class IMutation {
     abstract removeReview(reviewId: string): Review | Promise<Review>;
 
     abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
+
+    abstract setReviewStatus(reviewId: string, status: Status): string | Promise<string>;
 }
 
 export class Period {
@@ -171,6 +178,8 @@ export abstract class IQuery {
     abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
 
     abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
+
+    abstract pendingReviews(): Review[] | Promise<Review[]>;
 
     abstract me(): User | Promise<User>;
 }
