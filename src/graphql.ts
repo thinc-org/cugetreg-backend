@@ -76,6 +76,7 @@ export class GenEdOverrideInput {
 
 export class OverrideInput {
     courseNo: string;
+    courseDesc?: string;
     genEd?: GenEdOverrideInput;
 }
 
@@ -148,6 +149,7 @@ export class Course {
     semester: string;
     academicYear: string;
     courseNo: string;
+    courseDesc?: string;
     abbrName: string;
     courseNameTh: string;
     courseNameEn: string;
@@ -180,6 +182,7 @@ export class GenEdOverride {
 
 export class Override {
     courseNo: string;
+    courseDesc?: string;
     genEd?: GenEdOverride;
 }
 

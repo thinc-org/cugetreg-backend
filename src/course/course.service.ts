@@ -153,6 +153,9 @@ export class CourseService implements OnApplicationBootstrap {
         section.genEdType = getGenEdType(section)
       }
     }
+    if (override?.courseDesc) {
+      course.courseDesc = override.courseDesc
+    }
 
     // populate rating
     course.rating = this.ratings[course.studyProgram][course.courseNo]
