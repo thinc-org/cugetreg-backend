@@ -11,8 +11,6 @@ export default () => ({
   jwtSecret: process.env.JWT_SECRET,
   adminToken: process.env.ADMIN_TOKEN,
   isProduction: process.env.IS_PRODUCTION === 'true',
-  airtableReviewUrl: process.env.AIRTABLE_REVIEW_URL,
-  airtableApiKey: process.env.AIRTABLE_API_KEY,
   clientLoggerUrl: process.env.CLIENT_LOGGER_URL,
 })
 
@@ -22,8 +20,6 @@ const requiredConfigs = [
   'googleAuthClientId',
   'jwtSecret',
   'adminToken',
-  'airtableReviewUrl',
-  'airtableApiKey',
   'clientLoggerUrl',
 ]
 

@@ -1,6 +1,4 @@
 import {
-  forwardRef,
-  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -33,7 +31,6 @@ export class CourseService implements OnApplicationBootstrap {
   private logger = new Logger(CourseService.name)
 
   constructor(
-    @Inject(forwardRef(() => ReviewService))
     private reviewService: ReviewService,
     private overrideService: OverrideService,
     @InjectModel('course') private courseModel: Model<CourseDocument>
