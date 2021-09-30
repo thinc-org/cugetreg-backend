@@ -3,6 +3,11 @@ enum Interaction {
   D
 }
 
+enum Status {
+  APPROVED
+  REJECTED
+}
+
 type Review {
   _id: String!
   rating: Int!
@@ -27,10 +32,12 @@ input CreateReviewInput {
 
 type Query {
   reviews(courseNo: String!, studyProgram: StudyProgram!): [Review!]!
+  pendingReviews: [Review!]!
 }
 
 type Mutation {
   createReview(createReviewInput: CreateReviewInput!): Review!
   removeReview(reviewId: String!): Review!
   setInteraction(reviewId: String!, interaction: Interaction!): Review!
+  setReviewStatus(reviewId: String!, status: Status!): String!
 }
