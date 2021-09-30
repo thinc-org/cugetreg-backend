@@ -98,6 +98,7 @@ export class CourseService implements OnApplicationBootstrap {
       dayOfWeeks = [],
       limit = 10,
       offset = 0,
+      periodRange,
     }: FilterInput,
     { semester, academicYear, studyProgram }: CourseGroupInput
   ): Promise<Course[]> {
@@ -115,11 +116,31 @@ export class CourseService implements OnApplicationBootstrap {
         { courseNameEn: new RegExp(keyword, 'i') },
       ]
     }
+
     if (genEdTypes.length > 0) {
       query.genEdType = { $in: genEdTypes }
     }
+
     if (dayOfWeeks.length > 0) {
       query['sections.classes.dayOfWeek'] = { $in: dayOfWeeks }
+    }
+
+    if (periodRange) {
+      const { start, end } = periodRange
+      if (!isTime(start) || !isTime(end)) {
+        throw new BadRequestException({
+          reason: 'INVALID_PERIOD_RANGE',
+          message: 'Start time or end time is invalid',
+        })
+      }
+      if (start > end) {
+        throw new BadRequestException({
+          reason: 'INVALID_PERIOD_RANGE',
+          message: 'Start time cannot be later than end time',
+        })
+      }
+      query['sections.classes.period.start'] = { $lte: end, $nin: ['IA', 'AR'] }
+      query['sections.classes.period.end'] = { $gte: start, $nin: ['IA', 'AR'] }
     }
 
     const courses = await this.courseModel
@@ -192,4 +213,9 @@ function getGenEdType(section: Section): GenEdType {
     return 'NO'
   }
   return 'NO'
+}
+
+function isTime(timeString: string): boolean {
+  const timeRegex = /^\d{2}:\d{2}$/
+  return timeRegex.test(timeString)
 }
