@@ -60,12 +60,18 @@ export enum Status {
     REJECTED = "REJECTED"
 }
 
+export class PeriodRangeInput {
+    start: string;
+    end: string;
+}
+
 export class FilterInput {
     keyword?: string;
     genEdTypes?: GenEdType[];
     dayOfWeeks?: DayOfWeek[];
     limit?: number;
     offset?: number;
+    periodRange?: PeriodRangeInput;
 }
 
 export class CourseGroupInput {
