@@ -10,7 +10,6 @@ export default () => ({
   googleAuthClientId: process.env.GOOGLE_AUTH_CLIENTID,
   jwtSecret: process.env.JWT_SECRET,
   adminToken: process.env.ADMIN_TOKEN,
-  isProduction: process.env.IS_PRODUCTION === 'true',
   clientLoggerUrl: process.env.CLIENT_LOGGER_URL,
 })
 
