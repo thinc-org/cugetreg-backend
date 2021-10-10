@@ -9,6 +9,11 @@ import { CourseService } from './course.service'
 export class CourseResolver {
   constructor(private readonly courseService: CourseService) {}
 
+  @Query('courseNos')
+  courseNos(): Promise<string[]> {
+    return this.courseService.getAllCourseNos()
+  }
+
   @Query('course')
   findOne(
     @Args('courseNo') courseNo: string,

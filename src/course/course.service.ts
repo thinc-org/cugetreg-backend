@@ -92,6 +92,13 @@ export class CourseService implements OnApplicationBootstrap {
     return this.populate(course)
   }
 
+  async getAllCourseNos(): Promise<string[]> {
+    const courseNos = (
+      await this.courseModel.aggregate([{ $group: { _id: '$courseNo' } }])
+    ).map((result) => result._id) as string[]
+    return courseNos
+  }
+
   async search(
     {
       keyword = '',

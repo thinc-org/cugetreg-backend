@@ -82,6 +82,7 @@ input CourseGroupInput {
 }
 
 type Query {
+  courseNos: [String!]!
   course(courseNo: String!, courseGroup: CourseGroupInput!): Course!
   search(filter: FilterInput!, courseGroup: CourseGroupInput!): [Course!]!
 }
