@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { Course, Semester } from '@thinc-org/chula-courses'
+import { Course, Semester, StudyProgram } from '@thinc-org/chula-courses'
 import { AdminAuthGuard } from 'src/auth/admin.guard'
 import { CourseGroupInput, FilterInput } from 'src/graphql'
 import { CourseService } from './course.service'
@@ -10,7 +10,7 @@ export class CourseResolver {
   constructor(private readonly courseService: CourseService) {}
 
   @Query('courseNos')
-  courseNos(): Promise<string[]> {
+  courseNos(): Promise<Record<StudyProgram, string[]>> {
     return this.courseService.getAllCourseNos()
   }
 
