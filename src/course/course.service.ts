@@ -100,11 +100,11 @@ export class CourseService implements OnApplicationBootstrap {
         },
       },
     ])
-    const courseNos = {
+    const courseNos: Record<StudyProgram, string[]> = {
       S: [],
       T: [],
       I: [],
-    } as Record<StudyProgram, string[]>
+    }
     for (const course of courses) {
       courseNos[course._id.studyProgram].push(course._id.courseNo)
     }
