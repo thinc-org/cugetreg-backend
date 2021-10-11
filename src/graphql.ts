@@ -178,7 +178,15 @@ export class Course {
     rating?: string;
 }
 
+export class CourseNosOutput {
+    S: string[];
+    T: string[];
+    I: string[];
+}
+
 export abstract class IQuery {
+    abstract courseNos(): CourseNosOutput | Promise<CourseNosOutput>;
+
     abstract course(courseNo: string, courseGroup: CourseGroupInput): Course | Promise<Course>;
 
     abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;

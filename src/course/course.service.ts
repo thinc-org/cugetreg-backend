@@ -92,6 +92,25 @@ export class CourseService implements OnApplicationBootstrap {
     return this.populate(course)
   }
 
+  async getAllCourseNos(): Promise<Record<StudyProgram, string[]>> {
+    const courses = await this.courseModel.aggregate([
+      {
+        $group: {
+          _id: { courseNo: '$courseNo', studyProgram: '$studyProgram' },
+        },
+      },
+    ])
+    const courseNos: Record<StudyProgram, string[]> = {
+      S: [],
+      T: [],
+      I: [],
+    }
+    for (const course of courses) {
+      courseNos[course._id.studyProgram].push(course._id.courseNo)
+    }
+    return courseNos
+  }
+
   async search(
     {
       keyword = '',

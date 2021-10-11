@@ -81,7 +81,14 @@ input CourseGroupInput {
   studyProgram: StudyProgram!
 }
 
+type CourseNosOutput {
+  S: [String!]!
+  T: [String!]!
+  I: [String!]!
+}
+
 type Query {
+  courseNos: CourseNosOutput
   course(courseNo: String!, courseGroup: CourseGroupInput!): Course!
   search(filter: FilterInput!, courseGroup: CourseGroupInput!): [Course!]!
 }
