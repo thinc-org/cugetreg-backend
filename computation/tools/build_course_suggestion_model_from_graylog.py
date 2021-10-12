@@ -29,5 +29,5 @@ print("Training")
 model = CourseSuggestModel.train(obsv)
 
 print("Writing Model")
-with open('../computation/blob/coursesuggestmodel.pkl', 'wb') as f:
+with open('../computation/blob/course_suggest_model.pkl', 'wb') as f:
     pickle.dump(model, f)

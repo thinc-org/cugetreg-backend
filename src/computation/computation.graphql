@@ -1,5 +1,5 @@
 type Query {
-    recommendCourses(selectedCourse: [CourseEntryInput!]!): [CourseEntry!]!
+    recommendCourses(selectedCourses: [CourseEntryInput!]!): [CourseEntry!]!
 }
 
 input CourseEntryInput {

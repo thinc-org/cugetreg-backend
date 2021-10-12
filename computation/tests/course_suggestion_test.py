@@ -1,5 +1,5 @@
 from unittest import TestCase, mock, main
-from computation.service.course_suggestion import CourseSuggestModel, CourseSuggestTask, CourseSuggestService, CourseVal
+from computation.service.course_suggestion import CourseSuggestModel, CourseSuggestionTask, CourseSuggestionService, CourseVal
 from math import sqrt
 
 
@@ -50,12 +50,12 @@ class SuggestionModelTest(TestCase):
 class CourseSuggestTaskTest(TestCase):
 
     def test_canloadmodel(self):
-        task = CourseSuggestTask()
+        task = CourseSuggestionTask()
         model = task.load_model()
         model.infer([])
 
     def test_canrun(self):
-        task = CourseSuggestTask()
+        task = CourseSuggestionTask()
         task.model = mock.Mock()
         task.model.infer.return_value= ["MyCourse"]
         self.assertListEqual(task.run([]), ["MyCourse"])
@@ -66,7 +66,7 @@ class CourseSuggestServiceTest(TestCase):
     def test_transform(self):
         task = mock.Mock()
         task.delay().get.return_value = {"S:ABC": 2, "T:III": 10}
-        srv = CourseSuggestService(task)
+        srv = CourseSuggestionService(task)
         result = srv.suggest_course([CourseVal(course_id="123", study_program="S")])
 
         task.delay.assert_called_with(["S:123"])

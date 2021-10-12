@@ -5,7 +5,7 @@ from flask import request
 from werkzeug.exceptions import BadRequest
 
 from computation.container import AppContainer
-from computation.service.course_suggestion import CourseSuggestTask
+from computation.service.course_suggestion import CourseSuggestionTask
 
 
 def req_json(schema: dict) -> dict:
@@ -24,6 +24,6 @@ def req_json(schema: dict) -> dict:
 @inject
 def init_celery(
         celery_inst: Celery = Provide[AppContainer.celery]
-        , course_suggest_tasks: CourseSuggestTask = Provide[AppContainer.course_suggestion_task]
+        , course_suggest_tasks: CourseSuggestionTask = Provide[AppContainer.course_suggestion_task]
 ):
     celery_inst.register_task(course_suggest_tasks)

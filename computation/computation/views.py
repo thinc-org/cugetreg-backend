@@ -2,15 +2,15 @@ from dependency_injector.wiring import inject, Provide
 
 from computation.container import AppContainer
 from computation.helpers import req_json
-from computation.service.course_suggestion import CourseSuggestService, CourseVal
+from computation.service.course_suggestion import CourseSuggestionService, CourseVal
 
 
 @inject
-def course_suggest_view(course_suggest_service: CourseSuggestService = Provide[AppContainer.course_suggestion_service]):
+def course_suggest_view(course_suggest_service: CourseSuggestionService = Provide[AppContainer.course_suggestion_service]):
     """Retrieve course suggestion"""
 
     schema = {
-        'selectedCourse': {
+        'selectedCourses': {
             'required': True,
             'type': 'list',
             'schema': {
@@ -23,11 +23,11 @@ def course_suggest_view(course_suggest_service: CourseSuggestService = Provide[A
         }
     }
     body = req_json(schema)
-    selected_course = [
+    selected_courses = [
         CourseVal(course_id=c['courseId'], study_program=c['studyProgram'])
-        for c in body['selectedCourse']
+        for c in body['selectedCourses']
     ]
-    result = course_suggest_service.suggest_course(selected_course)
+    result = course_suggest_service.suggest_course(selected_courses)
     return {"suggestions": [
         {
             "courseId": r.course_id,

@@ -49,7 +49,7 @@ class CourseSuggestModel:
         return dict(sorted(d.items(), key=lambda x: x[1])[-10:])
 
 
-class CourseSuggestTask(Task):
+class CourseSuggestionTask(Task):
     """Celery task for course suggestion"""
 
     def __init__(self):
@@ -57,12 +57,12 @@ class CourseSuggestTask(Task):
 
     def run(self, selected_course: list[str]) -> dict[str, float]:
         if self.model is None:
-            self.model = CourseSuggestTask.load_model()
+            self.model = CourseSuggestionTask.load_model()
         return self.model.infer(selected_course)
 
     @staticmethod
     def load_model() -> CourseSuggestModel:
-        model_path = path.join(path.dirname(__file__), "../blob", "coursesuggestmodel.pkl")
+        model_path = path.join(path.dirname(__file__), "../blob", "course_suggest_model.pkl")
         with open(model_path, mode="rb") as f:
             return pickle.load(f)
 
@@ -84,10 +84,10 @@ class CourseVal:
 
 
 @inject
-class CourseSuggestService:
+class CourseSuggestionService:
     """Provide course suggestion from user's course cart"""
 
-    def __init__(self, course_suggest_task: CourseSuggestTask):
+    def __init__(self, course_suggest_task: CourseSuggestionTask):
         self.courseSuggestTask = course_suggest_task
 
     def suggest_course(self, selected_course: list[CourseVal]) -> list[CourseVal]:

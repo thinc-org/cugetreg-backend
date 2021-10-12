@@ -116,7 +116,7 @@ export abstract class IMutation {
 }
 
 export abstract class IQuery {
-    abstract recommendCourses(selectedCourse: CourseEntryInput[]): CourseEntry[] | Promise<CourseEntry[]>;
+    abstract recommendCourses(selectedCourses: CourseEntryInput[]): CourseEntry[] | Promise<CourseEntry[]>;
 
     abstract course(courseNo: string, courseGroup: CourseGroupInput): Course | Promise<Course>;
 
