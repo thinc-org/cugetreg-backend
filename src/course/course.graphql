@@ -39,6 +39,7 @@ type Course {
 
   # Course info
   courseNo: String!
+  courseDesc: String
   abbrName: String!
   courseNameTh: String!
   courseNameEn: String!
@@ -60,12 +61,18 @@ type Course {
   rating: String
 }
 
+input PeriodRangeInput {
+  start: String!
+  end: String!
+}
+
 input FilterInput {
   keyword: String
   genEdTypes: [GenEdType!]
   dayOfWeeks: [DayOfWeek!]
   limit: Int
   offset: Int
+  periodRange: PeriodRangeInput
 }
 
 input CourseGroupInput {
@@ -74,7 +81,14 @@ input CourseGroupInput {
   studyProgram: StudyProgram!
 }
 
+type CourseNosOutput {
+  S: [String!]!
+  T: [String!]!
+  I: [String!]!
+}
+
 type Query {
+  courseNos: CourseNosOutput
   course(courseNo: String!, courseGroup: CourseGroupInput!): Course!
   search(filter: FilterInput!, courseGroup: CourseGroupInput!): [Course!]!
 }

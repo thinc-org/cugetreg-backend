@@ -1,6 +1,5 @@
 import {
-  forwardRef,
-  Inject,
+  BadRequestException,
   Injectable,
   Logger,
   NotFoundException,
@@ -33,7 +32,6 @@ export class CourseService implements OnApplicationBootstrap {
   private logger = new Logger(CourseService.name)
 
   constructor(
-    @Inject(forwardRef(() => ReviewService))
     private reviewService: ReviewService,
     private overrideService: OverrideService,
     @InjectModel('course') private courseModel: Model<CourseDocument>
@@ -94,6 +92,25 @@ export class CourseService implements OnApplicationBootstrap {
     return this.populate(course)
   }
 
+  async getAllCourseNos(): Promise<Record<StudyProgram, string[]>> {
+    const courses = await this.courseModel.aggregate([
+      {
+        $group: {
+          _id: { courseNo: '$courseNo', studyProgram: '$studyProgram' },
+        },
+      },
+    ])
+    const courseNos: Record<StudyProgram, string[]> = {
+      S: [],
+      T: [],
+      I: [],
+    }
+    for (const course of courses) {
+      courseNos[course._id.studyProgram].push(course._id.courseNo)
+    }
+    return courseNos
+  }
+
   async search(
     {
       keyword = '',
@@ -101,6 +118,7 @@ export class CourseService implements OnApplicationBootstrap {
       dayOfWeeks = [],
       limit = 10,
       offset = 0,
+      periodRange,
     }: FilterInput,
     { semester, academicYear, studyProgram }: CourseGroupInput
   ): Promise<Course[]> {
@@ -118,11 +136,31 @@ export class CourseService implements OnApplicationBootstrap {
         { courseNameEn: new RegExp(keyword, 'i') },
       ]
     }
+
     if (genEdTypes.length > 0) {
       query.genEdType = { $in: genEdTypes }
     }
+
     if (dayOfWeeks.length > 0) {
       query['sections.classes.dayOfWeek'] = { $in: dayOfWeeks }
+    }
+
+    if (periodRange) {
+      const { start, end } = periodRange
+      if (!isTime(start) || !isTime(end)) {
+        throw new BadRequestException({
+          reason: 'INVALID_PERIOD_RANGE',
+          message: 'Start time or end time is invalid',
+        })
+      }
+      if (start > end) {
+        throw new BadRequestException({
+          reason: 'INVALID_PERIOD_RANGE',
+          message: 'Start time cannot be later than end time',
+        })
+      }
+      query['sections.classes.period.start'] = { $lt: end, $nin: ['IA', 'AR'] }
+      query['sections.classes.period.end'] = { $gt: start, $nin: ['IA', 'AR'] }
     }
 
     const courses = await this.courseModel
@@ -152,6 +190,9 @@ export class CourseService implements OnApplicationBootstrap {
       for (const section of course.sections) {
         section.genEdType = getGenEdType(section)
       }
+    }
+    if (override?.courseDesc) {
+      course.courseDesc = override.courseDesc
     }
 
     // populate rating
@@ -192,4 +233,9 @@ function getGenEdType(section: Section): GenEdType {
     return 'NO'
   }
   return 'NO'
+}
+
+function isTime(timeString: string): boolean {
+  const timeRegex = /^\d{2}:\d{2}$/
+  return timeRegex.test(timeString)
 }

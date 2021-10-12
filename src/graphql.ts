@@ -55,9 +55,19 @@ export enum Interaction {
     D = "D"
 }
 
+export enum Status {
+    APPROVED = "APPROVED",
+    REJECTED = "REJECTED"
+}
+
 export class CourseEntryInput {
     courseId: string;
     studyProgram: string;
+}
+
+export class PeriodRangeInput {
+    start: string;
+    end: string;
 }
 
 export class FilterInput {
@@ -66,6 +76,7 @@ export class FilterInput {
     dayOfWeeks?: DayOfWeek[];
     limit?: number;
     offset?: number;
+    periodRange?: PeriodRangeInput;
 }
 
 export class CourseGroupInput {
@@ -81,6 +92,7 @@ export class GenEdOverrideInput {
 
 export class OverrideInput {
     courseNo: string;
+    courseDesc?: string;
     genEd?: GenEdOverrideInput;
 }
 
@@ -113,16 +125,22 @@ export abstract class IMutation {
     abstract removeReview(reviewId: string): Review | Promise<Review>;
 
     abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
+
+    abstract setReviewStatus(reviewId: string, status: Status): string | Promise<string>;
 }
 
 export abstract class IQuery {
     abstract recommendCourses(selectedCourses: CourseEntryInput[]): CourseEntry[] | Promise<CourseEntry[]>;
+
+    abstract courseNos(): CourseNosOutput | Promise<CourseNosOutput>;
 
     abstract course(courseNo: string, courseGroup: CourseGroupInput): Course | Promise<Course>;
 
     abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
 
     abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
+
+    abstract pendingReviews(): Review[] | Promise<Review[]>;
 
     abstract me(): User | Promise<User>;
 }
@@ -170,6 +188,7 @@ export class Course {
     semester: string;
     academicYear: string;
     courseNo: string;
+    courseDesc?: string;
     abbrName: string;
     courseNameTh: string;
     courseNameEn: string;
@@ -185,6 +204,12 @@ export class Course {
     rating?: string;
 }
 
+export class CourseNosOutput {
+    S: string[];
+    T: string[];
+    I: string[];
+}
+
 export class GenEdOverride {
     genEdType: GenEdType;
     sections: string[];
@@ -192,6 +217,7 @@ export class GenEdOverride {
 
 export class Override {
     courseNo: string;
+    courseDesc?: string;
     genEd?: GenEdOverride;
 }
 

@@ -1,20 +1,17 @@
 import {
+  BadRequestException,
   ConflictException,
-  forwardRef,
-  HttpService,
-  Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Semester, StudyProgram } from '@thinc-org/chula-courses'
+import { StudyProgram } from '@thinc-org/chula-courses'
 import { Model, Types } from 'mongoose'
-import { CourseService } from 'src/course/course.service'
 import {
   CreateReviewInput,
   Interaction as GraphQLInteraction,
   Review,
+  Status,
   StudyProgram as GraphQLStudyProgram,
 } from 'src/graphql'
 import { Interaction, ReviewDocument } from 'src/schemas/review.schema'
@@ -22,10 +19,7 @@ import { Interaction, ReviewDocument } from 'src/schemas/review.schema'
 @Injectable()
 export class ReviewService {
   constructor(
-    @InjectModel('review') private reviewModel: Model<ReviewDocument>,
-    private airtableClient: HttpService,
-    @Inject(forwardRef(() => CourseService))
-    private courseService: CourseService
+    @InjectModel('review') private reviewModel: Model<ReviewDocument>
   ) {}
 
   async getReviews(): Promise<ReviewDocument[]> {
@@ -67,30 +61,6 @@ export class ReviewService {
       status: 'PENDING',
     })
 
-    const abbrName = (
-      await this.courseService.findOne(
-        courseNo,
-        semester as Semester,
-        academicYear,
-        studyProgram
-      )
-    ).abbrName
-
-    await this.airtableClient
-      .post('/', {
-        fields: {
-          reviewId: newReview._id,
-          status: 'Awaiting approval',
-          rating: `${rating / 2}/5`,
-          course: `${courseNo} ${abbrName}`,
-          semester,
-          studyProgram,
-          academicYear,
-          content,
-        },
-      })
-      .toPromise()
-
     return this.transformReview(await newReview.save(), userId)
   }
 
@@ -109,7 +79,10 @@ export class ReviewService {
       .map((rawReview) => this.transformReview(rawReview, userId))
   }
 
-  // TODO: hide reviews?
+  async getPending(): Promise<Review[]> {
+    const reviews = await this.reviewModel.find({ status: 'PENDING' })
+    return reviews.map((rawReview) => this.transformReview(rawReview, null))
+  }
 
   async remove(reviewId: string, userId: string): Promise<Review> {
     const review = await this.reviewModel.findOneAndDelete({
@@ -132,8 +105,10 @@ export class ReviewService {
       },
     })
     if (!review) {
-      const logger = new Logger('ReviewApproval')
-      logger.error(`Error approving review ${reviewId}: Review not found`)
+      throw new NotFoundException({
+        reason: 'REVIEW_NOT_FOUND',
+        message: `Error approving review ${reviewId}: Review not found`,
+      })
     }
     return review
   }
@@ -141,10 +116,29 @@ export class ReviewService {
   async reject(reviewId: string): Promise<ReviewDocument> {
     const review = await this.reviewModel.findByIdAndDelete(reviewId)
     if (!review) {
-      const logger = new Logger('ReviewApproval')
-      logger.error(`Error rejecting review ${reviewId}: Review not found`)
+      throw new NotFoundException({
+        reason: 'REVIEW_NOT_FOUND',
+        message: `Error approving review ${reviewId}: Review not found`,
+      })
     }
     return review
+  }
+
+  // TODO: hide reviews?
+
+  async setStatus(reviewId: string, status: Status): Promise<string> {
+    if (status === 'APPROVED') {
+      await this.approve(reviewId)
+    } else if (status === 'REJECTED') {
+      await this.reject(reviewId)
+    } else {
+      throw new BadRequestException({
+        reason: 'INVALID_STATUS',
+        message: 'Only APPROVED and REJECTED status is supported',
+      })
+    }
+
+    return 'Review status updated successfully'
   }
 
   async setInteraction(

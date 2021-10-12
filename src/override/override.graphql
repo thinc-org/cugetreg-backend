@@ -5,6 +5,7 @@ type GenEdOverride {
 
 type Override {
   courseNo: String!
+  courseDesc: String
   genEd: GenEdOverride
 }
 
@@ -15,6 +16,7 @@ input GenEdOverrideInput {
 
 input OverrideInput {
   courseNo: String!
+  courseDesc: String
   genEd: GenEdOverrideInput
 }
 
