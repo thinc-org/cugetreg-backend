@@ -86,5 +86,5 @@ jobs:
             docker-compose up -d 
             if [[ "$(docker images --filter "dangling=true" -q)" == "" ]]; 
               then echo "No image with <none> tag";
-              else docker rmi -f $(docker images --filter "dangling=true" -q);
+              else docker rmi $(docker images --filter "dangling=true" -q);
             fi
