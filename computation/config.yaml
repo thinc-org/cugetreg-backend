@@ -1,0 +1,2 @@
+celery:
+  broker_url: ${REDIS_URL:"redis://localhost"}

@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  backend:
+    build: .
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
+    command: "gunicorn -b 0.0.0.0:8000 computation.api:app"
+    environment:
+      REDIS_URL: "redis://redis"
+    links:
+      - redis
+  worker:
+    build: .
+    command: "celery -A computation.celery_entrypoint worker"
+    links:
+      - redis
+    environment:
+      REDIS_URL: "redis://redis"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"

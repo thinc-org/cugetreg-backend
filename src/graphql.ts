@@ -60,6 +60,11 @@ export enum Status {
     REJECTED = "REJECTED"
 }
 
+export class CourseEntryInput {
+    courseId: string;
+    studyProgram: string;
+}
+
 export class PeriodRangeInput {
     start: string;
     end: string;
@@ -124,6 +129,27 @@ export abstract class IMutation {
     abstract setReviewStatus(reviewId: string, status: Status): string | Promise<string>;
 }
 
+export abstract class IQuery {
+    abstract recommendCourses(selectedCourses: CourseEntryInput[]): CourseEntry[] | Promise<CourseEntry[]>;
+
+    abstract courseNos(): CourseNosOutput | Promise<CourseNosOutput>;
+
+    abstract course(courseNo: string, courseGroup: CourseGroupInput): Course | Promise<Course>;
+
+    abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
+
+    abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
+
+    abstract pendingReviews(): Review[] | Promise<Review[]>;
+
+    abstract me(): User | Promise<User>;
+}
+
+export class CourseEntry {
+    courseId: string;
+    studyProgram: string;
+}
+
 export class Period {
     start: string;
     end: string;
@@ -182,20 +208,6 @@ export class CourseNosOutput {
     S: string[];
     T: string[];
     I: string[];
-}
-
-export abstract class IQuery {
-    abstract courseNos(): CourseNosOutput | Promise<CourseNosOutput>;
-
-    abstract course(courseNo: string, courseGroup: CourseGroupInput): Course | Promise<Course>;
-
-    abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
-
-    abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
-
-    abstract pendingReviews(): Review[] | Promise<Review[]>;
-
-    abstract me(): User | Promise<User>;
 }
 
 export class GenEdOverride {

@@ -11,6 +11,7 @@ export default () => ({
   jwtSecret: process.env.JWT_SECRET,
   adminToken: process.env.ADMIN_TOKEN,
   clientLoggerUrl: process.env.CLIENT_LOGGER_URL,
+  computationBackendUrl: process.env.COMPUTATION_BACKEND_URL,
 })
 
 const requiredConfigs = [
@@ -20,6 +21,7 @@ const requiredConfigs = [
   'jwtSecret',
   'adminToken',
   'clientLoggerUrl',
+  'computationBackendUrl',
 ]
 
 export function validateConfig(configService: ConfigService): void {
