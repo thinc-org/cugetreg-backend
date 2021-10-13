@@ -1,50 +1,49 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { buildSchema, prop } from '@typegoose/typegoose'
 import { IsString } from 'class-validator'
 import * as mongoose from 'mongoose'
 
 export class GoogleUserData {
-  @Prop({ required: true })
+  @prop({ required: true })
   googleId: string
 
-  @Prop()
+  @prop()
   hasMigratedGDrive: boolean
 }
 
 export class CourseCartItem {
-  @Prop()
+  @prop()
   @IsString()
   studyProgram: string
-  @Prop()
+  @prop()
   @IsString()
   academicYear: string
-  @Prop()
+  @prop()
   @IsString()
   semester: string
-  @Prop()
+  @prop()
   @IsString()
   courseNo: string
-  @Prop()
+  @prop()
   @IsString()
   selectedSectionNo: string
 }
 
 export class CourseCart {
-  @Prop({ type: () => [CourseCartItem] })
+  @prop({ type: () => [CourseCartItem] })
   cartContent: CourseCartItem[]
 }
 
-@Schema()
 export class User {
-  @Prop({ required: true })
+  @prop({ required: true })
   email: string
-  @Prop()
+  @prop()
   name: string
-  @Prop()
+  @prop()
   google: GoogleUserData
-  @Prop()
+  @prop()
   courseCart: CourseCart
 }
 
 export type UserDocument = User & mongoose.Document
 
-export const UserSchema = SchemaFactory.createForClass(User)
+export const UserSchema = buildSchema(User)
