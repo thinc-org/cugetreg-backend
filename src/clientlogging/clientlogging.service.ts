@@ -6,16 +6,13 @@ import {
 import { ConfigService } from '@nestjs/config'
 import * as http from 'http'
 import * as https from 'https'
+import { hostname } from 'os'
 
 export interface GelfLogEntry {
-  version: '1.1'
-  host: string
   short_message: string
   full_message?: string
   _kind: string
-  _app: 'frontend-client'
-  _source_ip: string
-  _google_id?: string
+  _app: 'frontend-client' | 'backend'
 }
 
 @Injectable()
@@ -38,10 +35,18 @@ export class ClientLoggingService {
   async sendLogEntry(entry: GelfLogEntry & Record<string, string>) {
     try {
       const res = await this.httpService
-        .post(this.configService.get('clientLoggerUrl'), entry, {
-          httpAgent: this.httpAg,
-          httpsAgent: this.httpsAg,
-        })
+        .post(
+          this.configService.get('clientLoggerUrl'),
+          {
+            ...entry,
+            version: '1.1',
+            host: hostname(),
+          },
+          {
+            httpAgent: this.httpAg,
+            httpsAgent: this.httpsAg,
+          }
+        )
         .toPromise()
       return res.data
     } catch (e) {

@@ -4,6 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express'
 import { AppModule } from './app.module'
 import { HttpExceptionFilter } from './common/filters/httpException.filter'
 import { validateConfig } from './config/configuration'
+import cookieParser = require('cookie-parser')
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
@@ -19,6 +20,8 @@ async function bootstrap() {
   app.set('trust proxy', 1)
 
   app.useGlobalFilters(new HttpExceptionFilter())
+  app.setGlobalPrefix('/api')
+  app.use(cookieParser())
 
   await app.listen(port, () => {
     console.log(`App listening on port ${port}`)

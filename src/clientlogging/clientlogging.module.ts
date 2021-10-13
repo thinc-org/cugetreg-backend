@@ -7,5 +7,6 @@ import { GoogleIdTokenService } from './googleidtoken.service'
   providers: [ClientLoggingService, GoogleIdTokenService],
   controllers: [ClientLoggingController],
   imports: [HttpModule],
+  exports: [ClientLoggingService],
 })
 export class ClientLoggingModule {}

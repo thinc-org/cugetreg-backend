@@ -8,7 +8,6 @@ import {
 import { Request } from 'express'
 import { TokenPayload } from 'google-auth-library'
 import { validate } from 'jsonschema'
-import { hostname } from 'os'
 import { ClientLoggingService, GelfLogEntry } from './clientlogging.service'
 import { GoogleIdTokenService } from './googleidtoken.service'
 
@@ -84,8 +83,6 @@ export class ClientLoggingController {
       }
 
       const logEntry: GelfLogEntry & Record<string, string> = {
-        version: '1.1',
-        host: hostname(),
         short_message: dto.message,
         full_message: dto.detail,
         _kind: dto.kind,
