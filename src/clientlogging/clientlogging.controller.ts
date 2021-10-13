@@ -5,11 +5,11 @@ import {
   Post,
   Req,
 } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
-import { TokenPayload } from 'google-auth-library'
 import { validate } from 'jsonschema'
+import { AccessTokenPayload } from 'src/auth/auth.dto'
 import { ClientLoggingService, GelfLogEntry } from './clientlogging.service'
-import { GoogleIdTokenService } from './googleidtoken.service'
 
 class ClientLogDto {
   kind: string
@@ -61,7 +61,7 @@ const clientLogDtoArraySchema = {
 export class ClientLoggingController {
   constructor(
     readonly loggingService: ClientLoggingService,
-    readonly googleIdTokenService: GoogleIdTokenService
+    readonly jwtService: JwtService
   ) {}
 
   @Post()
@@ -72,10 +72,10 @@ export class ClientLoggingController {
     }
 
     for (const dto of dtos) {
-      let accessToken: TokenPayload | null = null
+      let accessToken: AccessTokenPayload | null = null
       if (dto.accessToken) {
         try {
-          accessToken = await this.googleIdTokenService.verify(dto.accessToken)
+          accessToken = await this.jwtService.verify(dto.accessToken)
         } catch (e) {
           accessToken = null
           console.error('Failed to validate accesstoken for clientlogging', e)
@@ -88,9 +88,7 @@ export class ClientLoggingController {
         _kind: dto.kind,
         _app: 'frontend-client',
         _source_ip: req.ip,
-        _google_id: accessToken?.sub || undefined,
-        _google_name: accessToken?.name || undefined,
-        _google_email: accessToken?.email || undefined,
+        _user_id: accessToken?._id || undefined,
         _session_id: dto.sessionId,
         _device_id: dto.deviceId,
       }

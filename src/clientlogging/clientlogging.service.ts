@@ -50,6 +50,7 @@ export class ClientLoggingService {
         .toPromise()
       return res.data
     } catch (e) {
+      console.error('Failed to send log to log collector', entry)
       throw new InternalServerErrorException("Can't send log to log collector")
     }
   }
