@@ -71,6 +71,7 @@ export class AuthService {
   }
 
   async revokeRefreshTokenToken(token: string) {
+    this.logMessage('Revoked refresh token', { token })
     await this.refreshTokenModel.findOneAndDelete({ refreshToken: token })
   }
 
@@ -83,6 +84,7 @@ export class AuthService {
       throw new BadRequestException('Not a valid refresh token')
     }
     const token: AccessTokenPayload = { _id: doc.userId.toHexString() }
+    this.logMessage('Issued access token', { userId: doc.userId })
     return this.jwtService.sign(token)
   }
 
@@ -97,7 +99,7 @@ export class AuthService {
       })
       tokens = res.tokens
     } catch (err) {
-      this.logMessage('Google Auth code exchange failed', { err })
+      this.logMessage('Google Auth code exchange failed', { err, code })
       throw new BadRequestException('Fail to login. Please try again.')
     }
     client.setCredentials(tokens)
@@ -162,10 +164,16 @@ export class AuthService {
             courseCart.cartContent.push(item)
           }
           user.courseCart = courseCart
-          this.logMessage('Migrated old course cart', { courseCart })
+          this.logMessage('Migrated old course cart', {
+            courseCart,
+            userId: user._id,
+          })
         }
       } catch (e) {
-        this.logMessage('Error while migrating GDrive data', serializeError(e))
+        this.logMessage('Error while migrating GDrive data', {
+          err: serializeError(e),
+          userId: user._id,
+        })
       } finally {
         user.google.hasMigratedGDrive = true
         user.save()
