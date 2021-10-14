@@ -50,7 +50,7 @@ export class AuthService {
     )}/api/auth/google/callback`
   }
 
-  async issueRefreshToken(user: UserDocument) {
+  async issueRefreshToken(user: UserDocument): Promise<string> {
     const token = new this.refreshTokenModel()
     token.refreshToken = randomBytes(64).toString('base64')
     token.userId = user._id
@@ -64,7 +64,7 @@ export class AuthService {
     await this.refreshTokenModel.findOneAndDelete({ refreshToken: token })
   }
 
-  async issueAccessToken(refreshtoken: string) {
+  async issueAccessToken(refreshtoken: string): Promise<string> {
     const doc = await this.refreshTokenModel.findOne({
       refreshToken: refreshtoken,
     })
@@ -77,7 +77,7 @@ export class AuthService {
     return this.jwtService.sign(token)
   }
 
-  async handleGoogleOauthCode(code: string) {
+  async handleGoogleOauthCode(code: string): Promise<{ refreshToken: string }> {
     // Authenticate code
     const client = this.generateGoogleOauthClient()
     let tokens: Credentials
