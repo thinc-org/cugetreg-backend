@@ -3,7 +3,7 @@ import { Document, Types } from 'mongoose'
 
 @Schema()
 export class RefreshToken {
-  @Prop({ index: true, required: true })
+  @Prop({ index: true, required: true, unique: true })
   refreshToken: string
 
   @Prop({ required: true })
