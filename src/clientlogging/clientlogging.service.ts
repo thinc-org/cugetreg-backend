@@ -2,6 +2,7 @@ import {
   HttpService,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import * as http from 'http'
@@ -50,7 +51,7 @@ export class ClientLoggingService {
         .toPromise()
       return res.data
     } catch (e) {
-      console.error('Failed to send log to log collector', entry)
+      Logger.warn('Failed to send log to log collector', entry)
       throw new InternalServerErrorException("Can't send log to log collector")
     }
   }
