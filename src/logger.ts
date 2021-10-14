@@ -9,7 +9,6 @@ export class GelfLogger extends ConsoleLogger {
   constructor() {
     super()
     this.gelfAgent = new Axios({
-      url: process.env.CLIENT_LOGGER_URL,
       httpAgent: new HttpAgent({
         keepAlive: true,
       }),
@@ -44,7 +43,8 @@ export class GelfLogger extends ConsoleLogger {
     this.gelfAgent
       .request({
         method: 'POST',
-        data: entry,
+        data: JSON.stringify(entry),
+        url: process.env.CLIENT_LOGGER_URL,
       })
       .catch((e) => {
         if (process.env.IS_PRODUCTION === 'true')
