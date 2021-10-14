@@ -11,19 +11,19 @@ export class GoogleUserData {
 }
 
 export class CourseCartItem {
-  @prop()
+  @prop({ required: true })
   @IsString()
   studyProgram: string
-  @prop()
+  @prop({ required: true })
   @IsString()
   academicYear: string
-  @prop()
+  @prop({ required: true })
   @IsString()
   semester: string
-  @prop()
+  @prop({ required: true })
   @IsString()
   courseNo: string
-  @prop()
+  @prop({ required: true })
   @IsString()
   selectedSectionNo: string
 }
