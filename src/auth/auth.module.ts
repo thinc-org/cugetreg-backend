@@ -1,8 +1,7 @@
-import { forwardRef, HttpModule, Module } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { MongooseModule } from '@nestjs/mongoose'
-import { ClientLoggingModule } from 'src/clientlogging/clientlogging.module'
 import { RefreshToken, RefreshTokenSchema } from 'src/schemas/auth.schema'
 import { UserSchema } from 'src/schemas/user.schema'
 import { AnonymousStrategy } from './anonymous.strategy'
@@ -22,8 +21,6 @@ import { JwtStrategy } from './jwt.strategy'
       }),
       inject: [ConfigService],
     }),
-    HttpModule,
-    forwardRef(() => ClientLoggingModule),
   ],
   providers: [AuthService, JwtStrategy, AnonymousStrategy],
   controllers: [AuthController],

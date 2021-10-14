@@ -1,7 +1,7 @@
 import {
   BadRequestException,
-  HttpService,
   Injectable,
+  Logger,
   UnprocessableEntityException,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
@@ -15,7 +15,6 @@ import { drive } from 'googleapis/build/src/apis/drive'
 import { oauth2 } from 'googleapis/build/src/apis/oauth2'
 import { Model } from 'mongoose'
 import { serializeError } from 'serialize-error'
-import { ClientLoggingService } from 'src/clientlogging/clientlogging.service'
 import { RefreshToken, RefreshTokenDocument } from 'src/schemas/auth.schema'
 import {
   CourseCart,
@@ -26,26 +25,16 @@ import { AccessTokenPayload } from './auth.dto'
 
 @Injectable()
 export class AuthService {
+  logger: Logger
+
   constructor(
     private configService: ConfigService,
-    private httpService: HttpService,
     private jwtService: JwtService,
-    private clientLogging: ClientLoggingService,
     @InjectModel('user') private userModel: Model<UserDocument>,
     @InjectModel(RefreshToken.name)
     private refreshTokenModel: Model<RefreshTokenDocument>
-  ) {}
-
-  async logMessage(msg: string, additionalObject?: any) {
-    console.info('GoogleAuth log', msg, JSON.stringify(additionalObject))
-    this.clientLogging
-      .sendLogEntry({
-        short_message: msg,
-        _kind: 'auth',
-        _app: 'backend',
-        _additional: JSON.stringify(additionalObject),
-      })
-      .catch((e) => console.error("Auth: Can't log message", e))
+  ) {
+    this.logger = new Logger('Auth Service')
   }
 
   generateGoogleOauthClient(): OAuth2Client {
@@ -66,12 +55,12 @@ export class AuthService {
     token.refreshToken = randomBytes(64).toString('base64')
     token.userId = user._id
     await token.save()
-    this.logMessage('Issued refresh token', { userId: token.userId })
+    this.logger.log('Issued refresh token', { userId: token.userId })
     return token.refreshToken
   }
 
   async revokeRefreshTokenToken(token: string) {
-    this.logMessage('Revoked refresh token', { token })
+    this.logger.log('Revoked refresh token', { token })
     await this.refreshTokenModel.findOneAndDelete({ refreshToken: token })
   }
 
@@ -80,11 +69,11 @@ export class AuthService {
       refreshToken: refreshtoken,
     })
     if (!doc) {
-      this.logMessage('Invalid refresh token', { refreshtoken })
+      this.logger.warn('Invalid refresh token', { refreshtoken })
       throw new BadRequestException('Not a valid refresh token')
     }
     const token: AccessTokenPayload = { _id: doc.userId.toHexString() }
-    this.logMessage('Issued access token', { userId: doc.userId })
+    this.logger.log('Issued access token', { userId: doc.userId })
     return this.jwtService.sign(token)
   }
 
@@ -99,7 +88,7 @@ export class AuthService {
       })
       tokens = res.tokens
     } catch (err) {
-      this.logMessage('Google Auth code exchange failed', { err, code })
+      this.logger.warn('Google Auth code exchange failed', { err, code })
       throw new BadRequestException('Fail to login. Please try again.')
     }
     client.setCredentials(tokens)
@@ -107,7 +96,7 @@ export class AuthService {
     // User lookup
     const userInfo = (await oauth2('v2').userinfo.get({ auth: client })).data
     if (!userInfo.email || !userInfo.id || !userInfo.name) {
-      this.logMessage('UserInfo contains inssuficient data', { userInfo })
+      this.logger.warn('UserInfo contains inssuficient data', { userInfo })
       throw new UnprocessableEntityException('Insufficient user data')
     }
     let user: UserDocument = await this.userModel.findOne({
@@ -122,7 +111,7 @@ export class AuthService {
         hasMigratedGDrive: false,
       }
       user.save()
-      this.logMessage('Created new user with Google Auth', { user })
+      this.logger.log('Created new user with Google Auth', { user })
     }
 
     // Handle legacy google drive data
@@ -164,13 +153,13 @@ export class AuthService {
             courseCart.cartContent.push(item)
           }
           user.courseCart = courseCart
-          this.logMessage('Migrated old course cart', {
+          this.logger.log('Migrated old course cart', {
             courseCart,
             userId: user._id,
           })
         }
       } catch (e) {
-        this.logMessage('Error while migrating GDrive data', {
+        this.logger.warn('Error while migrating GDrive data', {
           err: serializeError(e),
           userId: user._id,
         })
