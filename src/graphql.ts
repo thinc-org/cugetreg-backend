@@ -105,28 +105,12 @@ export class CreateReviewInput {
     content?: string;
 }
 
-export class AccessTokenDTO {
-    accessToken: string;
-    _id: string;
-    firstName: string;
-}
-
-export abstract class IMutation {
-    abstract verify(code: string, redirectURI: string): AccessTokenDTO | Promise<AccessTokenDTO>;
-
-    abstract refresh(): string | Promise<string>;
-
-    abstract createOrUpdateOverride(override: OverrideInput): Override | Promise<Override>;
-
-    abstract deleteOverride(courseNo: string): Override | Promise<Override>;
-
-    abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
-
-    abstract removeReview(reviewId: string): Review | Promise<Review>;
-
-    abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
-
-    abstract setReviewStatus(reviewId: string, status: Status): string | Promise<string>;
+export class CourseCartItemInput {
+    studyProgram: string;
+    academicYear: string;
+    courseNo: string;
+    semester: string;
+    selectedSectionNo: string;
 }
 
 export abstract class IQuery {
@@ -143,6 +127,8 @@ export abstract class IQuery {
     abstract pendingReviews(): Review[] | Promise<Review[]>;
 
     abstract me(): User | Promise<User>;
+
+    abstract courseCart(): CourseCartItem[] | Promise<CourseCartItem[]>;
 }
 
 export class CourseEntry {
@@ -210,6 +196,24 @@ export class CourseNosOutput {
     I: string[];
 }
 
+export abstract class IMutation {
+    abstract refresh(): string | Promise<string>;
+
+    abstract createOrUpdateOverride(override: OverrideInput): Override | Promise<Override>;
+
+    abstract deleteOverride(courseNo: string): Override | Promise<Override>;
+
+    abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
+
+    abstract removeReview(reviewId: string): Review | Promise<Review>;
+
+    abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
+
+    abstract setReviewStatus(reviewId: string, status: Status): string | Promise<string>;
+
+    abstract modifyCourseCart(newContent: CourseCartItemInput[]): CourseCartItem[] | Promise<CourseCartItem[]>;
+}
+
 export class GenEdOverride {
     genEdType: GenEdType;
     sections: string[];
@@ -241,8 +245,13 @@ export class GoogleCredential {
 
 export class User {
     _id: string;
-    email: string;
-    firstName?: string;
-    lastName?: string;
-    google: GoogleCredential;
+    name: string;
+}
+
+export class CourseCartItem {
+    studyProgram: string;
+    academicYear: string;
+    courseNo: string;
+    semester: string;
+    selectedSectionNo: string;
 }

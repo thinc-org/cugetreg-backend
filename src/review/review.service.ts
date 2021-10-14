@@ -51,7 +51,7 @@ export class ReviewService {
     }
 
     const newReview = new this.reviewModel({
-      ownerId: Types.ObjectId(userId),
+      ownerId: new Types.ObjectId(userId),
       courseNo,
       semester,
       academicYear,
@@ -159,7 +159,7 @@ export class ReviewService {
     )
     if (index === -1) {
       review.interactions.push({
-        userId: Types.ObjectId(userId),
+        userId: new Types.ObjectId(userId),
         type: interaction,
       })
     } else if (review.interactions[index].type === interaction) {

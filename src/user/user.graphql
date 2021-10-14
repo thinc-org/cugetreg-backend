@@ -5,12 +5,30 @@ type GoogleCredential {
 
 type User {
   _id: String!
-  email: String!
-  firstName: String
-  lastName: String
-  google: GoogleCredential!
+  name: String!
+}
+
+type CourseCartItem {
+  studyProgram: String!
+  academicYear: String!
+  courseNo: String!
+  semester: String!
+  selectedSectionNo: String!
+}
+
+input CourseCartItemInput {
+  studyProgram: String!
+  academicYear: String!
+  courseNo: String!
+  semester: String!
+  selectedSectionNo: String!
 }
 
 type Query {
   me: User
+  courseCart: [CourseCartItem!]
+}
+
+type Mutation {
+  modifyCourseCart(newContent: [CourseCartItemInput!]!): [CourseCartItem!]
 }

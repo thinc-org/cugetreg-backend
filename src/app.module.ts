@@ -36,6 +36,7 @@ import { UserModule } from './user/user.module'
         cors: {
           origin: configService.get<string>('origin'),
         },
+        path: '/api/graphql',
         context: ({ req, res }: GraphQLExpressContext) => ({ req, res }),
         formatError: (error: GraphQLError) => {
           const graphQLFormattedError = {
@@ -58,7 +59,6 @@ import { UserModule } from './user/user.module'
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('mongoURI'),
-        useFindAndModify: false,
       }),
       inject: [ConfigService],
     }),

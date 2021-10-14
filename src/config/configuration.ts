@@ -7,7 +7,7 @@ export default () => ({
   origin: process.env.CORS_ORIGIN || '*',
   googleOAuthId: process.env.GOOGLE_OAUTH_ID,
   googleOAuthSecret: process.env.GOOGLE_OAUTH_SECRET,
-  googleAuthClientId: process.env.GOOGLE_AUTH_CLIENTID,
+  backendPublicUrl: process.env.BACKEND_PUBLIC_URL,
   jwtSecret: process.env.JWT_SECRET,
   adminToken: process.env.ADMIN_TOKEN,
   clientLoggerUrl: process.env.CLIENT_LOGGER_URL,
@@ -17,11 +17,11 @@ export default () => ({
 const requiredConfigs = [
   'googleOAuthId',
   'googleOAuthSecret',
-  'googleAuthClientId',
   'jwtSecret',
   'adminToken',
   'clientLoggerUrl',
   'computationBackendUrl',
+  'backendPublicUrl',
 ]
 
 export function validateConfig(configService: ConfigService): void {
