@@ -55,12 +55,28 @@ export enum Interaction {
     D = "D"
 }
 
+export enum Status {
+    APPROVED = "APPROVED",
+    REJECTED = "REJECTED"
+}
+
+export class CourseEntryInput {
+    courseId: string;
+    studyProgram: string;
+}
+
+export class PeriodRangeInput {
+    start: string;
+    end: string;
+}
+
 export class FilterInput {
     keyword?: string;
     genEdTypes?: GenEdType[];
     dayOfWeeks?: DayOfWeek[];
     limit?: number;
     offset?: number;
+    periodRange?: PeriodRangeInput;
 }
 
 export class CourseGroupInput {
@@ -69,10 +85,15 @@ export class CourseGroupInput {
     studyProgram: StudyProgram;
 }
 
-export class GenEdInput {
-    courseNo?: string;
-    genEdType?: GenEdType;
+export class GenEdOverrideInput {
+    genEdType: GenEdType;
     sections: string[];
+}
+
+export class OverrideInput {
+    courseNo: string;
+    courseDesc?: string;
+    genEd?: GenEdOverrideInput;
 }
 
 export class CreateReviewInput {
@@ -84,26 +105,35 @@ export class CreateReviewInput {
     content?: string;
 }
 
-export class AccessTokenDTO {
-    accessToken: string;
-    _id: string;
-    firstName: string;
+export class CourseCartItemInput {
+    studyProgram: string;
+    academicYear: string;
+    courseNo: string;
+    semester: string;
+    selectedSectionNo: string;
 }
 
-export abstract class IMutation {
-    abstract verify(code: string, redirectURI: string): AccessTokenDTO | Promise<AccessTokenDTO>;
+export abstract class IQuery {
+    abstract recommendCourses(selectedCourses: CourseEntryInput[]): CourseEntry[] | Promise<CourseEntry[]>;
 
-    abstract refresh(): string | Promise<string>;
+    abstract courseNos(): CourseNosOutput | Promise<CourseNosOutput>;
 
-    abstract createOrUpdateGenEd(genEdInput: GenEdInput): GenEd | Promise<GenEd>;
+    abstract course(courseNo: string, courseGroup: CourseGroupInput): Course | Promise<Course>;
 
-    abstract removeGenEd(courseNo: string): GenEd | Promise<GenEd>;
+    abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
 
-    abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
+    abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
 
-    abstract removeReview(reviewId: string): Review | Promise<Review>;
+    abstract pendingReviews(): Review[] | Promise<Review[]>;
 
-    abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
+    abstract me(): User | Promise<User>;
+
+    abstract courseCart(): CourseCartItem[] | Promise<CourseCartItem[]>;
+}
+
+export class CourseEntry {
+    courseId: string;
+    studyProgram: string;
 }
 
 export class Period {
@@ -144,6 +174,7 @@ export class Course {
     semester: string;
     academicYear: string;
     courseNo: string;
+    courseDesc?: string;
     abbrName: string;
     courseNameTh: string;
     courseNameEn: string;
@@ -159,22 +190,39 @@ export class Course {
     rating?: string;
 }
 
-export abstract class IQuery {
-    abstract courses(): Course[] | Promise<Course[]>;
-
-    abstract course(courseNo: string, courseGroup: CourseGroupInput): Course | Promise<Course>;
-
-    abstract search(filter: FilterInput, courseGroup: CourseGroupInput): Course[] | Promise<Course[]>;
-
-    abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
-
-    abstract me(): User | Promise<User>;
+export class CourseNosOutput {
+    S: string[];
+    T: string[];
+    I: string[];
 }
 
-export class GenEd {
-    courseNo?: string;
-    genEdType?: GenEdType;
+export abstract class IMutation {
+    abstract refresh(): string | Promise<string>;
+
+    abstract createOrUpdateOverride(override: OverrideInput): Override | Promise<Override>;
+
+    abstract deleteOverride(courseNo: string): Override | Promise<Override>;
+
+    abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
+
+    abstract removeReview(reviewId: string): Review | Promise<Review>;
+
+    abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
+
+    abstract setReviewStatus(reviewId: string, status: Status): string | Promise<string>;
+
+    abstract modifyCourseCart(newContent: CourseCartItemInput[]): CourseCartItem[] | Promise<CourseCartItem[]>;
+}
+
+export class GenEdOverride {
+    genEdType: GenEdType;
     sections: string[];
+}
+
+export class Override {
+    courseNo: string;
+    courseDesc?: string;
+    genEd?: GenEdOverride;
 }
 
 export class Review {
@@ -197,8 +245,13 @@ export class GoogleCredential {
 
 export class User {
     _id: string;
-    email: string;
-    firstName?: string;
-    lastName?: string;
-    google: GoogleCredential;
+    name: string;
+}
+
+export class CourseCartItem {
+    studyProgram: string;
+    academicYear: string;
+    courseNo: string;
+    semester: string;
+    selectedSectionNo: string;
 }

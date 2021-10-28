@@ -1,32 +1,49 @@
+import { buildSchema, prop } from '@typegoose/typegoose'
+import { IsString } from 'class-validator'
 import * as mongoose from 'mongoose'
 
-export const GoogleCredentialSchema = new mongoose.Schema({
-  googleId: { type: String, required: true },
-  accessToken: { type: String },
-  refreshToken: { type: String },
-  expiresIn: { type: Date },
-})
+export class GoogleUserData {
+  @prop({ required: true })
+  googleId: string
 
-export const UserSchema = new mongoose.Schema(
-  {
-    email: { type: String, required: true },
-    firstName: { type: String, required: true },
-    lastName: { type: String },
-    google: { type: GoogleCredentialSchema, required: true },
-  },
-  {
-    timestamps: true,
-  }
-)
-
-export interface UserDocument extends mongoose.Document {
-  email: string
-  firstName: string
-  lastName: string
-  google: {
-    googleId: string
-    accessToken: string
-    refreshToken: string
-    expiresIn: Date
-  }
+  @prop()
+  hasMigratedGDrive: boolean
 }
+
+export class CourseCartItem {
+  @prop({ required: true })
+  @IsString()
+  studyProgram: string
+  @prop({ required: true })
+  @IsString()
+  academicYear: string
+  @prop({ required: true })
+  @IsString()
+  semester: string
+  @prop({ required: true })
+  @IsString()
+  courseNo: string
+  @prop({ required: true })
+  @IsString()
+  selectedSectionNo: string
+}
+
+export class CourseCart {
+  @prop({ type: () => [CourseCartItem] })
+  cartContent: CourseCartItem[]
+}
+
+export class User {
+  @prop({ required: true })
+  email: string
+  @prop()
+  name: string
+  @prop()
+  google: GoogleUserData
+  @prop()
+  courseCart: CourseCart
+}
+
+export type UserDocument = User & mongoose.Document
+
+export const UserSchema = buildSchema(User)

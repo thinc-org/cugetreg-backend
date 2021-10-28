@@ -1,181 +1,177 @@
 import {
   BadRequestException,
-  ForbiddenException,
-  HttpException,
-  HttpService,
   Injectable,
-  ServiceUnavailableException,
+  Logger,
+  UnprocessableEntityException,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
+import { validateOrReject } from 'class-validator'
+import { randomBytes } from 'crypto'
+import { Credentials } from 'google-auth-library'
+import { OAuth2Client } from 'googleapis-common'
+import { drive } from 'googleapis/build/src/apis/drive'
+import { oauth2 } from 'googleapis/build/src/apis/oauth2'
 import { Model } from 'mongoose'
 import { serializeError } from 'serialize-error'
-import { AccessTokenDTO } from 'src/graphql'
-import { UserDocument } from 'src/schemas/user.schema'
-
-interface AccessToken {
-  access_token: string
-  expires_in: number
-  scope: string
-  token_type: string
-}
-
-interface GoogleVerifyResponse extends AccessToken {
-  refresh_token: string
-  id_token: string
-}
-
-interface IDTokenPayload {
-  iss: string // Always https://accounts.google.com or accounts.google.com
-  azp: string // CU Get Reg's client id
-  aud: string // CU Get Reg's client id
-  sub: string // Unique Google account's identifier
-  email: string // User's email address
-  email_verified: boolean // True if the user's e-mail address has been verified; otherwise false
-  at_hash: string // Access token hash
-  name: string // The user's full name, in a displayable form
-  picture: string // The URL of the user's profile picture
-  given_name: string // The user's given name or first name
-  family_name: string // The user's surname or last name
-  locale: string // The user's locale
-  hd: string // User's hosted domain (G Suite)
-  iat: number // The time the ID token was issued
-  exp: number // Expiration time on or after which the ID token must not be accepted
-}
+import { RefreshToken, RefreshTokenDocument } from 'src/schemas/auth.schema'
+import {
+  CourseCart,
+  CourseCartItem,
+  UserDocument,
+} from 'src/schemas/user.schema'
+import { AccessTokenPayload } from './auth.dto'
 
 @Injectable()
 export class AuthService {
+  logger: Logger
+
   constructor(
     private configService: ConfigService,
-    private httpService: HttpService,
     private jwtService: JwtService,
-    @InjectModel('user') private userModel: Model<UserDocument>
-  ) {}
+    @InjectModel('user') private userModel: Model<UserDocument>,
+    @InjectModel(RefreshToken.name)
+    private refreshTokenModel: Model<RefreshTokenDocument>
+  ) {
+    this.logger = new Logger('Auth Service')
+  }
 
-  async verify(code: string, redirectURI: string): Promise<AccessTokenDTO> {
-    if (!code) {
-      throw new BadRequestException({
-        reason: 'CODE_UNDEFINED',
-        message: 'Authorization code is undefined',
-      })
+  generateGoogleOauthClient(): OAuth2Client {
+    return new OAuth2Client({
+      clientId: this.configService.get('googleOAuthId'),
+      clientSecret: this.configService.get('googleOAuthSecret'),
+    })
+  }
+
+  getGoogleCallbackUrl(): string {
+    return `${this.configService.get(
+      'backendPublicUrl'
+    )}/api/auth/google/callback`
+  }
+
+  async issueRefreshToken(user: UserDocument): Promise<string> {
+    const token = new this.refreshTokenModel()
+    token.refreshToken = randomBytes(64).toString('base64')
+    token.userId = user._id
+    await token.save()
+    this.logger.log('Issued refresh token', { userId: token.userId })
+    return token.refreshToken
+  }
+
+  async revokeRefreshTokenToken(token: string) {
+    this.logger.log('Revoked refresh token', { token })
+    await this.refreshTokenModel.findOneAndDelete({ refreshToken: token })
+  }
+
+  async issueAccessToken(refreshtoken: string): Promise<string> {
+    const doc = await this.refreshTokenModel.findOne({
+      refreshToken: refreshtoken,
+    })
+    if (!doc) {
+      this.logger.warn('Invalid refresh token', { refreshtoken })
+      throw new BadRequestException('Not a valid refresh token')
     }
-    if (!redirectURI) {
-      throw new BadRequestException({
-        reason: 'REDIRECT_URI_UNDEFINED',
-        message: 'Redirect URI is undefined',
-      })
-    }
+    const token: AccessTokenPayload = { _id: doc.userId.toHexString() }
+    this.logger.log('Issued access token', { userId: doc.userId })
+    return this.jwtService.sign(token)
+  }
 
-    const clientId = this.configService.get<string>('googleOAuthId')
-    const clientSecret = this.configService.get<string>('googleOAuthSecret')
-
+  async handleGoogleOauthCode(code: string): Promise<{ refreshToken: string }> {
+    // Authenticate code
+    const client = this.generateGoogleOauthClient()
+    let tokens: Credentials
     try {
-      const { data: googleResponse } = await this.httpService
-        .post<GoogleVerifyResponse>('https://oauth2.googleapis.com/token', {
-          client_id: clientId,
-          client_secret: clientSecret,
-          code: code,
-          grant_type: 'authorization_code',
-          redirect_uri: redirectURI,
-        })
-        .toPromise()
-
-      const userInfo = this.jwtService.decode(
-        googleResponse.id_token
-      ) as IDTokenPayload
-
-      if (userInfo.hd != 'student.chula.ac.th') {
-        throw new ForbiddenException({
-          reason: 'CHULA_ACCOUNT_ONLY',
-          message: 'Only @student.chula.ac.th accounts are allowed',
-        })
-      }
-
-      const user = await this.updateOrCreateUser(userInfo, googleResponse)
-
-      const accessToken = this.generateAccessToken(user)
-
-      return { accessToken, _id: user._id, firstName: user.firstName }
-    } catch (err) {
-      if (err instanceof HttpException) {
-        throw err
-      }
-      delete err?.config?.data
-      throw new ServiceUnavailableException({
-        reason: 'GOOGLE_OAUTH_ERROR',
-        message: 'Unknown error during OAuth token verification',
-        error: serializeError(err),
+      const res = await client.getToken({
+        redirect_uri: this.getGoogleCallbackUrl(),
+        code,
       })
-    }
-  }
-
-  async refreshGoogleToken(refreshToken: string) {
-    const clientId = this.configService.get<string>('googleOAuthId')
-    const clientSecret = this.configService.get<string>('googleOAuthSecret')
-
-    try {
-      const { data: accessTokenInfo } = await this.httpService
-        .post<AccessToken>('https://oauth2.googleapis.com/token', {
-          client_id: clientId,
-          client_secret: clientSecret,
-          refresh_token: refreshToken,
-          grant_type: 'refresh_token',
-        })
-        .toPromise()
-
-      return accessTokenInfo
+      tokens = res.tokens
     } catch (err) {
-      throw new ServiceUnavailableException({
-        reason: 'GOOGLE_REFRESH_ERROR',
-        message: `Unknown error while refreshing Google's accessToken`,
-        error: serializeError(err),
-      })
+      this.logger.warn('Google Auth code exchange failed', { err, code })
+      throw new BadRequestException('Fail to login. Please try again.')
     }
-  }
+    client.setCredentials(tokens)
 
-  private generateAccessToken(user: UserDocument): string {
-    const accessToken = this.jwtService.sign(
-      {
-        _id: user._id,
-        firstName: user.firstName,
-      },
-      { expiresIn: '7d' }
-    )
-
-    return accessToken
-  }
-
-  private async updateOrCreateUser(
-    userInfo: IDTokenPayload,
-    googleResponse: GoogleVerifyResponse
-  ): Promise<UserDocument> {
-    const expiredDate = new Date()
-    expiredDate.setSeconds(expiredDate.getSeconds() + googleResponse.expires_in)
-
-    let user = await this.userModel.findOne({ email: userInfo.email })
+    // User lookup
+    const userInfo = (await oauth2('v2').userinfo.get({ auth: client })).data
+    if (!userInfo.email || !userInfo.id || !userInfo.name) {
+      this.logger.warn('UserInfo contains inssuficient data', { userInfo })
+      throw new UnprocessableEntityException('Insufficient user data')
+    }
+    let user: UserDocument = await this.userModel.findOne({
+      'google.googleId': userInfo.id,
+    })
     if (!user) {
-      user = new this.userModel({
-        email: userInfo.email,
-        firstName: userInfo.given_name,
-        lastName: userInfo.family_name,
-        google: {
-          googleId: userInfo.sub,
-          accessToken: googleResponse.access_token,
-          expiresIn: expiredDate,
-          refreshToken: googleResponse.refresh_token,
-        },
-      })
-    } else {
+      user = new this.userModel()
+      user.email = userInfo.email
+      user.name = userInfo.name
       user.google = {
-        googleId: user.google.googleId,
-        accessToken: googleResponse.access_token,
-        expiresIn: expiredDate,
-        refreshToken: user.google.refreshToken,
+        googleId: userInfo.id,
+        hasMigratedGDrive: false,
+      }
+      user.save()
+      this.logger.log('Created new user with Google Auth', { user })
+    }
+
+    // Handle legacy google drive data
+    if (!user.google.hasMigratedGDrive) {
+      try {
+        if (
+          tokens.scope.indexOf(
+            'https://www.googleapis.com/auth/drive.appdata'
+          ) !== -1
+        ) {
+          const d = drive({ version: 'v3', auth: client })
+          const files = (await d.files.list({ spaces: 'appDataFolder' })).data
+            .files
+          if (files.length !== 1)
+            throw { reason: 'No or Multiple cart files', count: files.length }
+          const file = (
+            await d.files.get({ fileId: files[0].id, fields: 'id,size' })
+          ).data
+          if (parseInt(file.size) > 1000000)
+            throw { reason: 'File size exceed limit', size: file.size }
+          const data = (await d.files.get({ alt: 'media', fileId: file.id }))
+            .data
+
+          if (!Array.isArray(data))
+            throw { reason: 'Object is not an array', data }
+
+          const courseCart = new CourseCart()
+          courseCart.cartContent = []
+          for (const e of data) {
+            if (typeof e !== 'object')
+              throw { reason: 'Migrated cart item is not an object', e }
+            const item = new CourseCartItem()
+            item.academicYear = e.academicYear
+            item.courseNo = e.courseNo
+            item.semester = e.semester
+            item.studyProgram = e.studyProgram
+            item.selectedSectionNo = e.selectedSectionNo
+            await validateOrReject(item, { forbidUnknownValues: true })
+            courseCart.cartContent.push(item)
+          }
+          user.courseCart = courseCart
+          this.logger.log('Migrated old course cart', {
+            courseCart,
+            userId: user._id,
+          })
+        }
+      } catch (e) {
+        this.logger.warn('Error while migrating GDrive data', {
+          err: serializeError(e),
+          userId: user._id,
+        })
+      } finally {
+        user.google.hasMigratedGDrive = true
+        user.save()
       }
     }
 
-    await user.save()
-    return user
+    // Issue token
+    return {
+      refreshToken: await this.issueRefreshToken(user),
+    }
   }
 }

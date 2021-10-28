@@ -4,9 +4,13 @@ import { NestExpressApplication } from '@nestjs/platform-express'
 import { AppModule } from './app.module'
 import { HttpExceptionFilter } from './common/filters/httpException.filter'
 import { validateConfig } from './config/configuration'
+import { GelfLogger } from './logger'
+import cookieParser = require('cookie-parser')
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule)
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: new GelfLogger(),
+  })
   const configService = app.get(ConfigService)
 
   validateConfig(configService)
@@ -19,6 +23,8 @@ async function bootstrap() {
   app.set('trust proxy', 1)
 
   app.useGlobalFilters(new HttpExceptionFilter())
+  app.setGlobalPrefix('/api')
+  app.use(cookieParser())
 
   await app.listen(port, () => {
     console.log(`App listening on port ${port}`)

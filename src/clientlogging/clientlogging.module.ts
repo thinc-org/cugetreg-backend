@@ -1,11 +1,12 @@
-import { HttpModule, Module } from '@nestjs/common'
+import { forwardRef, HttpModule, Module } from '@nestjs/common'
+import { AuthModule } from 'src/auth/auth.module'
 import { ClientLoggingController } from './clientlogging.controller'
 import { ClientLoggingService } from './clientlogging.service'
-import { GoogleIdTokenService } from './googleidtoken.service'
 
 @Module({
-  providers: [ClientLoggingService, GoogleIdTokenService],
+  providers: [ClientLoggingService],
   controllers: [ClientLoggingController],
-  imports: [HttpModule],
+  imports: [HttpModule, forwardRef(() => AuthModule)],
+  exports: [ClientLoggingService],
 })
 export class ClientLoggingModule {}

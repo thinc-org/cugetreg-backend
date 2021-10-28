@@ -39,3 +39,6 @@ lerna-debug.log*
 
 # Volumes
 volumes
+
+# Virtual Environments
+**/venv

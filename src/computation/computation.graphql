@@ -1,0 +1,13 @@
+type Query {
+    recommendCourses(selectedCourses: [CourseEntryInput!]!): [CourseEntry!]!
+}
+
+input CourseEntryInput {
+    courseId: String!
+    studyProgram: String!
+}
+
+type CourseEntry {
+    courseId: String!
+    studyProgram: String!
+}

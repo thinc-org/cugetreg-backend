@@ -39,7 +39,7 @@ jobs:
           username: ${{ secrets.GH_USERNAME }}
           password: ${{ secrets.GH_TOKEN }}
 
-      - name: Push to GitHub Packages
+      - name: Push Central Backend to GitHub Packages
         uses: docker/build-push-action@v2
         with:
           push: true
@@ -47,6 +47,17 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           context: .
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Push Computation Backend to GitHub Packages
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ghcr.io/thinc-org/cugetreg/cugetreg-computation-dev:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          context: ./computation
           secrets: |
             GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
@@ -71,6 +82,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             docker pull ghcr.io/thinc-org/cugetreg/cugetreg-backend-dev:latest
+            docker pull ghcr.io/thinc-org/cugetreg/cugetreg-computation-dev:latest
             docker-compose up -d 
             if [[ "$(docker images --filter "dangling=true" -q)" == "" ]]; 
               then echo "No image with <none> tag";
