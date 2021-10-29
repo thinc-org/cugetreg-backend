@@ -27,7 +27,7 @@ export class UserResolver {
     @CurrentUser() userId: string
   ): Promise<CourseCartItem[]> {
     const user = await this.userModel.findById(userId)
-    return user.courseCart.cartContent
+    return user.courseCart?.cartContent || []
   }
 
   @Mutation('modifyCourseCart')
@@ -37,6 +37,11 @@ export class UserResolver {
     @Args('newContent') newContent: CourseCartItemInput[]
   ): Promise<CourseCartItem[]> {
     const user = await this.userModel.findById(userId)
+    if (!user.courseCart) {
+      user.courseCart = {
+        cartContent: [],
+      }
+    }
     user.courseCart.cartContent = newContent
     await user.save()
     return user.courseCart.cartContent
