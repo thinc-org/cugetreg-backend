@@ -27,7 +27,7 @@ export class UserResolver {
     @CurrentUser() userId: string
   ): Promise<CourseCartItem[]> {
     const user = await this.userModel.findById(userId)
-    return user.courseCart.cartContent
+    return user.courseCart?.cartContent || []
   }
 
   @Mutation('modifyCourseCart')

@@ -29,7 +29,7 @@ export class CourseCartItem {
 }
 
 export class CourseCart {
-  @prop({ type: () => [CourseCartItem] })
+  @prop({ type: () => [CourseCartItem], required: true })
   cartContent: CourseCartItem[]
 }
 
@@ -37,11 +37,11 @@ export class User {
   @prop({ required: true })
   email: string
   @prop()
-  name: string
+  name?: string
   @prop()
-  google: GoogleUserData
+  google?: GoogleUserData
   @prop()
-  courseCart: CourseCart
+  courseCart?: CourseCart
 }
 
 export type UserDocument = User & mongoose.Document
