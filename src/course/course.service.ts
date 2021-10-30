@@ -159,8 +159,8 @@ export class CourseService implements OnApplicationBootstrap {
           message: 'Start time cannot be later than end time',
         })
       }
-      query['sections.classes.period.start'] = { $lt: end, $nin: ['IA', 'AR'] }
-      query['sections.classes.period.end'] = { $gt: start, $nin: ['IA', 'AR'] }
+      query['sections.classes.period.start'] = { $lt: end }
+      query['sections.classes.period.end'] = { $gt: start }
     }
 
     const courses = await this.courseModel
@@ -170,7 +170,6 @@ export class CourseService implements OnApplicationBootstrap {
       .lean()
     return this.populateList(courses)
   }
-
   // warning: this method mutates the original course object with the override and rating
   private populate(course: Course): Course {
     if (!course) {
