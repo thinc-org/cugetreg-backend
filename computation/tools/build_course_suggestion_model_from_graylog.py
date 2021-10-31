@@ -4,7 +4,7 @@ import pickle
 
 # Read CSV
 print("Reading CSV")
-df = pd.read_csv("/tmp/2021-07-30-cugetreg.csv")
+df = pd.read_csv("/tmp/2021-10-31-cugetreg.csv")
 
 print("Aggreating observations")
 # Select course add event
