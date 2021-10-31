@@ -159,8 +159,12 @@ export class CourseService implements OnApplicationBootstrap {
           message: 'Start time cannot be later than end time',
         })
       }
-      query['sections.classes.period.start'] = { $lt: end }
-      query['sections.classes.period.end'] = { $gt: start }
+      query['sections.classes'] = {
+        $elemMatch: {
+          'period.start': { $lt: end },
+          'period.end': { $gt: start },
+        },
+      }
     }
 
     const courses = await this.courseModel
