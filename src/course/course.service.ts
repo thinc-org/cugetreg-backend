@@ -161,8 +161,8 @@ export class CourseService implements OnApplicationBootstrap {
       }
       query['sections.classes'] = {
         $elemMatch: {
-          'period.start': { $lt: end },
-          'period.end': { $gt: start },
+          'period.start': { $gte: start },
+          'period.end': { $lte: end },
         },
       }
     }
