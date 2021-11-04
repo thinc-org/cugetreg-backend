@@ -14,6 +14,7 @@ type CourseCartItem {
   courseNo: String!
   semester: String!
   selectedSectionNo: String!
+  color: String
 }
 
 input CourseCartItemInput {
@@ -22,6 +23,7 @@ input CourseCartItemInput {
   courseNo: String!
   semester: String!
   selectedSectionNo: String!
+  color: String
 }
 
 type Query {

@@ -111,6 +111,7 @@ export class CourseCartItemInput {
     courseNo: string;
     semester: string;
     selectedSectionNo: string;
+    color: string;
 }
 
 export abstract class IQuery {
@@ -254,4 +255,5 @@ export class CourseCartItem {
     courseNo: string;
     semester: string;
     selectedSectionNo: string;
+    color: string;
 }
