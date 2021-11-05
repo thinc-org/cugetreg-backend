@@ -111,6 +111,7 @@ export class CourseCartItemInput {
     courseNo: string;
     semester: string;
     selectedSectionNo: string;
+    isHidden: boolean;
     color?: string;
 }
 
@@ -255,5 +256,6 @@ export class CourseCartItem {
     courseNo: string;
     semester: string;
     selectedSectionNo: string;
+    isHidden: boolean;
     color?: string;
 }
