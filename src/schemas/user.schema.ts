@@ -26,6 +26,9 @@ export class CourseCartItem {
   @prop({ required: true })
   @IsString()
   selectedSectionNo: string
+  @prop({ required: true, default: false })
+  @IsString()
+  isHidden: boolean
   @prop()
   @IsString()
   color?: string
