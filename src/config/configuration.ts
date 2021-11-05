@@ -12,6 +12,7 @@ export default () => ({
   adminToken: process.env.ADMIN_TOKEN,
   clientLoggerUrl: process.env.CLIENT_LOGGER_URL,
   computationBackendUrl: process.env.COMPUTATION_BACKEND_URL,
+  env: process.env.ENV || 'development',
 })
 
 const requiredConfigs = [
