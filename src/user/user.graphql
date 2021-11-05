@@ -36,5 +36,5 @@ type Query {
 
 type Mutation {
   modifyCourseCart(newContent: [CourseCartItemInput!]!): [CourseCartItem!]
-  modifyCalendarId(newCalendarId: String!): String
+  modifyCalendarId(newCalendarId: String): String
 }

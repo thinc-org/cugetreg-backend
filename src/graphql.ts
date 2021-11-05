@@ -217,7 +217,7 @@ export abstract class IMutation {
 
     abstract modifyCourseCart(newContent: CourseCartItemInput[]): CourseCartItem[] | Promise<CourseCartItem[]>;
 
-    abstract modifyCalendarId(newCalendarId: string): string | Promise<string>;
+    abstract modifyCalendarId(newCalendarId?: string): string | Promise<string>;
 }
 
 export class GenEdOverride {
