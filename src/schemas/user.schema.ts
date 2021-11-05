@@ -48,6 +48,8 @@ export class User {
   google?: GoogleUserData
   @prop()
   courseCart?: CourseCart
+  @prop()
+  calendarId?: string
 }
 
 export type UserDocument = User & mongoose.Document

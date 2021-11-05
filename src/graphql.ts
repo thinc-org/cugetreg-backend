@@ -131,6 +131,8 @@ export abstract class IQuery {
     abstract me(): User | Promise<User>;
 
     abstract courseCart(): CourseCartItem[] | Promise<CourseCartItem[]>;
+
+    abstract calendarId(): string | Promise<string>;
 }
 
 export class CourseEntry {
@@ -214,6 +216,8 @@ export abstract class IMutation {
     abstract setReviewStatus(reviewId: string, status: Status): string | Promise<string>;
 
     abstract modifyCourseCart(newContent: CourseCartItemInput[]): CourseCartItem[] | Promise<CourseCartItem[]>;
+
+    abstract modifyCalendarId(newCalendarId: string): string | Promise<string>;
 }
 
 export class GenEdOverride {

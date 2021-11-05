@@ -31,8 +31,10 @@ input CourseCartItemInput {
 type Query {
   me: User
   courseCart: [CourseCartItem!]
+  calendarId: String
 }
 
 type Mutation {
   modifyCourseCart(newContent: [CourseCartItemInput!]!): [CourseCartItem!]
+  modifyCalendarId(newCalendarId: String!): String
 }
