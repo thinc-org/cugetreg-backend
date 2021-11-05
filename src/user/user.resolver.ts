@@ -16,8 +16,8 @@ export class UserResolver {
   async getCurrentUser(@CurrentUser() userId: string): Promise<User> {
     const user = await this.userModel.findById(userId)
     return {
-      name: user.name,
       _id: user._id,
+      name: user.name,
     }
   }
 
@@ -28,6 +28,13 @@ export class UserResolver {
   ): Promise<CourseCartItem[]> {
     const user = await this.userModel.findById(userId)
     return user.courseCart?.cartContent || []
+  }
+
+  @Query('calendarId')
+  @UseGuards(JwtAuthGuard)
+  async getCalendarId(@CurrentUser() userId: string): Promise<string> {
+    const user = await this.userModel.findById(userId)
+    return user.calendarId
   }
 
   @Mutation('modifyCourseCart')
@@ -45,5 +52,17 @@ export class UserResolver {
     user.courseCart.cartContent = newContent
     await user.save()
     return user.courseCart.cartContent
+  }
+
+  @Mutation('modifyCalendarId')
+  @UseGuards(JwtAuthGuard)
+  async setCalendarId(
+    @CurrentUser() userId: string,
+    @Args('newCalendarId') newCalendarId: string
+  ): Promise<string> {
+    const user = await this.userModel.findById(userId)
+    user.calendarId = newCalendarId
+    await user.save()
+    return user.calendarId
   }
 }
