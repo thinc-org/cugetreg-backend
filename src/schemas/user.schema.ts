@@ -26,6 +26,9 @@ export class CourseCartItem {
   @prop({ required: true })
   @IsString()
   selectedSectionNo: string
+  @prop()
+  @IsString()
+  color?: string
 }
 
 export class CourseCart {
