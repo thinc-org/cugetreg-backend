@@ -32,6 +32,7 @@ input CreateReviewInput {
 
 type Query {
   reviews(courseNo: String!, studyProgram: StudyProgram!): [Review!]!
+  myPendingReviews(courseNo: String!, studyProgram: StudyProgram!): [Review!]!
   pendingReviews: [Review!]!
 }
 
