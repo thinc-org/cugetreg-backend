@@ -84,6 +84,20 @@ export class ReviewService {
     return reviews.map((rawReview) => this.transformReview(rawReview, null))
   }
 
+  async getPendingForUser(
+    courseNo: string,
+    studyProgram: StudyProgram,
+    userId: string
+  ): Promise<Review[]> {
+    const reviews = await this.reviewModel.find({
+      ownerId: userId,
+      courseNo,
+      studyProgram,
+      status: 'PENDING',
+    })
+    return reviews.map((rawReview) => this.transformReview(rawReview, null))
+  }
+
   async remove(reviewId: string, userId: string): Promise<Review> {
     const review = await this.reviewModel.findOneAndDelete({
       _id: reviewId,

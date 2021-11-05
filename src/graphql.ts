@@ -126,6 +126,8 @@ export abstract class IQuery {
 
     abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
 
+    abstract myPendingReviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
+
     abstract pendingReviews(): Review[] | Promise<Review[]>;
 
     abstract me(): User | Promise<User>;
