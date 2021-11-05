@@ -22,13 +22,14 @@ export class AuthController {
 
   @Get('/google')
   @Redirect()
-  authWithGoogle() {
+  authWithGoogle(@Query('returnURL') returnURL: string) {
     const url = this.authService.generateGoogleOauthClient().generateAuthUrl({
       scope: [
         'https://www.googleapis.com/auth/userinfo.email',
         'openid',
         'https://www.googleapis.com/auth/userinfo.profile',
       ],
+      state: returnURL,
       redirect_uri: this.authService.getGoogleCallbackUrl(),
       access_type: 'online',
       include_granted_scopes: true,
@@ -45,6 +46,7 @@ export class AuthController {
   @Redirect()
   async authWithGoogleCallback(
     @Query('code') code: string,
+    @Query('state') returnURL = '',
     @Res({ passthrough: true }) res: Response
   ) {
     const { refreshToken } = await this.authService.handleGoogleOauthCode(code)
@@ -53,8 +55,22 @@ export class AuthController {
       maxAge: 1000 * 60 * 60 * 24 * 30 * 6,
     })
 
+    const backendPublicUrl = this.configService.get('backendPublicUrl')
+    if (!returnURL) {
+      returnURL = backendPublicUrl
+    }
+    // allow redirect to any origin for dev
+    if (
+      this.configService.get('env') !== 'development' &&
+      !returnURL.startsWith(backendPublicUrl)
+    ) {
+      throw new BadRequestException(
+        `returnURL must be the same origin as ${backendPublicUrl}`
+      )
+    }
+
     return {
-      url: this.configService.get('backendPublicUrl'),
+      url: returnURL,
     }
   }
 
