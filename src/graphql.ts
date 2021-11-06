@@ -92,6 +92,7 @@ export class GenEdOverrideInput {
 
 export class OverrideInput {
     courseNo: string;
+    studyProgram: StudyProgram;
     courseDesc?: string;
     genEd?: GenEdOverrideInput;
 }
@@ -207,7 +208,7 @@ export abstract class IMutation {
 
     abstract createOrUpdateOverride(override: OverrideInput): Override | Promise<Override>;
 
-    abstract deleteOverride(courseNo: string): Override | Promise<Override>;
+    abstract deleteOverride(courseNo: string, studyProgram: StudyProgram): Override | Promise<Override>;
 
     abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
 
@@ -229,6 +230,7 @@ export class GenEdOverride {
 
 export class Override {
     courseNo: string;
+    studyProgram: StudyProgram;
     courseDesc?: string;
     genEd?: GenEdOverride;
 }

@@ -5,6 +5,7 @@ type GenEdOverride {
 
 type Override {
   courseNo: String!
+  studyProgram: StudyProgram!
   courseDesc: String
   genEd: GenEdOverride
 }
@@ -16,11 +17,12 @@ input GenEdOverrideInput {
 
 input OverrideInput {
   courseNo: String!
+  studyProgram: StudyProgram!
   courseDesc: String
   genEd: GenEdOverrideInput
 }
 
 type Mutation {
   createOrUpdateOverride(override: OverrideInput!): Override!
-  deleteOverride(courseNo: String!): Override
+  deleteOverride(courseNo: String!, studyProgram: StudyProgram!): Override
 }
