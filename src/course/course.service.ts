@@ -23,7 +23,11 @@ import { Override } from 'src/schemas/override.schema'
 
 @Injectable()
 export class CourseService implements OnApplicationBootstrap {
-  private overrides: Record<string, Override> = {}
+  private overrides: Record<StudyProgram, Record<string, Override>> = {
+    S: {},
+    T: {},
+    I: {},
+  }
   private ratings: Record<StudyProgram, Record<string, string>> = {
     S: {},
     T: {},
@@ -46,28 +50,34 @@ export class CourseService implements OnApplicationBootstrap {
   async refresh(): Promise<void> {
     // refresh override
     const overridesList = await this.overrideService.getOverrides()
-    this.overrides = {}
+    this.overrides = {
+      S: {},
+      T: {},
+      I: {},
+    }
     for (const override of overridesList) {
-      this.overrides[override.courseNo] = override
+      if (override.studyProgram) {
+        this.overrides[override.studyProgram][override.courseNo] = override
+      }
     }
 
     // refresh review ratings
     const reviewsList = await this.reviewService.getReviews()
-    const reviews: Record<StudyProgram, Record<string, number[]>> = {
+    const ratings: Record<StudyProgram, Record<string, number[]>> = {
       S: {},
       T: {},
       I: {},
     }
     for (const review of reviewsList) {
-      if (!(review.courseNo in reviews[review.studyProgram])) {
-        reviews[review.studyProgram][review.courseNo] = []
+      if (!(review.courseNo in ratings[review.studyProgram])) {
+        ratings[review.studyProgram][review.courseNo] = []
       }
-      reviews[review.studyProgram][review.courseNo].push(review.rating)
+      ratings[review.studyProgram][review.courseNo].push(review.rating)
     }
-    for (const studyProgram in reviews) {
-      for (const courseNo in reviews[studyProgram]) {
+    for (const studyProgram in ratings) {
+      for (const courseNo in ratings[studyProgram]) {
         this.ratings[studyProgram][courseNo] = findAvgRating(
-          reviews[studyProgram][courseNo]
+          ratings[studyProgram][courseNo]
         )
       }
     }
@@ -179,8 +189,8 @@ export class CourseService implements OnApplicationBootstrap {
     if (!course) {
       return null
     }
-    // populate override
-    const override = this.overrides[course.courseNo]
+    // populate override - genEdType
+    const override = this.overrides[course.studyProgram][course.courseNo]
     if (override?.genEd) {
       const { genEdType, sections: genEdSections } = override.genEd
       course.genEdType = genEdType
@@ -190,10 +200,14 @@ export class CourseService implements OnApplicationBootstrap {
           : 'NO'
       }
     } else {
+      // only use genEdType from override
+      course.genEdType = 'NO'
       for (const section of course.sections) {
-        section.genEdType = getGenEdType(section)
+        section.genEdType = 'NO'
       }
     }
+
+    // populate override - course description
     if (override?.courseDesc) {
       course.courseDesc = override.courseDesc
     }
@@ -219,6 +233,10 @@ function findAvgRating(ratings: number[]): string {
   return (total / (2 * ratings.length)).toFixed(2)
 }
 
+/**
+ * @deprecated by course override. Left this in case of reverting back to this.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getGenEdType(section: Section): GenEdType {
   if (section.note === undefined) return 'NO'
   if (section.note.includes('GENED')) {

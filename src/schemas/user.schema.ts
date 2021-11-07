@@ -26,6 +26,12 @@ export class CourseCartItem {
   @prop({ required: true })
   @IsString()
   selectedSectionNo: string
+  @prop({ required: true, default: false })
+  @IsString()
+  isHidden: boolean
+  @prop()
+  @IsString()
+  color?: string
 }
 
 export class CourseCart {
@@ -42,6 +48,8 @@ export class User {
   google?: GoogleUserData
   @prop()
   courseCart?: CourseCart
+  @prop()
+  calendarId?: string
 }
 
 export type UserDocument = User & mongoose.Document

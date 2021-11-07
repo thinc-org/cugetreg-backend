@@ -92,6 +92,7 @@ export class GenEdOverrideInput {
 
 export class OverrideInput {
     courseNo: string;
+    studyProgram: StudyProgram;
     courseDesc?: string;
     genEd?: GenEdOverrideInput;
 }
@@ -111,6 +112,8 @@ export class CourseCartItemInput {
     courseNo: string;
     semester: string;
     selectedSectionNo: string;
+    isHidden: boolean;
+    color?: string;
 }
 
 export abstract class IQuery {
@@ -124,11 +127,15 @@ export abstract class IQuery {
 
     abstract reviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
 
+    abstract myPendingReviews(courseNo: string, studyProgram: StudyProgram): Review[] | Promise<Review[]>;
+
     abstract pendingReviews(): Review[] | Promise<Review[]>;
 
     abstract me(): User | Promise<User>;
 
     abstract courseCart(): CourseCartItem[] | Promise<CourseCartItem[]>;
+
+    abstract calendarId(): string | Promise<string>;
 }
 
 export class CourseEntry {
@@ -201,7 +208,7 @@ export abstract class IMutation {
 
     abstract createOrUpdateOverride(override: OverrideInput): Override | Promise<Override>;
 
-    abstract deleteOverride(courseNo: string): Override | Promise<Override>;
+    abstract deleteOverride(courseNo: string, studyProgram: StudyProgram): Override | Promise<Override>;
 
     abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
 
@@ -212,6 +219,8 @@ export abstract class IMutation {
     abstract setReviewStatus(reviewId: string, status: Status): string | Promise<string>;
 
     abstract modifyCourseCart(newContent: CourseCartItemInput[]): CourseCartItem[] | Promise<CourseCartItem[]>;
+
+    abstract modifyCalendarId(newCalendarId?: string): string | Promise<string>;
 }
 
 export class GenEdOverride {
@@ -221,6 +230,7 @@ export class GenEdOverride {
 
 export class Override {
     courseNo: string;
+    studyProgram: StudyProgram;
     courseDesc?: string;
     genEd?: GenEdOverride;
 }
@@ -254,4 +264,6 @@ export class CourseCartItem {
     courseNo: string;
     semester: string;
     selectedSectionNo: string;
+    isHidden: boolean;
+    color?: string;
 }

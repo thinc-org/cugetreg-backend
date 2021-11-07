@@ -50,6 +50,16 @@ export class ReviewResolver {
     return this.reviewService.setInteraction(reviewId, interaction, userId)
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Query('myPendingReviews')
+  async getMyPendingReviews(
+    @Args('courseNo') courseNo: string,
+    @Args('studyProgram') studyProgram: StudyProgram,
+    @CurrentUser() userId: string
+  ): Promise<Review[]> {
+    return this.reviewService.getPendingForUser(courseNo, studyProgram, userId)
+  }
+
   @UseGuards(AdminAuthGuard)
   @Query('pendingReviews')
   async getPending(): Promise<Review[]> {
