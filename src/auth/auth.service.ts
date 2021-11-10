@@ -149,6 +149,7 @@ export class AuthService {
             item.semester = e.semester
             item.studyProgram = e.studyProgram
             item.selectedSectionNo = e.selectedSectionNo
+            item.isHidden = false
             await validateOrReject(item, { forbidUnknownValues: true })
             courseCart.cartContent.push(item)
           }
