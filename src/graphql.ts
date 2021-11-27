@@ -221,7 +221,7 @@ export abstract class IMutation {
 
     abstract removeReview(reviewId: string): Review | Promise<Review>;
 
-    abstract editReview(reviewId: string, review: EditReviewInput): Review | Promise<Review>;
+    abstract editMyPendingReview(reviewId: string, review: EditReviewInput): Review | Promise<Review>;
 
     abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
 

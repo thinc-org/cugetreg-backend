@@ -99,7 +99,7 @@ export class ReviewService {
     return reviews.map((rawReview) => this.transformReview(rawReview, null))
   }
 
-  async editReview(
+  async editMyPendingReview(
     reviewId: string,
     reviewInput: EditReviewInput,
     userId: string

@@ -61,13 +61,13 @@ export class ReviewResolver {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Mutation('editReview')
-  async editReview(
+  @Mutation('editMyPendingReview')
+  async editMyPendingReview(
     @Args('reviewId') reviewId: string,
     @Args('review') review: EditReviewInput,
     @CurrentUser() userId: string
   ): Promise<Review> {
-    return this.reviewService.editReview(reviewId, review, userId)
+    return this.reviewService.editMyPendingReview(reviewId, review, userId)
   }
 
   @UseGuards(AdminAuthGuard)
