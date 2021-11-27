@@ -8,6 +8,7 @@ load_dotenv(".env")
 
 with open("gened_sections_2_64.csv", mode="r", encoding="utf8") as csvFile:
   csvReader = csv.DictReader(csvFile)
+  print("Connecting to", os.getenv("API_URL"))
   for row in csvReader:
     courseNo = row["courseNo"].strip()
     studyProgram = row["studyProgram"].strip()

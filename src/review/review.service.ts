@@ -9,12 +9,16 @@ import { StudyProgram } from '@thinc-org/chula-courses'
 import { Model, Types } from 'mongoose'
 import {
   CreateReviewInput,
+  EditReviewInput,
   Interaction as GraphQLInteraction,
   Review,
   Status,
   StudyProgram as GraphQLStudyProgram,
 } from 'src/graphql'
-import { Interaction, ReviewDocument } from 'src/schemas/review.schema'
+import {
+  ReviewDocument,
+  ReviewInteractionType,
+} from 'src/schemas/review.schema'
 
 @Injectable()
 export class ReviewService {
@@ -98,6 +102,34 @@ export class ReviewService {
     return reviews.map((rawReview) => this.transformReview(rawReview, null))
   }
 
+  async editMyPendingReview(
+    reviewId: string,
+    reviewInput: EditReviewInput,
+    userId: string
+  ): Promise<Review> {
+    const review = await this.reviewModel.findById(reviewId)
+    if (review.status !== 'PENDING') {
+      throw new BadRequestException({
+        reason: 'INVALID_STATUS',
+        message: 'Only PENDING status is supported',
+      })
+    }
+    if (!review.ownerId.equals(userId)) {
+      throw new BadRequestException({
+        reason: 'INVALID_USER',
+        message: 'Only the owner of the review can edit it',
+      })
+    }
+    const newReview = await this.reviewModel.findByIdAndUpdate(
+      reviewId,
+      {
+        $set: reviewInput,
+      },
+      { new: true }
+    )
+    return this.transformReview(newReview, userId)
+  }
+
   async remove(reviewId: string, userId: string): Promise<Review> {
     const review = await this.reviewModel.findOneAndDelete({
       _id: reviewId,
@@ -157,7 +189,7 @@ export class ReviewService {
 
   async setInteraction(
     reviewId: string,
-    interaction: Interaction,
+    interaction: ReviewInteractionType,
     userId: string
   ): Promise<Review> {
     const review = await this.reviewModel.findById(reviewId)

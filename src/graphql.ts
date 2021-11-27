@@ -93,7 +93,6 @@ export class GenEdOverrideInput {
 export class OverrideInput {
     courseNo: string;
     studyProgram: StudyProgram;
-    courseDesc?: string;
     genEd?: GenEdOverrideInput;
 }
 
@@ -103,6 +102,13 @@ export class CreateReviewInput {
     semester: string;
     academicYear: string;
     studyProgram: StudyProgram;
+    content?: string;
+}
+
+export class EditReviewInput {
+    rating?: number;
+    semester?: string;
+    academicYear?: string;
     content?: string;
 }
 
@@ -181,7 +187,8 @@ export class Course {
     semester: string;
     academicYear: string;
     courseNo: string;
-    courseDesc?: string;
+    courseDescTh?: string;
+    courseDescEn?: string;
     abbrName: string;
     courseNameTh: string;
     courseNameEn: string;
@@ -195,32 +202,13 @@ export class Course {
     final?: ExamPeriod;
     sections: Section[];
     rating?: string;
+    courseDesc?: string;
 }
 
 export class CourseNosOutput {
     S: string[];
     T: string[];
     I: string[];
-}
-
-export abstract class IMutation {
-    abstract refresh(): string | Promise<string>;
-
-    abstract createOrUpdateOverride(override: OverrideInput): Override | Promise<Override>;
-
-    abstract deleteOverride(courseNo: string, studyProgram: StudyProgram): Override | Promise<Override>;
-
-    abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
-
-    abstract removeReview(reviewId: string): Review | Promise<Review>;
-
-    abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
-
-    abstract setReviewStatus(reviewId: string, status: Status): string | Promise<string>;
-
-    abstract modifyCourseCart(newContent: CourseCartItemInput[]): CourseCartItem[] | Promise<CourseCartItem[]>;
-
-    abstract modifyCalendarId(newCalendarId?: string): string | Promise<string>;
 }
 
 export class GenEdOverride {
@@ -231,8 +219,27 @@ export class GenEdOverride {
 export class Override {
     courseNo: string;
     studyProgram: StudyProgram;
-    courseDesc?: string;
     genEd?: GenEdOverride;
+}
+
+export abstract class IMutation {
+    abstract createOrUpdateOverride(override: OverrideInput): Override | Promise<Override>;
+
+    abstract deleteOverride(courseNo: string, studyProgram: StudyProgram): Override | Promise<Override>;
+
+    abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
+
+    abstract removeReview(reviewId: string): Review | Promise<Review>;
+
+    abstract editMyPendingReview(reviewId: string, review: EditReviewInput): Review | Promise<Review>;
+
+    abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
+
+    abstract setReviewStatus(reviewId: string, status: Status): string | Promise<string>;
+
+    abstract modifyCourseCart(newContent: CourseCartItemInput[]): CourseCartItem[] | Promise<CourseCartItem[]>;
+
+    abstract modifyCalendarId(newCalendarId?: string): string | Promise<string>;
 }
 
 export class Review {
