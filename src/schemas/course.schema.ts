@@ -84,6 +84,7 @@ export const CourseSchema = new mongoose.Schema({
   midterm: examPeriod,
   final: examPeriod,
   sections: { type: [section], required: true },
+  rating: { type: String },
 })
 
 export type CourseDocument = Course & mongoose.Document

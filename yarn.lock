@@ -1393,10 +1393,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@thinc-org/chula-courses@^1.1.12":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@thinc-org/chula-courses/-/chula-courses-1.2.1.tgz#2bce461e7b76b5d86386e84e3a5574e531f22135"
-  integrity sha512-SNtw0tjZcWlB4Yer1R7lE8WGXKK+ncrucEp1Y2bBj4MrRZwetCwXkN/KsEcXw8T5BShZtgDIxx5WmeF1+RYFsg==
+"@thinc-org/chula-courses@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@thinc-org/chula-courses/-/chula-courses-2.3.0.tgz#28518dee973d31a6e17c9162c33ccb7924434be1"
+  integrity sha512-ooi0sK83sLDMhhDSwDDwyy0EsvX7hZduU6jwG0v+n74t+DbJiFZnncR/6bsZoT4N/9u35FKKPGMHFNyUHSYVyA==
   dependencies:
     axios "^0.21.1"
 

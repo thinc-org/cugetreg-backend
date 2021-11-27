@@ -1,88 +1,20 @@
 import {
   BadRequestException,
   Injectable,
-  Logger,
   NotFoundException,
-  OnApplicationBootstrap,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Cron } from '@nestjs/schedule'
-import {
-  GenEdType,
-  Section,
-  Semester,
-  StudyProgram,
-} from '@thinc-org/chula-courses'
+import { Semester, StudyProgram } from '@thinc-org/chula-courses'
 import { FilterQuery, Model } from 'mongoose'
 import { Course } from 'src/common/types/course.type'
 import { CourseGroupInput, FilterInput } from 'src/graphql'
-import { OverrideService } from 'src/override/override.service'
-import { ReviewService } from 'src/review/review.service'
 import { CourseDocument } from 'src/schemas/course.schema'
-import { Override } from 'src/schemas/override.schema'
 
 @Injectable()
-export class CourseService implements OnApplicationBootstrap {
-  private overrides: Record<StudyProgram, Record<string, Override>> = {
-    S: {},
-    T: {},
-    I: {},
-  }
-  private ratings: Record<StudyProgram, Record<string, string>> = {
-    S: {},
-    T: {},
-    I: {},
-  }
-  private logger = new Logger(CourseService.name)
-
+export class CourseService {
   constructor(
-    private reviewService: ReviewService,
-    private overrideService: OverrideService,
     @InjectModel('course') private courseModel: Model<CourseDocument>
   ) {}
-
-  async onApplicationBootstrap(): Promise<void> {
-    await this.refresh()
-  }
-
-  // Every 30 minutes
-  @Cron('0 */30 * * * *')
-  async refresh(): Promise<void> {
-    // refresh override
-    const overridesList = await this.overrideService.getOverrides()
-    this.overrides = {
-      S: {},
-      T: {},
-      I: {},
-    }
-    for (const override of overridesList) {
-      if (override.studyProgram) {
-        this.overrides[override.studyProgram][override.courseNo] = override
-      }
-    }
-
-    // refresh review ratings
-    const reviewsList = await this.reviewService.getReviews()
-    const ratings: Record<StudyProgram, Record<string, number[]>> = {
-      S: {},
-      T: {},
-      I: {},
-    }
-    for (const review of reviewsList) {
-      if (!(review.courseNo in ratings[review.studyProgram])) {
-        ratings[review.studyProgram][review.courseNo] = []
-      }
-      ratings[review.studyProgram][review.courseNo].push(review.rating)
-    }
-    for (const studyProgram in ratings) {
-      for (const courseNo in ratings[studyProgram]) {
-        this.ratings[studyProgram][courseNo] = findAvgRating(
-          ratings[studyProgram][courseNo]
-        )
-      }
-    }
-    this.logger.log(`Course override and ratings refreshed`)
-  }
 
   async findOne(
     courseNo: string,
@@ -99,7 +31,7 @@ export class CourseService implements OnApplicationBootstrap {
         message: "Can't find a course with the given properties",
       })
     }
-    return this.populate(course)
+    return course
   }
 
   async getAllCourseNos(): Promise<Record<StudyProgram, string[]>> {
@@ -182,78 +114,8 @@ export class CourseService implements OnApplicationBootstrap {
       .limit(limit)
       .skip(offset)
       .lean()
-    return this.populateList(courses)
-  }
-  // warning: this method mutates the original course object with the override and rating
-  private populate(course: Course): Course {
-    if (!course) {
-      return null
-    }
-    // populate override - genEdType
-    const override = this.overrides[course.studyProgram][course.courseNo]
-    if (override?.genEd) {
-      const { genEdType, sections: genEdSections } = override.genEd
-      course.genEdType = genEdType
-      for (const section of course.sections) {
-        section.genEdType = genEdSections.includes(section.sectionNo)
-          ? override.genEd.genEdType
-          : 'NO'
-      }
-    } else {
-      // only use genEdType from override
-      course.genEdType = 'NO'
-      for (const section of course.sections) {
-        section.genEdType = 'NO'
-      }
-    }
-
-    // populate override - course description
-    if (override?.courseDesc) {
-      course.courseDesc = override.courseDesc
-    }
-
-    // populate rating
-    course.rating = this.ratings[course.studyProgram][course.courseNo]
-    return course
-  }
-
-  private populateList(courses: Course[]): Course[] {
-    for (const course of courses) {
-      this.populate(course)
-    }
     return courses
   }
-}
-
-function findAvgRating(ratings: number[]): string {
-  let total = 0
-  for (const rating of ratings) {
-    total += rating
-  }
-  return (total / (2 * ratings.length)).toFixed(2)
-}
-
-/**
- * @deprecated by course override. Left this in case of reverting back to this.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getGenEdType(section: Section): GenEdType {
-  if (section.note === undefined) return 'NO'
-  if (section.note.includes('GENED')) {
-    const result = section.note.match(/GENED-(\w+)/)
-    if (result == null) {
-      return 'NO'
-    }
-    if (['SO', 'SC', 'HU', 'IN'].includes(result[1])) {
-      return <GenEdType>result[1]
-    }
-    // edge case
-    if (['SCI', 'SCIENCE'].includes(result[1])) {
-      return 'SC'
-    }
-    return 'NO'
-  }
-  return 'NO'
 }
 
 function isTime(timeString: string): boolean {

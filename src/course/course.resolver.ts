@@ -1,7 +1,5 @@
-import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { Args, Query, Resolver } from '@nestjs/graphql'
 import { Course, Semester, StudyProgram } from '@thinc-org/chula-courses'
-import { AdminAuthGuard } from 'src/auth/admin.guard'
 import { CourseGroupInput, FilterInput } from 'src/graphql'
 import { CourseService } from './course.service'
 
@@ -34,12 +32,5 @@ export class CourseResolver {
     @Args('courseGroup') courseGroup: CourseGroupInput
   ): Promise<Course[]> {
     return this.courseService.search(filter, courseGroup)
-  }
-
-  @UseGuards(AdminAuthGuard)
-  @Mutation('refresh')
-  async refresh(): Promise<string> {
-    this.courseService.refresh()
-    return 'Refreshed course overrides and ratings.'
   }
 }
