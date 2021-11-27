@@ -98,6 +98,34 @@ export class ReviewService {
     return reviews.map((rawReview) => this.transformReview(rawReview, null))
   }
 
+  async editReview(
+    reviewId: string,
+    reviewInput: CreateReviewInput,
+    userId: string
+  ): Promise<Review> {
+    const review = await this.reviewModel.findById(reviewId)
+    if (review.status !== 'PENDING') {
+      throw new BadRequestException({
+        reason: 'INVALID_STATUS',
+        message: 'Only PENDING status is supported',
+      })
+    }
+    if (!review.ownerId.equals(userId)) {
+      throw new BadRequestException({
+        reason: 'INVALID_USER',
+        message: 'Only the owner of the review can edit it',
+      })
+    }
+    const newReview = await this.reviewModel.findByIdAndUpdate(
+      reviewId,
+      {
+        $set: reviewInput,
+      },
+      { new: true }
+    )
+    return this.transformReview(newReview, userId)
+  }
+
   async remove(reviewId: string, userId: string): Promise<Review> {
     const review = await this.reviewModel.findOneAndDelete({
       _id: reviewId,

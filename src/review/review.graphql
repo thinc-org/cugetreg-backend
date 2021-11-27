@@ -39,6 +39,7 @@ type Query {
 type Mutation {
   createReview(createReviewInput: CreateReviewInput!): Review!
   removeReview(reviewId: String!): Review!
+  editReview(reviewId: String!, review: CreateReviewInput!): Review!
   setInteraction(reviewId: String!, interaction: Interaction!): Review!
   setReviewStatus(reviewId: String!, status: Status!): String!
 }

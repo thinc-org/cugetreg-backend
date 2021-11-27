@@ -60,6 +60,16 @@ export class ReviewResolver {
     return this.reviewService.getPendingForUser(courseNo, studyProgram, userId)
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Mutation('editReview')
+  async editReview(
+    @Args('reviewId') reviewId: string,
+    @Args('review') review: CreateReviewInput,
+    @CurrentUser() userId: string
+  ): Promise<Review> {
+    return this.reviewService.editReview(reviewId, review, userId)
+  }
+
   @UseGuards(AdminAuthGuard)
   @Query('pendingReviews')
   async getPending(): Promise<Review[]> {
