@@ -9,6 +9,7 @@ import { StudyProgram } from '@thinc-org/chula-courses'
 import { Model, Types } from 'mongoose'
 import {
   CreateReviewInput,
+  EditReviewInput,
   Interaction as GraphQLInteraction,
   Review,
   Status,
@@ -100,7 +101,7 @@ export class ReviewService {
 
   async editReview(
     reviewId: string,
-    reviewInput: CreateReviewInput,
+    reviewInput: EditReviewInput,
     userId: string
   ): Promise<Review> {
     const review = await this.reviewModel.findById(reviewId)
