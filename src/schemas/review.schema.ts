@@ -22,15 +22,15 @@ export const ReviewSchema = new mongoose.Schema({
   status: { type: String, default: 'PENDING' },
 })
 
-export type InteractionType = 'L' | 'D'
+export type ReviewInteractionType = 'L' | 'D'
 export type ReviewStatus = 'PENDING' | 'APPROVED' | 'HIDDEN'
 
-export interface Interaction {
+export interface ReviewInteraction {
   userId: mongoose.Types.ObjectId
-  type: InteractionType
+  type: ReviewInteractionType
 }
 
-export type InteractionDocument = Interaction & mongoose.Document
+export type ReviewInteractionDocument = ReviewInteraction & mongoose.Document
 
 export interface Review {
   ownerId: mongoose.Types.ObjectId
@@ -40,7 +40,7 @@ export interface Review {
   academicYear: string
   studyProgram: StudyProgram
   content?: string
-  interactions: mongoose.Types.DocumentArray<InteractionDocument>
+  interactions: mongoose.Types.DocumentArray<ReviewInteractionDocument>
   status: ReviewStatus
 }
 
