@@ -106,6 +106,13 @@ export class CreateReviewInput {
     content?: string;
 }
 
+export class EditReviewInput {
+    rating?: number;
+    semester?: string;
+    academicYear?: string;
+    content?: string;
+}
+
 export class CourseCartItemInput {
     studyProgram: string;
     academicYear: string;
@@ -213,6 +220,8 @@ export abstract class IMutation {
     abstract createReview(createReviewInput: CreateReviewInput): Review | Promise<Review>;
 
     abstract removeReview(reviewId: string): Review | Promise<Review>;
+
+    abstract editMyPendingReview(reviewId: string, review: EditReviewInput): Review | Promise<Review>;
 
     abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
 

@@ -30,6 +30,13 @@ input CreateReviewInput {
   content: String
 }
 
+input EditReviewInput {
+  rating: Int
+  semester: String
+  academicYear: String
+  content: String
+}
+
 type Query {
   reviews(courseNo: String!, studyProgram: StudyProgram!): [Review!]!
   myPendingReviews(courseNo: String!, studyProgram: StudyProgram!): [Review!]!
@@ -39,6 +46,7 @@ type Query {
 type Mutation {
   createReview(createReviewInput: CreateReviewInput!): Review!
   removeReview(reviewId: String!): Review!
+  editMyPendingReview(reviewId: String!, review: EditReviewInput!): Review!
   setInteraction(reviewId: String!, interaction: Interaction!): Review!
   setReviewStatus(reviewId: String!, status: Status!): String!
 }

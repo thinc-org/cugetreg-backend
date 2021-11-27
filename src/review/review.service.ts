@@ -9,6 +9,7 @@ import { StudyProgram } from '@thinc-org/chula-courses'
 import { Model, Types } from 'mongoose'
 import {
   CreateReviewInput,
+  EditReviewInput,
   Interaction as GraphQLInteraction,
   Review,
   Status,
@@ -96,6 +97,34 @@ export class ReviewService {
       status: 'PENDING',
     })
     return reviews.map((rawReview) => this.transformReview(rawReview, null))
+  }
+
+  async editMyPendingReview(
+    reviewId: string,
+    reviewInput: EditReviewInput,
+    userId: string
+  ): Promise<Review> {
+    const review = await this.reviewModel.findById(reviewId)
+    if (review.status !== 'PENDING') {
+      throw new BadRequestException({
+        reason: 'INVALID_STATUS',
+        message: 'Only PENDING status is supported',
+      })
+    }
+    if (!review.ownerId.equals(userId)) {
+      throw new BadRequestException({
+        reason: 'INVALID_USER',
+        message: 'Only the owner of the review can edit it',
+      })
+    }
+    const newReview = await this.reviewModel.findByIdAndUpdate(
+      reviewId,
+      {
+        $set: reviewInput,
+      },
+      { new: true }
+    )
+    return this.transformReview(newReview, userId)
   }
 
   async remove(reviewId: string, userId: string): Promise<Review> {
