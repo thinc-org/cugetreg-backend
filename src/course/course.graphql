@@ -39,7 +39,8 @@ type Course {
 
   # Course info
   courseNo: String!
-  courseDesc: String
+  courseDescTh: String
+  courseDescEn: String
   abbrName: String!
   courseNameTh: String!
   courseNameEn: String!
@@ -59,6 +60,10 @@ type Course {
 
   # Rating
   rating: String
+
+  # Deprecated
+  courseDesc: String
+    @deprecated(reason: "Use courseDescTh or courseDescEn instead")
 }
 
 input PeriodRangeInput {
