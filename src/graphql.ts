@@ -211,9 +211,18 @@ export class CourseNosOutput {
     I: string[];
 }
 
-export abstract class IMutation {
-    abstract refresh(): string | Promise<string>;
+export class GenEdOverride {
+    genEdType: GenEdType;
+    sections: string[];
+}
 
+export class Override {
+    courseNo: string;
+    studyProgram: StudyProgram;
+    genEd?: GenEdOverride;
+}
+
+export abstract class IMutation {
     abstract createOrUpdateOverride(override: OverrideInput): Override | Promise<Override>;
 
     abstract deleteOverride(courseNo: string, studyProgram: StudyProgram): Override | Promise<Override>;
@@ -231,17 +240,6 @@ export abstract class IMutation {
     abstract modifyCourseCart(newContent: CourseCartItemInput[]): CourseCartItem[] | Promise<CourseCartItem[]>;
 
     abstract modifyCalendarId(newCalendarId?: string): string | Promise<string>;
-}
-
-export class GenEdOverride {
-    genEdType: GenEdType;
-    sections: string[];
-}
-
-export class Override {
-    courseNo: string;
-    studyProgram: StudyProgram;
-    genEd?: GenEdOverride;
 }
 
 export class Review {

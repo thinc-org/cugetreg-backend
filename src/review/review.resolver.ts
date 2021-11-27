@@ -5,7 +5,7 @@ import { AdminAuthGuard } from 'src/auth/admin.guard'
 import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/auth/jwt.guard'
 import { CurrentUser } from 'src/common/decorators/currentUser.decorator'
 import { CreateReviewInput, EditReviewInput, Review, Status } from 'src/graphql'
-import { Interaction } from 'src/schemas/review.schema'
+import { InteractionType } from 'src/schemas/review.schema'
 import { ReviewService } from './review.service'
 
 @Resolver('Review')
@@ -44,7 +44,7 @@ export class ReviewResolver {
   @Mutation('setInteraction')
   async like(
     @Args('reviewId') reviewId: string,
-    @Args('interaction') interaction: Interaction,
+    @Args('interaction') interaction: InteractionType,
     @CurrentUser() userId: string
   ): Promise<Review> {
     return this.reviewService.setInteraction(reviewId, interaction, userId)

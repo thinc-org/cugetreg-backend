@@ -15,7 +15,7 @@ import {
   Status,
   StudyProgram as GraphQLStudyProgram,
 } from 'src/graphql'
-import { Interaction, ReviewDocument } from 'src/schemas/review.schema'
+import { InteractionType, ReviewDocument } from 'src/schemas/review.schema'
 
 @Injectable()
 export class ReviewService {
@@ -186,7 +186,7 @@ export class ReviewService {
 
   async setInteraction(
     reviewId: string,
-    interaction: Interaction,
+    interaction: InteractionType,
     userId: string
   ): Promise<Review> {
     const review = await this.reviewModel.findById(reviewId)

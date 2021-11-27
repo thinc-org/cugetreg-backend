@@ -97,7 +97,3 @@ type Query {
   course(courseNo: String!, courseGroup: CourseGroupInput!): Course!
   search(filter: FilterInput!, courseGroup: CourseGroupInput!): [Course!]!
 }
-
-type Mutation {
-  refresh: String!
-}

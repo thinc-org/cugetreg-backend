@@ -1,62 +1,20 @@
 import {
   BadRequestException,
   Injectable,
-  Logger,
   NotFoundException,
-  OnApplicationBootstrap,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Cron } from '@nestjs/schedule'
 import { Semester, StudyProgram } from '@thinc-org/chula-courses'
 import { FilterQuery, Model } from 'mongoose'
 import { Course } from 'src/common/types/course.type'
 import { CourseGroupInput, FilterInput } from 'src/graphql'
-import { ReviewService } from 'src/review/review.service'
 import { CourseDocument } from 'src/schemas/course.schema'
 
 @Injectable()
-export class CourseService implements OnApplicationBootstrap {
-  private ratings: Record<StudyProgram, Record<string, string>> = {
-    S: {},
-    T: {},
-    I: {},
-  }
-  private logger = new Logger(CourseService.name)
-
+export class CourseService {
   constructor(
-    private reviewService: ReviewService,
     @InjectModel('course') private courseModel: Model<CourseDocument>
   ) {}
-
-  async onApplicationBootstrap(): Promise<void> {
-    await this.refresh()
-  }
-
-  // Every 30 minutes
-  @Cron('0 */30 * * * *')
-  async refresh(): Promise<void> {
-    // refresh review ratings
-    const reviewsList = await this.reviewService.getReviews()
-    const ratings: Record<StudyProgram, Record<string, number[]>> = {
-      S: {},
-      T: {},
-      I: {},
-    }
-    for (const review of reviewsList) {
-      if (!(review.courseNo in ratings[review.studyProgram])) {
-        ratings[review.studyProgram][review.courseNo] = []
-      }
-      ratings[review.studyProgram][review.courseNo].push(review.rating)
-    }
-    for (const studyProgram in ratings) {
-      for (const courseNo in ratings[studyProgram]) {
-        this.ratings[studyProgram][courseNo] = findAvgRating(
-          ratings[studyProgram][courseNo]
-        )
-      }
-    }
-    this.logger.log(`Ratings refreshed`)
-  }
 
   async findOne(
     courseNo: string,
@@ -73,7 +31,7 @@ export class CourseService implements OnApplicationBootstrap {
         message: "Can't find a course with the given properties",
       })
     }
-    return this.populate(course)
+    return course
   }
 
   async getAllCourseNos(): Promise<Record<StudyProgram, string[]>> {
@@ -156,33 +114,8 @@ export class CourseService implements OnApplicationBootstrap {
       .limit(limit)
       .skip(offset)
       .lean()
-    return this.populateList(courses)
-  }
-  // warning: this method mutates the original course object with rating
-  private populate(course: Course): Course {
-    if (!course) {
-      return null
-    }
-
-    // populate rating
-    course.rating = this.ratings[course.studyProgram][course.courseNo]
-    return course
-  }
-
-  private populateList(courses: Course[]): Course[] {
-    for (const course of courses) {
-      this.populate(course)
-    }
     return courses
   }
-}
-
-function findAvgRating(ratings: number[]): string {
-  let total = 0
-  for (const rating of ratings) {
-    total += rating
-  }
-  return (total / (2 * ratings.length)).toFixed(2)
 }
 
 function isTime(timeString: string): boolean {
