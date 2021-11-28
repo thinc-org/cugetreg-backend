@@ -11,6 +11,7 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { Request, Response } from 'express'
 import {} from 'googleapis'
+import { OauthStatePayload } from './auth.dto'
 import { AuthService } from './auth.service'
 
 @Controller('auth')
@@ -22,15 +23,23 @@ export class AuthController {
 
   @Get('/google')
   @Redirect()
-  authWithGoogle(@Query('returnURL') returnURL: string) {
+  authWithGoogle(
+    @Query('returnUrl') returnUrl: string,
+    @Query('backendUrl') overrideBackendUrl?: string
+  ) {
+    const state = this.createOauthState(returnUrl, overrideBackendUrl)
+    this.validateOauthState(state)
+
     const url = this.authService.generateGoogleOauthClient().generateAuthUrl({
       scope: [
         'https://www.googleapis.com/auth/userinfo.email',
         'openid',
         'https://www.googleapis.com/auth/userinfo.profile',
       ],
-      state: returnURL,
-      redirect_uri: this.authService.getGoogleCallbackUrl(),
+      state: JSON.stringify(state),
+      redirect_uri: this.authService.getGoogleCallbackUrl(
+        state.overrideBackendUrl
+      ),
       access_type: 'online',
       include_granted_scopes: true,
       hd: 'student.chula.ac.th',
@@ -46,31 +55,23 @@ export class AuthController {
   @Redirect()
   async authWithGoogleCallback(
     @Query('code') code: string,
-    @Query('state') returnURL = '',
+    @Query('state') stateString = '',
     @Res({ passthrough: true }) res: Response
   ) {
-    const { refreshToken } = await this.authService.handleGoogleOauthCode(code)
+    const state: OauthStatePayload = JSON.parse(stateString)
+    this.validateOauthState(state)
+
+    const { refreshToken } = await this.authService.handleGoogleOauthCode(
+      code,
+      state.overrideBackendUrl
+    )
     res.cookie('refreshtoken', refreshToken, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 30 * 6,
     })
 
-    const backendPublicUrl = this.configService.get('backendPublicUrl')
-    if (!returnURL) {
-      returnURL = backendPublicUrl
-    }
-    // allow redirect to any origin for dev
-    if (
-      this.configService.get('env') !== 'development' &&
-      !returnURL.startsWith(backendPublicUrl)
-    ) {
-      throw new BadRequestException(
-        `returnURL must be the same origin as ${backendPublicUrl}`
-      )
-    }
-
     return {
-      url: returnURL,
+      url: state.returnUrl,
     }
   }
 
@@ -87,6 +88,31 @@ export class AuthController {
     if (!token) throw new BadRequestException('Not logged in')
     return {
       accessToken: await this.authService.issueAccessToken(token),
+    }
+  }
+
+  private createOauthState(returnUrl: string, overrideBackendUrl?: string) {
+    const state: OauthStatePayload = {
+      returnUrl: returnUrl || this.configService.get('backendPublicUrl'),
+    }
+    if (overrideBackendUrl) {
+      state.overrideBackendUrl = overrideBackendUrl
+    }
+    return state
+  }
+
+  private validateOauthState(state: OauthStatePayload) {
+    const backendUrl = this.configService.get('backendPublicUrl')
+    if (this.configService.get('env') === 'development') return
+    if (state.overrideBackendUrl) {
+      throw new BadRequestException(
+        `overriding backendUrl is not allowed in this environment`
+      )
+    }
+    if (!state.returnUrl.startsWith(backendUrl)) {
+      throw new BadRequestException(
+        `returnUrl must be the same origin as ${backendUrl}`
+      )
     }
   }
 }
