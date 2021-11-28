@@ -102,14 +102,16 @@ export class AuthController {
   }
 
   private validateOauthState(state: OauthStatePayload) {
-    const backendUrl = this.configService.get('backendPublicUrl')
     if (this.configService.get('env') === 'development') return
     if (state.overrideBackendUrl) {
       throw new BadRequestException(
         `overriding backendUrl is not allowed in this environment`
       )
     }
-    if (!state.returnUrl.startsWith(backendUrl)) {
+    const backendUrl = this.configService.get('backendPublicUrl')
+    const backendOrigin = new URL(backendUrl).origin
+    const returnUrlOrigin = new URL(state.returnUrl).origin
+    if (backendOrigin !== returnUrlOrigin) {
       throw new BadRequestException(
         `returnUrl must be the same origin as ${backendUrl}`
       )
