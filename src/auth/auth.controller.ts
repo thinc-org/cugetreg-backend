@@ -94,9 +94,7 @@ export class AuthController {
   private createOauthState(returnUrl: string, overrideBackendUrl?: string) {
     const state: OauthStatePayload = {
       returnUrl: returnUrl || this.configService.get('backendPublicUrl'),
-    }
-    if (overrideBackendUrl) {
-      state.overrideBackendUrl = overrideBackendUrl
+      overrideBackendUrl: overrideBackendUrl
     }
     return state
   }
