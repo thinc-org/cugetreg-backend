@@ -254,6 +254,7 @@ export class Review {
     likeCount: number;
     dislikeCount: number;
     myInteraction?: ReviewInteractionType;
+    status?: ReviewStatus;
 }
 
 export class GoogleCredential {

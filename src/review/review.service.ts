@@ -239,6 +239,7 @@ export class ReviewService {
       likeCount: likeCount,
       dislikeCount: dislikeCount,
       myInteraction: interactionType,
+      status: rawReview.status,
     }
   }
 }
