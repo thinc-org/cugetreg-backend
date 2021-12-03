@@ -117,10 +117,10 @@ export class ReviewService {
     userId: string
   ): Promise<Review> {
     const review = await this.reviewModel.findById(reviewId)
-    if (review.status !== 'PENDING') {
+    if (review.status === ReviewStatus.APPROVED) {
       throw new BadRequestException({
         reason: 'INVALID_STATUS',
-        message: 'Only PENDING status is supported',
+        message: 'Only APPROVED status is not supported',
       })
     }
     if (!review.ownerId.equals(userId)) {
@@ -132,7 +132,10 @@ export class ReviewService {
     const newReview = await this.reviewModel.findByIdAndUpdate(
       reviewId,
       {
-        $set: reviewInput,
+        $set: {
+          ...reviewInput,
+          status: ReviewStatus.PENDING,
+        },
       },
       { new: true }
     )
