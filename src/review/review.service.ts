@@ -94,19 +94,12 @@ export class ReviewService {
   ): Promise<Review[]> {
     const reviews = await this.reviewModel.find({
       $or: [
-        {
-          ownerId: userId,
-          courseNo,
-          studyProgram,
-          status: ReviewStatus.PENDING,
-        },
-        {
-          ownerId: userId,
-          courseNo,
-          studyProgram,
-          status: ReviewStatus.REJECTED,
-        },
+        { status: ReviewStatus.PENDING },
+        { status: ReviewStatus.REJECTED },
       ],
+      ownerId: userId,
+      courseNo,
+      studyProgram,
     })
     return reviews.map((rawReview) => this.transformReview(rawReview, null))
   }
