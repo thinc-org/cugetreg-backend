@@ -50,14 +50,15 @@ export enum GenEdType {
     NO = "NO"
 }
 
-export enum Interaction {
+export enum ReviewInteractionType {
     L = "L",
     D = "D"
 }
 
 export enum ReviewStatus {
     APPROVED = "APPROVED",
-    REJECTED = "REJECTED"
+    REJECTED = "REJECTED",
+    PENDING = "PENDING"
 }
 
 export class CourseEntryInput {
@@ -233,7 +234,7 @@ export abstract class IMutation {
 
     abstract editMyPendingReview(reviewId: string, review: EditReviewInput): Review | Promise<Review>;
 
-    abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
+    abstract setInteraction(reviewId: string, interaction: ReviewInteractionType): Review | Promise<Review>;
 
     abstract setReviewStatus(reviewId: string, status: ReviewStatus): string | Promise<string>;
 
@@ -252,7 +253,7 @@ export class Review {
     content?: string;
     likeCount: number;
     dislikeCount: number;
-    myInteraction?: Interaction;
+    myInteraction?: ReviewInteractionType;
 }
 
 export class GoogleCredential {

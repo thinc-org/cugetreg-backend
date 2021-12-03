@@ -10,15 +10,12 @@ import { Model, Types } from 'mongoose'
 import {
   CreateReviewInput,
   EditReviewInput,
-  Interaction as GraphQLInteraction,
   Review,
+  ReviewInteractionType,
   ReviewStatus,
   StudyProgram as GraphQLStudyProgram,
 } from 'src/graphql'
-import {
-  ReviewDocument,
-  ReviewInteractionType,
-} from 'src/schemas/review.schema'
+import { ReviewDocument } from 'src/schemas/review.schema'
 
 @Injectable()
 export class ReviewService {
@@ -84,7 +81,9 @@ export class ReviewService {
   }
 
   async getPending(): Promise<Review[]> {
-    const reviews = await this.reviewModel.find({ status: 'PENDING' })
+    const reviews = await this.reviewModel.find({
+      status: ReviewStatus.PENDING,
+    })
     return reviews.map((rawReview) => this.transformReview(rawReview, null))
   }
 
@@ -94,10 +93,20 @@ export class ReviewService {
     userId: string
   ): Promise<Review[]> {
     const reviews = await this.reviewModel.find({
-      ownerId: userId,
-      courseNo,
-      studyProgram,
-      status: 'PENDING',
+      $or: [
+        {
+          ownerId: userId,
+          courseNo,
+          studyProgram,
+          status: ReviewStatus.PENDING,
+        },
+        {
+          ownerId: userId,
+          courseNo,
+          studyProgram,
+          status: ReviewStatus.REJECTED,
+        },
+      ],
     })
     return reviews.map((rawReview) => this.transformReview(rawReview, null))
   }
@@ -226,7 +235,7 @@ export class ReviewService {
       content: rawReview.content,
       likeCount: likeCount,
       dislikeCount: dislikeCount,
-      myInteraction: interactionType as GraphQLInteraction,
+      myInteraction: interactionType,
     }
   }
 }

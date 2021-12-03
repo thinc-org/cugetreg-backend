@@ -8,9 +8,9 @@ import {
   CreateReviewInput,
   EditReviewInput,
   Review,
+  ReviewInteractionType,
   ReviewStatus,
 } from 'src/graphql'
-import { ReviewInteractionType } from 'src/schemas/review.schema'
 import { ReviewService } from './review.service'
 
 @Resolver('Review')
