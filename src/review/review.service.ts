@@ -12,7 +12,7 @@ import {
   EditReviewInput,
   Interaction as GraphQLInteraction,
   Review,
-  Status,
+  ReviewStatus,
   StudyProgram as GraphQLStudyProgram,
 } from 'src/graphql'
 import {
@@ -144,10 +144,13 @@ export class ReviewService {
     return this.transformReview(review, userId)
   }
 
-  async approve(reviewId: string): Promise<ReviewDocument> {
+  async changeStatus(
+    reviewId: string,
+    status: ReviewStatus
+  ): Promise<ReviewDocument> {
     const review = await this.reviewModel.findByIdAndUpdate(reviewId, {
       $set: {
-        status: 'APPROVED',
+        status,
       },
     })
     if (!review) {
@@ -159,24 +162,11 @@ export class ReviewService {
     return review
   }
 
-  async reject(reviewId: string): Promise<ReviewDocument> {
-    const review = await this.reviewModel.findByIdAndDelete(reviewId)
-    if (!review) {
-      throw new NotFoundException({
-        reason: 'REVIEW_NOT_FOUND',
-        message: `Error approving review ${reviewId}: Review not found`,
-      })
-    }
-    return review
-  }
-
   // TODO: hide reviews?
 
-  async setStatus(reviewId: string, status: Status): Promise<string> {
-    if (status === 'APPROVED') {
-      await this.approve(reviewId)
-    } else if (status === 'REJECTED') {
-      await this.reject(reviewId)
+  async setStatus(reviewId: string, status: ReviewStatus): Promise<string> {
+    if (status in ReviewStatus) {
+      await this.changeStatus(reviewId, status)
     } else {
       throw new BadRequestException({
         reason: 'INVALID_STATUS',

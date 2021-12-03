@@ -55,7 +55,7 @@ export enum Interaction {
     D = "D"
 }
 
-export enum Status {
+export enum ReviewStatus {
     APPROVED = "APPROVED",
     REJECTED = "REJECTED"
 }
@@ -235,7 +235,7 @@ export abstract class IMutation {
 
     abstract setInteraction(reviewId: string, interaction: Interaction): Review | Promise<Review>;
 
-    abstract setReviewStatus(reviewId: string, status: Status): string | Promise<string>;
+    abstract setReviewStatus(reviewId: string, status: ReviewStatus): string | Promise<string>;
 
     abstract modifyCourseCart(newContent: CourseCartItemInput[]): CourseCartItem[] | Promise<CourseCartItem[]>;
 

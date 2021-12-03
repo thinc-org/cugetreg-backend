@@ -3,7 +3,7 @@ enum Interaction {
   D
 }
 
-enum Status {
+enum ReviewStatus {
   APPROVED
   REJECTED
 }
@@ -48,5 +48,5 @@ type Mutation {
   removeReview(reviewId: String!): Review!
   editMyPendingReview(reviewId: String!, review: EditReviewInput!): Review!
   setInteraction(reviewId: String!, interaction: Interaction!): Review!
-  setReviewStatus(reviewId: String!, status: Status!): String!
+  setReviewStatus(reviewId: String!, status: ReviewStatus!): String!
 }
