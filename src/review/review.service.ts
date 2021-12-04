@@ -108,18 +108,12 @@ export class ReviewService {
     return reviews.map((rawReview) => this.transformReview(rawReview, null))
   }
 
-  async editMyPendingReview(
+  async editMyReview(
     reviewId: string,
     reviewInput: EditReviewInput,
     userId: string
   ): Promise<Review> {
     const review = await this.reviewModel.findById(reviewId)
-    if (review.status === ReviewStatus.APPROVED) {
-      throw new BadRequestException({
-        reason: 'INVALID_STATUS',
-        message: 'Only APPROVED status is not supported',
-      })
-    }
     if (!review.ownerId.equals(userId)) {
       throw new BadRequestException({
         reason: 'INVALID_USER',
