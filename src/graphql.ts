@@ -255,6 +255,7 @@ export class Review {
     dislikeCount: number;
     myInteraction?: ReviewInteractionType;
     status?: ReviewStatus;
+    isOwner: boolean;
 }
 
 export class GoogleCredential {

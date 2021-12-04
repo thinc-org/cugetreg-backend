@@ -21,6 +21,7 @@ type Review {
   dislikeCount: Int!
   myInteraction: ReviewInteractionType
   status: ReviewStatus
+  isOwner: Boolean!
 }
 
 input CreateReviewInput {

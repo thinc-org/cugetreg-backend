@@ -233,6 +233,7 @@ export class ReviewService {
       dislikeCount: dislikeCount,
       myInteraction: interactionType,
       status: rawReview.status,
+      isOwner: rawReview.ownerId.equals(userId),
     }
   }
 }
