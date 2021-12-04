@@ -105,7 +105,7 @@ export class ReviewService {
       courseNo,
       studyProgram,
     })
-    return reviews.map((rawReview) => this.transformReview(rawReview, null))
+    return reviews.map((rawReview) => this.transformReview(rawReview, userId))
   }
 
   async editMyReview(
