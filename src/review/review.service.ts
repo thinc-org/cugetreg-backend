@@ -78,6 +78,10 @@ export class ReviewService {
           review.status === 'APPROVED' && (!filterEmpty || review.content)
       )
       .map((rawReview) => this.transformReview(rawReview, userId))
+      .sort(
+        (reviewA, reviewB) =>
+          (reviewB.isOwner ? 1 : 0) - (reviewA.isOwner ? 1 : 0)
+      )
   }
 
   async getPending(): Promise<Review[]> {
