@@ -163,7 +163,7 @@ export class ReviewService {
     if (!review) {
       throw new NotFoundException({
         reason: 'REVIEW_NOT_FOUND',
-        message: `Error approving review ${reviewId}: Review not found`,
+        message: `Error setting status for review ${reviewId}: Review not found`,
       })
     }
     return 'Review status updated successfully'
