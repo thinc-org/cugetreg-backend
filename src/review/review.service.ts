@@ -78,6 +78,10 @@ export class ReviewService {
           review.status === 'APPROVED' && (!filterEmpty || review.content)
       )
       .map((rawReview) => this.transformReview(rawReview, userId))
+      .sort(
+        (reviewA, reviewB) =>
+          (reviewB.isOwner ? 1 : 0) - (reviewA.isOwner ? 1 : 0)
+      )
   }
 
   async getPending(): Promise<Review[]> {
@@ -101,21 +105,15 @@ export class ReviewService {
       courseNo,
       studyProgram,
     })
-    return reviews.map((rawReview) => this.transformReview(rawReview, null))
+    return reviews.map((rawReview) => this.transformReview(rawReview, userId))
   }
 
-  async editMyPendingReview(
+  async editMyReview(
     reviewId: string,
     reviewInput: EditReviewInput,
     userId: string
   ): Promise<Review> {
     const review = await this.reviewModel.findById(reviewId)
-    if (review.status === ReviewStatus.APPROVED) {
-      throw new BadRequestException({
-        reason: 'INVALID_STATUS',
-        message: 'Only APPROVED status is not supported',
-      })
-    }
     if (!review.ownerId.equals(userId)) {
       throw new BadRequestException({
         reason: 'INVALID_USER',
@@ -233,6 +231,7 @@ export class ReviewService {
       dislikeCount: dislikeCount,
       myInteraction: interactionType,
       status: rawReview.status,
+      isOwner: rawReview.ownerId.equals(userId),
     }
   }
 }

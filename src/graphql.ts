@@ -232,7 +232,7 @@ export abstract class IMutation {
 
     abstract removeReview(reviewId: string): Review | Promise<Review>;
 
-    abstract editMyPendingReview(reviewId: string, review: EditReviewInput): Review | Promise<Review>;
+    abstract editMyReview(reviewId: string, review: EditReviewInput): Review | Promise<Review>;
 
     abstract setInteraction(reviewId: string, interaction: ReviewInteractionType): Review | Promise<Review>;
 
@@ -255,6 +255,7 @@ export class Review {
     dislikeCount: number;
     myInteraction?: ReviewInteractionType;
     status?: ReviewStatus;
+    isOwner: boolean;
 }
 
 export class GoogleCredential {
