@@ -65,18 +65,17 @@ export class ReviewService {
     return this.transformReview(await newReview.save(), userId)
   }
 
-  async find(
+  async getApprovedReviews(
     courseNo: string,
     studyProgram: StudyProgram,
-    userId: string,
-    filterEmpty: boolean
+    userId: string
   ): Promise<Review[]> {
-    const reviews = await this.reviewModel.find({ courseNo, studyProgram })
+    const reviews = await this.reviewModel.find({
+      courseNo,
+      studyProgram,
+      status: ReviewStatus.APPROVED,
+    })
     return reviews
-      .filter(
-        (review) =>
-          review.status === 'APPROVED' && (!filterEmpty || review.content)
-      )
       .map((rawReview) => this.transformReview(rawReview, userId))
       .sort(
         (reviewA, reviewB) =>
