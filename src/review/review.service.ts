@@ -149,25 +149,23 @@ export class ReviewService {
 
   // TODO: hide reviews?
   async setStatus(reviewId: string, status: ReviewStatus): Promise<string> {
-    if (status in ReviewStatus) {
-      const review = await this.reviewModel.findByIdAndUpdate(reviewId, {
-        $set: {
-          status,
-        },
-      })
-      if (!review) {
-        throw new NotFoundException({
-          reason: 'REVIEW_NOT_FOUND',
-          message: `Error approving review ${reviewId}: Review not found`,
-        })
-      }
-    } else {
+    if (status !== ReviewStatus.APPROVED && status !== ReviewStatus.REJECTED) {
       throw new BadRequestException({
         reason: 'INVALID_STATUS',
-        message: 'APPROVED reviews can not be edited!',
+        message: 'Only APPROVED and REJECTED status is supported',
       })
     }
-
+    const review = await this.reviewModel.findByIdAndUpdate(reviewId, {
+      $set: {
+        status,
+      },
+    })
+    if (!review) {
+      throw new NotFoundException({
+        reason: 'REVIEW_NOT_FOUND',
+        message: `Error approving review ${reviewId}: Review not found`,
+      })
+    }
     return 'Review status updated successfully'
   }
 
