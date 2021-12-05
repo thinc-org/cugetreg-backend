@@ -1,11 +1,12 @@
-enum Interaction {
+enum ReviewInteractionType {
   L
   D
 }
 
-enum Status {
+enum ReviewStatus {
   APPROVED
   REJECTED
+  PENDING
 }
 
 type Review {
@@ -18,7 +19,9 @@ type Review {
   content: String
   likeCount: Int!
   dislikeCount: Int!
-  myInteraction: Interaction
+  myInteraction: ReviewInteractionType
+  status: ReviewStatus
+  isOwner: Boolean!
 }
 
 input CreateReviewInput {
@@ -46,7 +49,10 @@ type Query {
 type Mutation {
   createReview(createReviewInput: CreateReviewInput!): Review!
   removeReview(reviewId: String!): Review!
-  editMyPendingReview(reviewId: String!, review: EditReviewInput!): Review!
-  setInteraction(reviewId: String!, interaction: Interaction!): Review!
-  setReviewStatus(reviewId: String!, status: Status!): String!
+  editMyReview(reviewId: String!, review: EditReviewInput!): Review!
+  setReviewInteraction(
+    reviewId: String!
+    interactionType: ReviewInteractionType!
+  ): Review!
+  setReviewStatus(reviewId: String!, status: ReviewStatus!): String!
 }

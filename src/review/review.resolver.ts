@@ -4,8 +4,13 @@ import { StudyProgram } from '@thinc-org/chula-courses'
 import { AdminAuthGuard } from 'src/auth/admin.guard'
 import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/auth/jwt.guard'
 import { CurrentUser } from 'src/common/decorators/currentUser.decorator'
-import { CreateReviewInput, EditReviewInput, Review, Status } from 'src/graphql'
-import { ReviewInteractionType } from 'src/schemas/review.schema'
+import {
+  CreateReviewInput,
+  EditReviewInput,
+  Review,
+  ReviewInteractionType,
+  ReviewStatus,
+} from 'src/graphql'
 import { ReviewService } from './review.service'
 
 @Resolver('Review')
@@ -41,13 +46,13 @@ export class ReviewResolver {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Mutation('setInteraction')
+  @Mutation('setReviewInteraction')
   async like(
     @Args('reviewId') reviewId: string,
-    @Args('interaction') interaction: ReviewInteractionType,
+    @Args('interactionType') interactionType: ReviewInteractionType,
     @CurrentUser() userId: string
   ): Promise<Review> {
-    return this.reviewService.setInteraction(reviewId, interaction, userId)
+    return this.reviewService.setInteraction(reviewId, interactionType, userId)
   }
 
   @UseGuards(JwtAuthGuard)
@@ -61,13 +66,13 @@ export class ReviewResolver {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Mutation('editMyPendingReview')
+  @Mutation('editMyReview')
   async editMyPendingReview(
     @Args('reviewId') reviewId: string,
     @Args('review') review: EditReviewInput,
     @CurrentUser() userId: string
   ): Promise<Review> {
-    return this.reviewService.editMyPendingReview(reviewId, review, userId)
+    return this.reviewService.editMyReview(reviewId, review, userId)
   }
 
   @UseGuards(AdminAuthGuard)
@@ -80,7 +85,7 @@ export class ReviewResolver {
   @Mutation('setReviewStatus')
   async setStatus(
     @Args('reviewId') reviewId: string,
-    @Args('status') status: Status
+    @Args('status') status: ReviewStatus
   ): Promise<string> {
     return this.reviewService.setStatus(reviewId, status)
   }
