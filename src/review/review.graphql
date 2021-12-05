@@ -50,9 +50,9 @@ type Mutation {
   createReview(createReviewInput: CreateReviewInput!): Review!
   removeReview(reviewId: String!): Review!
   editMyReview(reviewId: String!, review: EditReviewInput!): Review!
-  setInteraction(
+  setReviewInteraction(
     reviewId: String!
-    interaction: ReviewInteractionType!
+    interactionType: ReviewInteractionType!
   ): Review!
   setReviewStatus(reviewId: String!, status: ReviewStatus!): String!
 }

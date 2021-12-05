@@ -46,13 +46,13 @@ export class ReviewResolver {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Mutation('setInteraction')
+  @Mutation('setReviewInteraction')
   async like(
     @Args('reviewId') reviewId: string,
-    @Args('interaction') interaction: ReviewInteractionType,
+    @Args('interactionType') interactionType: ReviewInteractionType,
     @CurrentUser() userId: string
   ): Promise<Review> {
-    return this.reviewService.setInteraction(reviewId, interaction, userId)
+    return this.reviewService.setInteraction(reviewId, interactionType, userId)
   }
 
   @UseGuards(JwtAuthGuard)
