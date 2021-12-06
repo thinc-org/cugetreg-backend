@@ -1,5 +1,5 @@
 type Query {
-    recommendCourses(selectedCourses: [CourseEntryInput!]!): [CourseEntry!]!
+    recommend(req: CourseRecommendationRequest!): CourseRecommendationResponse!
 }
 
 input CourseEntryInput {
@@ -10,4 +10,39 @@ input CourseEntryInput {
 type CourseEntry {
     courseId: String!
     studyProgram: String!
+}
+
+input CourseRecommendationRequest {
+    variant: String!
+    semesterKey: SemesterKeyInput!
+	selectedCourse: [CourseKeyInput!]! 
+}
+
+input SemesterKeyInput {
+    studyProgram: String!
+	semester: String!
+}
+
+input CourseKeyInput {
+    courseNo: String!
+	semesterKey: SemesterKeyInput!
+}
+
+type SemesterKey {
+    studyProgram: String!
+	semester: String!
+}
+
+type CourseKey {
+    courseNo: String!
+	semesterKey: SemesterKey!
+}
+
+type CourseDetail {
+    key: CourseKey!
+    courseNameEn: String!
+}
+
+type CourseRecommendationResponse {
+	course: [CourseDetail!]!
 }
