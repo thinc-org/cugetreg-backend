@@ -21,6 +21,7 @@ input CourseRecommendationRequest {
 input SemesterKeyInput {
     studyProgram: String!
 	semester: String!
+    academicYear: String!
 }
 
 input CourseKeyInput {
@@ -31,6 +32,7 @@ input CourseKeyInput {
 type SemesterKey {
     studyProgram: String!
 	semester: String!
+    academicYear: String!
 }
 
 type CourseKey {

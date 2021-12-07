@@ -75,6 +75,7 @@ export class CourseRecommendationRequest {
 export class SemesterKeyInput {
     studyProgram: string;
     semester: string;
+    academicYear: string;
 }
 
 export class CourseKeyInput {
@@ -169,6 +170,7 @@ export class CourseEntry {
 export class SemesterKey {
     studyProgram: string;
     semester: string;
+    academicYear: string;
 }
 
 export class CourseKey {

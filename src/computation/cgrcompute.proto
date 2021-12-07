@@ -9,6 +9,7 @@ service CourseRecommendation {
 message SemesterKey {
 	string studyProgram = 1;
 	string semester = 2;
+	string academicYear = 3;
 }
 
 message CourseKey {
