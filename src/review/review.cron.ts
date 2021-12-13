@@ -17,7 +17,9 @@ export class ReviewCron {
     @InjectModel('review') private reviewModel: Model<ReviewDocument>
   ) {
     const url = this.configService.get<string>('slackWebhookUrl')
-    this.webhook = new IncomingWebhook(url)
+    if (url) {
+      this.webhook = new IncomingWebhook(url)
+    }
   }
 
   @Cron('0 0 19 * * *', { timeZone: 'Asia/Bangkok' })

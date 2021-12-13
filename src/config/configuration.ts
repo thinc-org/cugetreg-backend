@@ -24,7 +24,6 @@ const requiredConfigs = [
   'clientLoggerUrl',
   'computationBackendUrl',
   'backendPublicUrl',
-  'slackWebhookUrl',
 ]
 
 export function validateConfig(configService: ConfigService): void {
