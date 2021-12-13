@@ -12,6 +12,7 @@ export default () => ({
   adminToken: process.env.ADMIN_TOKEN,
   clientLoggerUrl: process.env.CLIENT_LOGGER_URL,
   computationBackendUrl: process.env.COMPUTATION_BACKEND_URL,
+  slackWebhookUrl: process.env.SLACK_WEBHOOK_URL,
   env: process.env.ENV || 'development',
 })
 
@@ -23,6 +24,7 @@ const requiredConfigs = [
   'clientLoggerUrl',
   'computationBackendUrl',
   'backendPublicUrl',
+  'slackWebhookUrl',
 ]
 
 export function validateConfig(configService: ConfigService): void {

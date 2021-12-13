@@ -24,7 +24,11 @@ export const ReviewSchema = new mongoose.Schema({
   rating: { type: Number, required: true },
   content: { type: String },
   interactions: [InteractionSchema],
-  status: { type: String, default: ReviewStatus.PENDING },
+  status: {
+    type: String,
+    enum: Object.values(ReviewStatus),
+    default: ReviewStatus.PENDING,
+  },
 })
 
 export interface ReviewInteraction {
