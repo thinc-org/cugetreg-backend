@@ -10,15 +10,12 @@ import { Model, Types } from 'mongoose'
 import {
   CreateReviewInput,
   EditReviewInput,
-  Interaction as GraphQLInteraction,
   Review,
-  Status,
+  ReviewInteractionType,
+  ReviewStatus,
   StudyProgram as GraphQLStudyProgram,
 } from 'src/graphql'
-import {
-  ReviewDocument,
-  ReviewInteractionType,
-} from 'src/schemas/review.schema'
+import { ReviewDocument } from 'src/schemas/review.schema'
 
 @Injectable()
 export class ReviewService {
@@ -68,23 +65,28 @@ export class ReviewService {
     return this.transformReview(await newReview.save(), userId)
   }
 
-  async find(
+  async getApprovedReviews(
     courseNo: string,
     studyProgram: StudyProgram,
-    userId: string,
-    filterEmpty: boolean
+    userId: string
   ): Promise<Review[]> {
-    const reviews = await this.reviewModel.find({ courseNo, studyProgram })
+    const reviews = await this.reviewModel.find({
+      courseNo,
+      studyProgram,
+      status: ReviewStatus.APPROVED,
+    })
     return reviews
-      .filter(
-        (review) =>
-          review.status === 'APPROVED' && (!filterEmpty || review.content)
-      )
       .map((rawReview) => this.transformReview(rawReview, userId))
+      .sort(
+        (reviewA, reviewB) =>
+          (reviewB.isOwner ? 1 : 0) - (reviewA.isOwner ? 1 : 0)
+      )
   }
 
   async getPending(): Promise<Review[]> {
-    const reviews = await this.reviewModel.find({ status: 'PENDING' })
+    const reviews = await this.reviewModel.find({
+      status: ReviewStatus.PENDING,
+    })
     return reviews.map((rawReview) => this.transformReview(rawReview, null))
   }
 
@@ -94,26 +96,23 @@ export class ReviewService {
     userId: string
   ): Promise<Review[]> {
     const reviews = await this.reviewModel.find({
+      $or: [
+        { status: ReviewStatus.PENDING },
+        { status: ReviewStatus.REJECTED },
+      ],
       ownerId: userId,
       courseNo,
       studyProgram,
-      status: 'PENDING',
     })
-    return reviews.map((rawReview) => this.transformReview(rawReview, null))
+    return reviews.map((rawReview) => this.transformReview(rawReview, userId))
   }
 
-  async editMyPendingReview(
+  async editMyReview(
     reviewId: string,
     reviewInput: EditReviewInput,
     userId: string
   ): Promise<Review> {
     const review = await this.reviewModel.findById(reviewId)
-    if (review.status !== 'PENDING') {
-      throw new BadRequestException({
-        reason: 'INVALID_STATUS',
-        message: 'Only PENDING status is supported',
-      })
-    }
     if (!review.ownerId.equals(userId)) {
       throw new BadRequestException({
         reason: 'INVALID_USER',
@@ -123,7 +122,10 @@ export class ReviewService {
     const newReview = await this.reviewModel.findByIdAndUpdate(
       reviewId,
       {
-        $set: reviewInput,
+        $set: {
+          ...reviewInput,
+          status: ReviewStatus.PENDING,
+        },
       },
       { new: true }
     )
@@ -144,46 +146,25 @@ export class ReviewService {
     return this.transformReview(review, userId)
   }
 
-  async approve(reviewId: string): Promise<ReviewDocument> {
-    const review = await this.reviewModel.findByIdAndUpdate(reviewId, {
-      $set: {
-        status: 'APPROVED',
-      },
-    })
-    if (!review) {
-      throw new NotFoundException({
-        reason: 'REVIEW_NOT_FOUND',
-        message: `Error approving review ${reviewId}: Review not found`,
-      })
-    }
-    return review
-  }
-
-  async reject(reviewId: string): Promise<ReviewDocument> {
-    const review = await this.reviewModel.findByIdAndDelete(reviewId)
-    if (!review) {
-      throw new NotFoundException({
-        reason: 'REVIEW_NOT_FOUND',
-        message: `Error approving review ${reviewId}: Review not found`,
-      })
-    }
-    return review
-  }
-
   // TODO: hide reviews?
-
-  async setStatus(reviewId: string, status: Status): Promise<string> {
-    if (status === 'APPROVED') {
-      await this.approve(reviewId)
-    } else if (status === 'REJECTED') {
-      await this.reject(reviewId)
-    } else {
+  async setStatus(reviewId: string, status: ReviewStatus): Promise<string> {
+    if (status !== ReviewStatus.APPROVED && status !== ReviewStatus.REJECTED) {
       throw new BadRequestException({
         reason: 'INVALID_STATUS',
         message: 'Only APPROVED and REJECTED status is supported',
       })
     }
-
+    const review = await this.reviewModel.findByIdAndUpdate(reviewId, {
+      $set: {
+        status,
+      },
+    })
+    if (!review) {
+      throw new NotFoundException({
+        reason: 'REVIEW_NOT_FOUND',
+        message: `Error setting status for review ${reviewId}: Review not found`,
+      })
+    }
     return 'Review status updated successfully'
   }
 
@@ -236,7 +217,9 @@ export class ReviewService {
       content: rawReview.content,
       likeCount: likeCount,
       dislikeCount: dislikeCount,
-      myInteraction: interactionType as GraphQLInteraction,
+      myInteraction: interactionType,
+      status: rawReview.status,
+      isOwner: rawReview.ownerId.equals(userId),
     }
   }
 }

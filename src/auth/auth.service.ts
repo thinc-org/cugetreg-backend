@@ -44,10 +44,10 @@ export class AuthService {
     })
   }
 
-  getGoogleCallbackUrl(): string {
-    return `${this.configService.get(
-      'backendPublicUrl'
-    )}/api/auth/google/callback`
+  getGoogleCallbackUrl(overrideBackendUrl: string | undefined): string {
+    const backendApiUrl =
+      overrideBackendUrl ?? `${this.configService.get('backendPublicUrl')}/api`
+    return `${backendApiUrl}/auth/google/callback`
   }
 
   async issueRefreshToken(user: UserDocument): Promise<string> {
@@ -77,13 +77,16 @@ export class AuthService {
     return this.jwtService.sign(token)
   }
 
-  async handleGoogleOauthCode(code: string): Promise<{ refreshToken: string }> {
+  async handleGoogleOauthCode(
+    code: string,
+    overrideBackendUrl: string | undefined
+  ): Promise<{ refreshToken: string }> {
     // Authenticate code
     const client = this.generateGoogleOauthClient()
     let tokens: Credentials
     try {
       const res = await client.getToken({
-        redirect_uri: this.getGoogleCallbackUrl(),
+        redirect_uri: this.getGoogleCallbackUrl(overrideBackendUrl),
         code,
       })
       tokens = res.tokens

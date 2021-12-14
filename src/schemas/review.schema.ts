@@ -1,9 +1,14 @@
 import { StudyProgram } from '@thinc-org/chula-courses'
 import * as mongoose from 'mongoose'
+import { ReviewInteractionType, ReviewStatus } from 'src/graphql'
 
 export const InteractionSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'user' },
-  type: { type: String, required: true, enum: ['L', 'D'] },
+  type: {
+    type: String,
+    required: true,
+    enum: Object.values(ReviewInteractionType),
+  },
 })
 
 export const ReviewSchema = new mongoose.Schema({
@@ -19,11 +24,12 @@ export const ReviewSchema = new mongoose.Schema({
   rating: { type: Number, required: true },
   content: { type: String },
   interactions: [InteractionSchema],
-  status: { type: String, default: 'PENDING' },
+  status: {
+    type: String,
+    enum: Object.values(ReviewStatus),
+    default: ReviewStatus.PENDING,
+  },
 })
-
-export type ReviewInteractionType = 'L' | 'D'
-export type ReviewStatus = 'PENDING' | 'APPROVED' | 'HIDDEN'
 
 export interface ReviewInteraction {
   userId: mongoose.Types.ObjectId
