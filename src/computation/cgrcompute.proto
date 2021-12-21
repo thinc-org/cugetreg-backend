@@ -20,7 +20,7 @@ message CourseKey {
 message CourseRecommendationRequest {
 	string variant = 1;
 	SemesterKey semesterKey = 2;
-	repeated CourseKey selectedCourse = 3;
+	repeated CourseKey selectedCourses = 3;
 }
 
 message CourseRecommendationResponse {
@@ -28,5 +28,5 @@ message CourseRecommendationResponse {
 		CourseKey key = 1;
 		string courseNameEn = 2;
 	}
-	repeated CourseDetail course = 2;
+	repeated CourseDetail courses = 2;
 }
