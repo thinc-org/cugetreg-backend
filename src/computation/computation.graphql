@@ -14,30 +14,24 @@ type CourseEntry {
 
 input CourseRecommendationRequest {
     variant: String!
-    semesterKey: SemesterKeyInput!
-	selectedCourse: [CourseKeyInput!]! 
-}
-
-input SemesterKeyInput {
-    studyProgram: String!
-	semester: String!
-    academicYear: String!
+    semesterKey: CourseGroupInput!
+    selectedCourses: [CourseKeyInput!]! 
 }
 
 input CourseKeyInput {
     courseNo: String!
-	semesterKey: SemesterKeyInput!
+    semesterKey: CourseGroupInput!
 }
 
 type SemesterKey {
     studyProgram: String!
-	semester: String!
+    semester: String!
     academicYear: String!
 }
 
 type CourseKey {
     courseNo: String!
-	semesterKey: SemesterKey!
+    semesterKey: SemesterKey!
 }
 
 type CourseDetail {
@@ -46,5 +40,5 @@ type CourseDetail {
 }
 
 type CourseRecommendationResponse {
-	course: [CourseDetail!]!
+    courses: [CourseDetail!]!
 }

@@ -68,19 +68,13 @@ export class CourseEntryInput {
 
 export class CourseRecommendationRequest {
     variant: string;
-    semesterKey: SemesterKeyInput;
-    selectedCourse: CourseKeyInput[];
-}
-
-export class SemesterKeyInput {
-    studyProgram: string;
-    semester: string;
-    academicYear: string;
+    semesterKey: CourseGroupInput;
+    selectedCourses: CourseKeyInput[];
 }
 
 export class CourseKeyInput {
     courseNo: string;
-    semesterKey: SemesterKeyInput;
+    semesterKey: CourseGroupInput;
 }
 
 export class PeriodRangeInput {
@@ -184,7 +178,7 @@ export class CourseDetail {
 }
 
 export class CourseRecommendationResponse {
-    course: CourseDetail[];
+    courses: CourseDetail[];
 }
 
 export class Period {
