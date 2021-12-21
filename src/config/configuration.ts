@@ -12,7 +12,7 @@ export default () => ({
   adminToken: process.env.ADMIN_TOKEN,
   clientLoggerUrl: process.env.CLIENT_LOGGER_URL,
   computationBackendUrl: process.env.COMPUTATION_BACKEND_URL,
-  computationBackendCredential: process.env.COMPUTATION_BACKEND_AUTHTOKEN,
+  computationBackendAuthToken: process.env.COMPUTATION_BACKEND_AUTHTOKEN,
   env: process.env.ENV || 'development',
 })
 

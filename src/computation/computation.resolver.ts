@@ -39,7 +39,7 @@ export class ComputationResolver {
       this.metadata.set(
         'cookie',
         'authelia_session=' +
-          configService.get('computationBackendCredential') +
+          configService.get('computationBackendAuthToken') +
           ';'
       )
     }
