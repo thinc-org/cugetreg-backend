@@ -66,6 +66,17 @@ export class CourseEntryInput {
     studyProgram: string;
 }
 
+export class CourseRecommendationRequest {
+    variant: string;
+    semesterKey: CourseGroupInput;
+    selectedCourses: CourseKeyInput[];
+}
+
+export class CourseKeyInput {
+    courseNo: string;
+    semesterKey: CourseGroupInput;
+}
+
 export class PeriodRangeInput {
     start: string;
     end: string;
@@ -124,7 +135,7 @@ export class CourseCartItemInput {
 }
 
 export abstract class IQuery {
-    abstract recommendCourses(selectedCourses: CourseEntryInput[]): CourseEntry[] | Promise<CourseEntry[]>;
+    abstract recommend(req: CourseRecommendationRequest): CourseRecommendationResponse | Promise<CourseRecommendationResponse>;
 
     abstract courseNos(): CourseNosOutput | Promise<CourseNosOutput>;
 
@@ -148,6 +159,26 @@ export abstract class IQuery {
 export class CourseEntry {
     courseId: string;
     studyProgram: string;
+}
+
+export class SemesterKey {
+    studyProgram: string;
+    semester: string;
+    academicYear: string;
+}
+
+export class CourseKey {
+    courseNo: string;
+    semesterKey: SemesterKey;
+}
+
+export class CourseDetail {
+    key: CourseKey;
+    courseNameEn: string;
+}
+
+export class CourseRecommendationResponse {
+    courses: CourseDetail[];
 }
 
 export class Period {
