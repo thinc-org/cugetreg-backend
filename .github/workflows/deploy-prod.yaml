@@ -50,17 +50,6 @@ jobs:
           secrets: |
             GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push Computation Backend to GitHub Packages
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: ghcr.io/thinc-org/cugetreg/cugetreg-computation:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-          context: ./computation
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
-
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
