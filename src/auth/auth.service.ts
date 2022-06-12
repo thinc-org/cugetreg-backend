@@ -77,6 +77,27 @@ export class AuthService {
     return this.jwtService.sign(token)
   }
 
+  async handleGoogleIdToken(
+    idToken: string
+  ): Promise<{ refreshToken: string }> {
+    const client = this.generateGoogleOauthClient()
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: this.configService.get('googleOAuthIosClientId'),
+    })
+    const payload = ticket.getPayload()
+    const user = await this.getUserDocument(
+      payload.sub,
+      payload.email,
+      payload.name
+    )
+
+    // Issue token
+    return {
+      refreshToken: await this.issueRefreshToken(user),
+    }
+  }
+
   async handleGoogleOauthCode(
     code: string,
     overrideBackendUrl: string | undefined
@@ -102,20 +123,11 @@ export class AuthService {
       this.logger.warn('UserInfo contains inssuficient data', { userInfo })
       throw new UnprocessableEntityException('Insufficient user data')
     }
-    let user: UserDocument = await this.userModel.findOne({
-      'google.googleId': userInfo.id,
-    })
-    if (!user) {
-      user = new this.userModel()
-      user.email = userInfo.email
-      user.name = userInfo.name
-      user.google = {
-        googleId: userInfo.id,
-        hasMigratedGDrive: false,
-      }
-      user.save()
-      this.logger.log('Created new user with Google Auth', { user })
-    }
+    const user = await this.getUserDocument(
+      userInfo.id,
+      userInfo.email,
+      userInfo.name
+    )
 
     // Handle legacy google drive data
     if (!user.google.hasMigratedGDrive) {
@@ -177,5 +189,28 @@ export class AuthService {
     return {
       refreshToken: await this.issueRefreshToken(user),
     }
+  }
+
+  private async getUserDocument(
+    userId: string,
+    userEmail: string,
+    userName: string
+  ): Promise<UserDocument> {
+    let user: UserDocument = await this.userModel.findOne({
+      'google.googleId': userId,
+    })
+    if (!user) {
+      user = new this.userModel()
+      user.email = userEmail
+      user.name = userName
+      user.google = {
+        googleId: userId,
+        hasMigratedGDrive: false,
+      }
+      user.save()
+      this.logger.log('Created new user with Google Auth', { user })
+    }
+
+    return user
   }
 }

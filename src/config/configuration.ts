@@ -7,6 +7,7 @@ export default () => ({
   origin: process.env.CORS_ORIGIN || '*',
   googleOAuthId: process.env.GOOGLE_OAUTH_ID,
   googleOAuthSecret: process.env.GOOGLE_OAUTH_SECRET,
+  googleOAuthIosClientId: process.env.GOOGLE_OAUTH_IOS_ID,
   backendPublicUrl: process.env.BACKEND_PUBLIC_URL,
   jwtSecret: process.env.JWT_SECRET,
   adminToken: process.env.ADMIN_TOKEN,

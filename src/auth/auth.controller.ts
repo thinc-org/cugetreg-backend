@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Get,
   Post,
@@ -75,6 +76,11 @@ export class AuthController {
     }
   }
 
+  @Post('/google/idToken')
+  async authWithIdToken(@Body('idToken') idToken: string) {
+    return this.authService.handleGoogleIdToken(idToken)
+  }
+
   @Post('/logout')
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const token = req.cookies['refreshtoken']
@@ -91,10 +97,17 @@ export class AuthController {
     }
   }
 
+  @Post('/refreshtoken2')
+  async getAccessToken2(@Body('refreshToken') refreshToken: string) {
+    return {
+      accessToken: await this.authService.issueAccessToken(refreshToken),
+    }
+  }
+
   private createOauthState(returnUrl: string, overrideBackendUrl?: string) {
     const state: OauthStatePayload = {
       returnUrl: returnUrl || this.configService.get('backendPublicUrl'),
-      overrideBackendUrl: overrideBackendUrl
+      overrideBackendUrl: overrideBackendUrl,
     }
     return state
   }
