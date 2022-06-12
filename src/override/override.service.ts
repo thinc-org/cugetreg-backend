@@ -23,6 +23,8 @@ export class OverrideService {
         {
           courseNo: override.courseNo,
           studyProgram: override.studyProgram,
+          semester: override.semester,
+          academicYear: override.academicYear,
         },
         override,
         {
