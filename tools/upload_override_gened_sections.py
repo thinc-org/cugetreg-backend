@@ -13,6 +13,8 @@ with open("gened_sections_2_64.csv", mode="r", encoding="utf8") as csvFile:
     courseNo = row["courseNo"].strip()
     studyProgram = row["studyProgram"].strip()
     genEdType = row["genEdType"].strip()
+    semester = row["semester"].strip()
+    academicYear = row["academicYear"].strip()
 
     sectionGroups = row["sections"].strip().split(",")
     sections = []
@@ -34,6 +36,8 @@ with open("gened_sections_2_64.csv", mode="r", encoding="utf8") as csvFile:
           createOrUpdateOverride(override: $override) {
             courseNo
             studyProgram
+            semester
+            academicYear
             genEd {
               genEdType
               sections
@@ -45,6 +49,8 @@ with open("gened_sections_2_64.csv", mode="r", encoding="utf8") as csvFile:
         "override": {
           "courseNo": courseNo,
           "studyProgram": studyProgram,
+          "semester": semester,
+          "academicYear": academicYear,
           "genEd": {
             "genEdType": genEdType,
             "sections": sections,
@@ -52,7 +58,7 @@ with open("gened_sections_2_64.csv", mode="r", encoding="utf8") as csvFile:
         }
       }
     }
-    print('Updating', courseNo, studyProgram, genEdType, sections)
+    print('Updating', courseNo, studyProgram, genEdType, sections, academicYear, semester)
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:
       print(f"ERROR ({courseNo}): {r.content}")  
