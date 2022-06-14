@@ -1,14 +1,19 @@
 import csv
 import os
 import requests
+import pathlib
 from dotenv import load_dotenv
 
-os.chdir("tools")
 load_dotenv(".env")
 
-with open("gened_sections_2_64.csv", mode="r", encoding="utf8") as csvFile:
+# make sure you configure .env before running this script
+API_URL = os.getenv("API_URL")
+SECTIONS_FILE = os.path.join(os.path.dirname(__file__), os.getenv("SECTIONS_FILE"))
+ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
+
+with open(SECTIONS_FILE, mode="r", encoding="utf8") as csvFile:
   csvReader = csv.DictReader(csvFile)
-  print("Connecting to", os.getenv("API_URL"))
+  print("Connecting to", API_URL)
   for row in csvReader:
     courseNo = row["courseNo"].strip()
     studyProgram = row["studyProgram"].strip()
@@ -25,9 +30,8 @@ with open("gened_sections_2_64.csv", mode="r", encoding="utf8") as csvFile:
           sections.append(str(section))
       else:
         sections.append(sectionGroup)
-    url = os.getenv("API_URL")
     headers = {
-        "Authorization": f"Bearer {os.getenv('ADMIN_TOKEN')}",
+        "Authorization": f"Bearer {ADMIN_TOKEN}",
         "Content-Type": "application/json"
     }
     data = {
@@ -59,6 +63,7 @@ with open("gened_sections_2_64.csv", mode="r", encoding="utf8") as csvFile:
       }
     }
     print('Updating', courseNo, studyProgram, genEdType, sections, academicYear, semester)
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(API_URL, headers=headers, json=data)
     if r.status_code != 200:
-      print(f"ERROR ({courseNo}): {r.content}")  
+      print(f"ERROR ({courseNo}): {r.content}") 
+      break
