@@ -58,5 +58,5 @@ for genedCode in range(1, 5):
     abbrName = abbrName.text.strip()
     # course = fetch_html_course_detail("2605311")
     # print(courseNo, parse_course_sections(course))
-    print(f"{courseNo},{abbrName},{STUDY_PROGRAM},{ACAD_YEAR},{SEMESTER},{GENED_NAME[genedCode]},")
+    print(f"{courseNo},{abbrName},{GENED_NAME[genedCode]},{STUDY_PROGRAM},{ACAD_YEAR},{SEMESTER},")
   
