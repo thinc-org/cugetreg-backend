@@ -23,7 +23,7 @@ async function bootstrap() {
   app.set('trust proxy', 1)
 
   app.useGlobalFilters(new HttpExceptionFilter())
-  app.setGlobalPrefix('/api')
+  app.setGlobalPrefix('/_api')
   app.use(cookieParser())
 
   await app.listen(port, () => {
