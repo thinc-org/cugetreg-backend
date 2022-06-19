@@ -46,7 +46,7 @@ export class AuthService {
 
   getGoogleCallbackUrl(overrideBackendUrl: string | undefined): string {
     const backendApiUrl =
-      overrideBackendUrl ?? `${this.configService.get('backendPublicUrl')}/api`
+      overrideBackendUrl ?? `${this.configService.get('backendPublicUrl')}`
     return `${backendApiUrl}/auth/google/callback`
   }
 
