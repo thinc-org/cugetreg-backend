@@ -36,7 +36,7 @@ import { UserModule } from './user/user.module'
         cors: {
           origin: configService.get<string>('origin'),
         },
-        path: '/api/graphql',
+        path: '/_api/graphql',
         context: ({ req, res }: GraphQLExpressContext) => ({ req, res }),
         formatError: (error: GraphQLError) => {
           const graphQLFormattedError = {
