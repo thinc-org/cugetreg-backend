@@ -24,24 +24,6 @@ export enum StudyProgram {
     I = "I"
 }
 
-export enum ClassType {
-    LECT = "LECT",
-    LAB = "LAB",
-    DISC = "DISC",
-    FWK = "FWK",
-    PRAC = "PRAC",
-    IDPS = "IDPS",
-    SMNA = "SMNA",
-    STU = "STU",
-    IA = "IA",
-    OTHER = "OTHER",
-    IDVS = "IDVS",
-    AR = "AR",
-    CLIN = "CLIN",
-    TUT = "TUT",
-    REFL = "REFL"
-}
-
 export enum GenEdType {
     SO = "SO",
     SC = "SC",

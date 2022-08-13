@@ -16,25 +16,6 @@ enum StudyProgram {
   I
 }
 
-enum ClassType {
-  LECT
-  LAB
-  DISC
-  FWK
-  PRAC
-  IDPS
-  SMNA
-  STU
-  "L/T"
-  IA
-  OTHER
-  IDVS
-  AR
-  CLIN
-  TUT
-  REFL
-}
-
 enum GenEdType {
   SO
   SC
