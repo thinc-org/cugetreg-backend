@@ -24,28 +24,10 @@ export enum StudyProgram {
     I = "I"
 }
 
-export enum ClassType {
-    LECT = "LECT",
-    LAB = "LAB",
-    DISC = "DISC",
-    FWK = "FWK",
-    PRAC = "PRAC",
-    IDPS = "IDPS",
-    SMNA = "SMNA",
-    STU = "STU",
-    IA = "IA",
-    OTHER = "OTHER",
-    IDVS = "IDVS",
-    AR = "AR",
-    CLIN = "CLIN",
-    TUT = "TUT",
-    REFL = "REFL"
-}
-
 export enum GenEdType {
     SO = "SO",
-    SC = "SC",
     HU = "HU",
+    SC = "SC",
     IN = "IN",
     NO = "NO"
 }
@@ -86,9 +68,9 @@ export class FilterInput {
     keyword?: string;
     genEdTypes?: GenEdType[];
     dayOfWeeks?: DayOfWeek[];
+    periodRange?: PeriodRangeInput;
     limit?: number;
     offset?: number;
-    periodRange?: PeriodRangeInput;
 }
 
 export class CourseGroupInput {
@@ -291,11 +273,6 @@ export class Review {
     myInteraction?: ReviewInteractionType;
     status?: ReviewStatus;
     isOwner: boolean;
-}
-
-export class GoogleCredential {
-    accessToken?: string;
-    expiresIn?: Date;
 }
 
 export class User {
