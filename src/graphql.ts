@@ -26,8 +26,8 @@ export enum StudyProgram {
 
 export enum GenEdType {
     SO = "SO",
-    SC = "SC",
     HU = "HU",
+    SC = "SC",
     IN = "IN",
     NO = "NO"
 }
@@ -68,9 +68,9 @@ export class FilterInput {
     keyword?: string;
     genEdTypes?: GenEdType[];
     dayOfWeeks?: DayOfWeek[];
+    periodRange?: PeriodRangeInput;
     limit?: number;
     offset?: number;
-    periodRange?: PeriodRangeInput;
 }
 
 export class CourseGroupInput {
