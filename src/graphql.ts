@@ -275,11 +275,6 @@ export class Review {
     isOwner: boolean;
 }
 
-export class GoogleCredential {
-    accessToken?: string;
-    expiresIn?: Date;
-}
-
 export class User {
     _id: string;
     name: string;
