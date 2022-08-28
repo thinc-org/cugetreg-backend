@@ -2,6 +2,9 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
 
+# IMPORTANT
+**This repository has been archived in favor of monorepo architecture. The current source for CU Get Reg API is now located in [thinc-org/cugetreg](https://github.com/thinc-org/cugetreg) repository.**
+
 ## CU Get Reg API
 
 Backend service for [CU Get Reg](https://cugetreg.com).
